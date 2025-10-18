@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VitalSoft - Pharmacy Management System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="header">
+        <h1>💊 VitalSoft</h1>
+        <p>Comprehensive Pharmacy Management System</p>
+    </div>
+
+    <div class="container">
+        <!-- Login Section -->
+        <div id="loginSection" class="login-section">
+            <h2>Sign In to VitalSoft</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="role">Role</label>
+                    <select id="role" required>
+                        <option value="">Select Role</option>
+                        <option value="admin">Admin</option>
+                        <option value="doctor">Doctor</option>
+                        <option value="pharmacist">Pharmacist</option>
+                        <option value="manager">Pharmacy Manager</option>
+                        <option value="patient">Patient</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">Sign In</button>
+            </form>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="adminDashboard" class="dashboard">
+            <div class="dashboard-header">
+                <h2>Admin Dashboard</h2>
+                <div class="user-info">
+                    <div class="user-avatar">A</div>
+                    <div>
+                        <strong>Admin User</strong>
+                        <button onclick="logout()" class="btn-logout">Logout</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3><div class="card-icon">👥</div> User Management</h3>
+                    <p>Create, read, update, and delete user accounts</p>
+                    <button class="btn" onclick="showSection('userManagement')">Manage Users</button>
+                </div>
+                <div class="card">
+                    <h3><div class="card-icon">🏥</div> Branch Management</h3>
+                    <p>Manage pharmacy branches and locations</p>
+                    <button class="btn" onclick="showSection('branchManagement')">Manage Branches</button>
+                </div>
+                <div class="card">
+                    <h3><div class="card-icon">🔍</div> Search & Filter</h3>
+                    <p>Search users and branches by status or role</p>
+                    <button class="btn" onclick="showSection('searchFilter')">Search</button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <h3>Recent User Activities</h3>
+                <div class="search-bar">
+                    <input type="text" placeholder="Search users..." id="userSearch">
+                    <select id="statusFilter">
+                        <option value="">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="deactivated">Deactivated</option>
+                    </select>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>001</td>
+                            <td>Dr. John Smith</td>
+                            <td>Doctor</td>
+                            <td><span class="badge badge-active">Active</span></td>
+                            <td>
+                                <button class="btn-action">Edit</button>
+                                <button class="btn-action btn-danger">Delete</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>002</td>
+                            <td>Sarah Johnson</td>
+                            <td>Pharmacist</td>
+                            <td><span class="badge badge-active">Active</span></td>
+                            <td>
+                                <button class="btn-action">Edit</button>
+                                <button class="btn-action btn-danger">Delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Doctor Dashboard -->
+        <div id="doctorDashboard" class="dashboard">
+            <div class="dashboard-header">
+                <h2>Doctor Dashboard</h2>
+                <div class="user-info">
+                    <div class="user-avatar">D</div>
+                    <div>
+                        <strong>Dr. John Smith</strong>
+                        <button onclick="logout()" class="btn-logout">Logout</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3><div class="card-icon">📋</div> Prescriptions</h3>
+                    <div class="stat-value">24</div>
+                    <p>Active prescriptions</p>
+                    <button class="btn" onclick="showSection('prescriptions')">Manage Prescriptions</button>
+                </div>
+                <div class="card">
+                    <h3><div class="card-icon">🩺</div> Medical History</h3>
+                    <div class="stat-value">156</div>
+                    <p>Patient records</p>
+                    <button class="btn" onclick="showSection('medicalHistory')">View Records</button>
+                </div>
+                <div class="card">
+                    <h3><div class="card-icon">💊</div> Medicine Inventory</h3>
+                    <p>Check medicine availability across branches</p>
+                    <button class="btn" onclick="showSection('medicineCheck')">Check Stock</button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <h3>Recent Prescriptions</h3>
+                <div class="search-bar">
+                    <input type="text" placeholder="Search patients or medicines..." id="prescriptionSearch">
+                    <button class="btn">New Prescription</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Patient</th>
+                            <th>Medicine</th>
+                            <th>Dosage</th>
+                            <th>Quantity</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Jane Doe</td>
+                            <td>Amoxicillin</td>
+                            <td>500mg</td>
+                            <td>30 tablets</td>
+                            <td>2025-10-15</td>
+                            <td>
+                                <button class="btn-action">Edit</button>
+                                <button class="btn-action btn-danger">Delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pharmacist Dashboard -->
+        <div id="pharmacistDashboard" class="dashboard">
+            <div class="dashboard-header">
+                <h2>Pharmacist Dashboard</h2>
+                <div class="user-info">
+                    <div class="user-avatar">P</div>
+                    <div>
+                        <strong>Sarah Johnson</strong>
+                        <button onclick="logout()" class="btn-logout">Logout</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3><div class="card-icon">📜</div> Prescriptions</h3>
+                    <div class="stat-value">8</div>
+                    <p>Pending dispensing</p>
+                    <button class="btn" onclick="showSection('dispensing')">View Prescriptions</button>
+                </div>
+                <div class="card">
+                    <h3><div class="card-icon">📦</div> Inventory</h3>
+                    <div class="stat-value">342</div>
+                    <p>Items in stock</p>
+                    <button class="btn" onclick="showSection('inventory')">Manage Inventory</button>
+                </div>
+                <div class="card">
+                    <h3><div class="card-icon">💰</div> Billing</h3>
+                    <p>Calculate and process payments</p>
+                    <button class="btn" onclick="showSection('billing')">Process Payment</button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <h3>Pharmacy Inventory</h3>
+                <div class="search-bar">
+                    <input type="text" placeholder="Search medicine..." id="inventorySearch">
+                    <select id="inventoryFilter">
+                        <option value="">All Items</option>
+                        <option value="low">Low Stock</option>
+                        <option value="expiring">Expiring Soon</option>
+                    </select>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Medicine Name</th>
+                            <th>Quantity</th>
+                            <th>Expiry Date</th>
+                            <th>Price</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Amoxicillin 500mg</td>
+                            <td>250</td>
+                            <td>2026-12-31</td>
+                            <td>$5.99</td>
+                            <td>
+                                <button class="btn-action">Update</button>
+                                <button class="btn-action btn-danger">Remove</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Ibuprofen 200mg</td>
+                            <td>180</td>
+                            <td>2026-08-15</td>
+                            <td>$3.49</td>
+                            <td>
+                                <button class="btn-action">Update</button>
+                                <button class="btn-action btn-danger">Remove</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pharmacy Manager Dashboard -->
+        <div id="managerDashboard" class="dashboard">
+            <div class="dashboard-header">
+                <h2>Pharmacy Manager Dashboard</h2>
+                <div class="user-info">
+                    <div class="user-avatar">M</div>
+                    <div>
+                        <strong>Manager Name</strong>
+                        <button onclick="logout()" class="btn-logout">Logout</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3><div class="card-icon">🏥</div> Branch Management</h3>
+                    <div class="stat-value">5</div>
+                    <p>Active branches</p>
+                    <button class="btn" onclick="showSection('branches')">Manage Branches</button>
+                </div>
+                <div class="card">
+                    <h3><div class="card-icon">👥</div> Staff Management</h3>
+                    <div class="stat-value">23</div>
+                    <p>Pharmacy staff</p>
+                    <button class="btn" onclick="showSection('staff')">Manage Staff</button>
+                </div>
+                <div class="card">
+                    <h3><div class="card-icon">✅</div> Stock Approvals</h3>
+                    <div class="stat-value">4</div>
+                    <p>Pending approvals</p>
+                    <button class="btn" onclick="showSection('approvals')">Review</button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <h3>Branch Overview</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Branch Name</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Staff Count</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Main Branch</td>
+                            <td>Downtown</td>
+                            <td><span class="badge badge-active">Active</span></td>
+                            <td>12</td>
+                            <td>
+                                <button class="btn-action">Edit</button>
+                                <button class="btn-action">View Stock</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>North Branch</td>
+                            <td>North District</td>
+                            <td><span class="badge badge-active">Active</span></td>
+                            <td>8</td>
+                            <td>
+                                <button class="btn-action">Edit</button>
+                                <button class="btn-action">View Stock</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Patient Dashboard -->
+        <div id="patientDashboard" class="dashboard">
+            <div class="dashboard-header">
+                <h2>Patient Dashboard</h2>
+                <div class="user-info">
+                    <div class="user-avatar">P</div>
+                    <div>
+                        <strong>Jane Doe</strong>
+                        <button onclick="logout()" class="btn-logout">Logout</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3><div class="card-icon">📋</div> My Prescriptions</h3>
+                    <div class="stat-value">3</div>
+                    <p>Active prescriptions</p>
+                    <button class="btn" onclick="showSection('myPrescriptions')">View All</button>
+                </div>
+                <div class="card">
+                    <h3><div class="card-icon">🔄</div> Prescription Renewal</h3>
+                    <p>Request prescription renewals</p>
+                    <button class="btn" onclick="showSection('renewals')">Request Renewal</button>
+                </div>
+                <div class="card">
+                    <h3><div class="card-icon">🩺</div> Medical History</h3>
+                    <p>View your medical records</p>
+                    <button class="btn" onclick="showSection('patientHistory')">View History</button>
+                </div>
+                <div class="card">
+                    <h3><div class="card-icon">👤</div> Profile</h3>
+                    <p>Update personal information</p>
+                    <button class="btn" onclick="showSection('profile')">Edit Profile</button>
+                </div>
+                <div class="card">
+                    <h3><div class="card-icon">💳</div> Payment Methods</h3>
+                    <p>Manage payment options</p>
+                    <button class="btn" onclick="showSection('payment')">Manage Payments</button>
+                </div>
+                <div class="card">
+                    <h3><div class="card-icon">❓</div> Help & Support</h3>
+                    <p>Technical assistance available</p>
+                    <button class="btn" onclick="showSection('support')">Get Help</button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <h3>My Prescription History</h3>
+                <div class="search-bar">
+                    <input type="text" placeholder="Search by medicine or date..." id="patientSearch">
+                    <input type="date" id="dateFilter">
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Medicine</th>
+                            <th>Dosage</th>
+                            <th>Quantity</th>
+                            <th>Doctor</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2025-10-15</td>
+                            <td>Amoxicillin</td>
+                            <td>500mg</td>
+                            <td>30 tablets</td>
+                            <td>Dr. John Smith</td>
+                            <td><span class="badge badge-active">Active</span></td>
+                            <td>
+                                <button class="btn-action">View Details</button>
+                                <button class="btn-action">Request Renewal</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2025-09-20</td>
+                            <td>Lisinopril</td>
+                            <td>10mg</td>
+                            <td>90 tablets</td>
+                            <td>Dr. Emily Brown</td>
+                            <td><span class="badge badge-inactive">Completed</span></td>
+                            <td>
+                                <button class="btn-action">View Details</button>
+                                <button class="btn-action">Request Renewal</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
