@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmaCare - Patient Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/patient.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-heartbeat"></i>
+                    <h1>PharmaCare - Patient Portal</h1>
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar">PT</div>
+                    <div>
+                        <div class="user-name">Michael Thompson</div>
+                        <div class="user-role">Patient</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="dashboard">
+            <div class="sidebar">
+                <div class="patient-info">
+                    <h3>My Health Profile</h3>
+                    <p>ID: <strong>PT001</strong></p>
+                    <p>Age: <strong>45</strong></p>
+                    <p>Blood Type: <strong>O+</strong></p>
+                    <div class="account-status status-active">Account Active</div>
+                </div>
+                <ul class="sidebar-menu">
+                    <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="#"><i class="fas fa-prescription"></i> My Prescriptions</a></li>
+                    <li><a href="#"><i class="fas fa-history"></i> Medical History</a></li>
+                    <li><a href="#"><i class="fas fa-user-edit"></i> Personal Information</a></li>
+                    <li><a href="#"><i class="fas fa-question-circle"></i> Help & Support</a></li>
+                    <li><a href="#"><i class="fas fa-credit-card"></i> Billing & Payments</a></li>
+                </ul>
+            </div>
+            <div class="main-content">
+                <div class="content-header">
+                    <h2>Welcome, Michael</h2>
+                    <div class="header-actions">
+                        <button class="btn btn-primary"><i class="fas fa-file-medical"></i> Request Renewal</button>
+                        <button class="btn btn-primary"><i class="fas fa-question"></i> Get Help</button>
+                    </div>
+                </div>
+                
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <i class="fas fa-prescription-bottle"></i>
+                        <h3>Active Prescriptions</h3>
+                        <div class="value">2</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-calendar-check"></i>
+                        <h3>Upcoming Refills</h3>
+                        <div class="value">1</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-file-medical"></i>
+                        <h3>Medical Records</h3>
+                        <div class="value">12</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-clock"></i>
+                        <h3>Pending Requests</h3>
+                        <div class="value">1</div>
+                    </div>
+                </div>
+
+                <div class="content-tabs">
+                    <button class="tab-btn active" data-tab="prescriptions">My Prescriptions</button>
+                    <button class="tab-btn" data-tab="medical-history">Medical History</button>
+                    <button class="tab-btn" data-tab="profile">Personal Information</button>
+                    <button class="tab-btn" data-tab="payments">Payments</button>
+                </div>
+
+                <div class="tab-content active" id="prescriptions-tab">
+                    <div class="search-filter">
+                        <input type="text" class="search-box" placeholder="Search prescriptions...">
+                        <select class="filter-select">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="completed">Completed</option>
+                            <option value="expired">Expired</option>
+                        </select>
+                        <button class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+                    </div>
+
+                    <div class="prescriptions-list">
+                        <div class="prescription-card">
+                            <div class="prescription-header">
+                                <div class="prescription-info">
+                                    <div class="prescription-id">RX-2023-015</div>
+                                    <div class="prescription-date">Prescribed: 2023-10-18</div>
+                                    <div class="prescription-doctor">Dr. Sarah Johnson</div>
+                                </div>
+                                <div class="prescription-status status-active">Active</div>
+                            </div>
+                            <div class="prescription-medicines">
+                                <h4>Medications:</h4>
+                                <div class="medicine-item">
+                                    <div class="medicine-details">
+                                        <span class="medicine-name">Amoxicillin 500mg</span>
+                                        <span class="medicine-dosage">1 tablet every 8 hours</span>
+                                        <span class="medicine-instructions">Take with food. Complete full course.</span>
+                                    </div>
+                                    <div class="medicine-info">
+                                        <span class="medicine-quantity">Quantity: 21 tablets</span>
+                                        <span class="refill-status">Refills: 0 remaining</span>
+                                    </div>
+                                </div>
+                                <div class="medicine-item">
+                                    <div class="medicine-details">
+                                        <span class="medicine-name">Ibuprofen 400mg</span>
+                                        <span class="medicine-dosage">1 tablet as needed for pain</span>
+                                        <span class="medicine-instructions">Take with food or milk.</span>
+                                    </div>
+                                    <div class="medicine-info">
+                                        <span class="medicine-quantity">Quantity: 10 tablets</span>
+                                        <span class="refill-status">Refills: 1 remaining</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="prescription-actions">
+                                <button class="btn btn-primary"><i class="fas fa-redo"></i> Request Renewal</button>
+                                <button class="btn btn-secondary"><i class="fas fa-info-circle"></i> Medicine Details</button>
+                                <button class="btn btn-secondary"><i class="fas fa-print"></i> Print</button>
+                            </div>
+                        </div>
+                        
+                        <div class="prescription-card">
+                            <div class="prescription-header">
+                                <div class="prescription-info">
+                                    <div class="prescription-id">RX-2023-010</div>
+                                    <div class="prescription-date">Prescribed: 2023-09-15</div>
+                                    <div class="prescription-doctor">Dr. Robert Kim</div>
+                                </div>
+                                <div class="prescription-status status-completed">Completed</div>
+                            </div>
+                            <div class="prescription-medicines">
+                                <h4>Medications:</h4>
+                                <div class="medicine-item">
+                                    <div class="medicine-details">
+                                        <span class="medicine-name">Lisinopril 10mg</span>
+                                        <span class="medicine-dosage">1 tablet daily</span>
+                                        <span class="medicine-instructions">Take in the morning.</span>
+                                    </div>
+                                    <div class="medicine-info">
+                                        <span class="medicine-quantity">Quantity: 30 tablets</span>
+                                        <span class="refill-status">Refills: 2 remaining</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="prescription-actions">
+                                <button class="btn btn-primary"><i class="fas fa-redo"></i> Request Renewal</button>
+                                <button class="btn btn-secondary"><i class="fas fa-info-circle"></i> Medicine Details</button>
+                                <button class="btn btn-secondary"><i class="fas fa-print"></i> Print</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="renewal-request">
+                        <h3>Request Prescription Renewal</h3>
+                        <div class="form-container">
+                            <div class="form-group">
+                                <label for="prescription-select">Select Prescription</label>
+                                <select id="prescription-select" class="form-control">
+                                    <option value="">Choose a prescription...</option>
+                                    <option value="RX-2023-015">RX-2023-015 (Amoxicillin, Ibuprofen)</option>
+                                    <option value="RX-2023-010">RX-2023-010 (Lisinopril)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="renewal-notes">Additional Notes (Optional)</label>
+                                <textarea id="renewal-notes" class="form-control" placeholder="Any additional information for your doctor..." rows="3"></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-success"><i class="fas fa-paper-plane"></i> Submit Request</button>
+                                <button class="btn btn-secondary">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="medical-history-tab">
+                    <div class="search-filter">
+                        <input type="text" class="search-box" placeholder="Search medical history...">
+                        <select class="filter-select">
+                            <option value="">All Records</option>
+                            <option value="prescription">Prescriptions</option>
+                            <option value="allergy">Allergies</option>
+                            <option value="condition">Medical Conditions</option>
+                            <option value="vaccination">Vaccinations</option>
+                        </select>
+                        <button class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+                    </div>
+
+                    <div class="medical-history">
+                        <div class="history-timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-date">2023-10-18</div>
+                                <div class="timeline-content">
+                                    <h4>Upper Respiratory Infection</h4>
+                                    <p><strong>Doctor:</strong> Dr. Sarah Johnson</p>
+                                    <p><strong>Diagnosis:</strong> Bacterial sinusitis</p>
+                                    <p><strong>Treatment:</strong> Amoxicillin 500mg, Ibuprofen 400mg</p>
+                                    <p><strong>Notes:</strong> Patient presented with sinus pressure and congestion. Course of antibiotics prescribed.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="timeline-item">
+                                <div class="timeline-date">2023-09-15</div>
+                                <div class="timeline-content">
+                                    <h4>Annual Checkup</h4>
+                                    <p><strong>Doctor:</strong> Dr. Robert Kim</p>
+                                    <p><strong>Diagnosis:</strong> Hypertension</p>
+                                    <p><strong>Treatment:</strong> Lisinopril 10mg daily</p>
+                                    <p><strong>Notes:</strong> Blood pressure reading: 145/92. Medication prescribed and lifestyle changes recommended.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="timeline-item">
+                                <div class="timeline-date">2023-06-22</div>
+                                <div class="timeline-content">
+                                    <h4>Allergy Consultation</h4>
+                                    <p><strong>Doctor:</strong> Dr. Sarah Johnson</p>
+                                    <p><strong>Diagnosis:</strong> Seasonal allergies</p>
+                                    <p><strong>Treatment:</strong> Loratadine 10mg as needed</p>
+                                    <p><strong>Notes:</strong> Patient reports seasonal allergy symptoms. Recommended OTC antihistamine.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-section">
+                        <h3>Medical Summary</h3>
+                        <div class="medical-summary">
+                            <div class="summary-section">
+                                <h4>Current Conditions</h4>
+                                <ul>
+                                    <li>Hypertension (Diagnosed: September 2023)</li>
+                                    <li>Seasonal Allergies (Diagnosed: June 2023)</li>
+                                </ul>
+                            </div>
+                            <div class="summary-section">
+                                <h4>Known Allergies</h4>
+                                <ul>
+                                    <li>Penicillin (Severe reaction)</li>
+                                    <li>No known food allergies</li>
+                                </ul>
+                            </div>
+                            <div class="summary-section">
+                                <h4>Current Medications</h4>
+                                <ul>
+                                    <li>Lisinopril 10mg - Daily for hypertension</li>
+                                    <li>Loratadine 10mg - As needed for allergies</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="profile-tab">
+                    <div class="profile-container">
+                        <div class="profile-header">
+                            <h3>Personal Information</h3>
+                            <button class="btn btn-primary"><i class="fas fa-edit"></i> Edit Information</button>
+                        </div>
+                        
+                        <div class="profile-details">
+                            <div class="detail-section">
+                                <h4>Basic Information</h4>
+                                <div class="detail-grid">
+                                    <div class="detail-item">
+                                        <label>Full Name</label>
+                                        <div class="detail-value">Michael Thompson</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Date of Birth</label>
+                                        <div class="detail-value">May 12, 1978 (45 years)</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Gender</label>
+                                        <div class="detail-value">Male</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Blood Type</label>
+                                        <div class="detail-value">O+</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <h4>Contact Information</h4>
+                                <div class="detail-grid">
+                                    <div class="detail-item">
+                                        <label>Email Address</label>
+                                        <div class="detail-value">m.thompson@example.com</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Phone Number</label>
+                                        <div class="detail-value">(555) 123-4567</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Address</label>
+                                        <div class="detail-value">123 Maple Street, Springfield, IL 62704</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Emergency Contact</label>
+                                        <div class="detail-value">Jennifer Thompson (555) 234-5678</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <h4>Account Information</h4>
+                                <div class="detail-grid">
+                                    <div class="detail-item">
+                                        <label>Patient ID</label>
+                                        <div class="detail-value">PT001</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Account Status</label>
+                                        <div class="detail-value"><span class="status-badge status-active">Active</span></div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Primary Pharmacy</label>
+                                        <div class="detail-value">Downtown Pharmacy</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Insurance Provider</label>
+                                        <div class="detail-value">HealthCare Plus</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="payments-tab">
+                    <div class="payment-container">
+                        <div class="payment-methods-section">
+                            <h3>Payment Methods</h3>
+                            <div class="payment-methods">
+                                <div class="payment-method selected">
+                                    <i class="fas fa-credit-card"></i>
+                                    <div class="method-details">
+                                        <div class="method-name">Visa ending in 4321</div>
+                                        <div class="method-expiry">Expires 12/2024</div>
+                                    </div>
+                                    <div class="method-actions">
+                                        <button class="btn btn-secondary">Edit</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="payment-method">
+                                    <i class="fas fa-university"></i>
+                                    <div class="method-details">
+                                        <div class="method-name">Bank Transfer</div>
+                                        <div class="method-expiry">Primary account</div>
+                                    </div>
+                                    <div class="method-actions">
+                                        <button class="btn btn-secondary">Edit</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="payment-method">
+                                    <i class="fab fa-paypal"></i>
+                                    <div class="method-details">
+                                        <div class="method-name">PayPal</div>
+                                        <div class="method-expiry">m.thompson@example.com</div>
+                                    </div>
+                                    <div class="method-actions">
+                                        <button class="btn btn-secondary">Edit</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary"><i class="fas fa-plus"></i> Add Payment Method</button>
+                        </div>
+                        
+                        <div class="billing-history">
+                            <h3>Billing History</h3>
+                            <div class="billing-table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Description</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>2023-10-18</td>
+                                            <td>Amoxicillin 500mg, Ibuprofen 400mg</td>
+                                            <td>$21.25</td>
+                                            <td><span class="status-badge status-paid">Paid</span></td>
+                                            <td><button class="btn btn-secondary">View Receipt</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>2023-09-15</td>
+                                            <td>Lisinopril 10mg</td>
+                                            <td>$15.20</td>
+                                            <td><span class="status-badge status-paid">Paid</span></td>
+                                            <td><button class="btn btn-secondary">View Receipt</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>2023-08-10</td>
+                                            <td>Annual Checkup Copay</td>
+                                            <td>$25.00</td>
+                                            <td><span class="status-badge status-paid">Paid</span></td>
+                                            <td><button class="btn btn-secondary">View Receipt</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="help-section">
+                    <h3>Help & Support</h3>
+                    <div class="help-options">
+                        <div class="help-card">
+                            <i class="fas fa-phone-alt"></i>
+                            <h4>Phone Support</h4>
+                            <p>Call us at <strong>1-800-PHARMACY</strong></p>
+                            <p>Available 24/7 for urgent matters</p>
+                        </div>
+                        <div class="help-card">
+                            <i class="fas fa-envelope"></i>
+                            <h4>Email Support</h4>
+                            <p>Send us an email at <strong>support@pharmacare.com</strong></p>
+                            <p>Response within 24 hours</p>
+                        </div>
+                        <div class="help-card">
+                            <i class="fas fa-comments"></i>
+                            <h4>Live Chat</h4>
+                            <p>Chat with our support team</p>
+                            <p>Available Mon-Fri, 9AM-5PM</p>
+                            <button class="btn btn-primary">Start Chat</button>
+                        </div>
+                        <div class="help-card">
+                            <i class="fas fa-question-circle"></i>
+                            <h4>FAQ</h4>
+                            <p>Find answers to common questions</p>
+                            <button class="btn btn-secondary">View FAQ</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab functionality
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Remove active class from all buttons and contents
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to current button and content
+                    this.classList.add('active');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // Payment method selection
+            const paymentMethods = document.querySelectorAll('.payment-method');
+            paymentMethods.forEach(method => {
+                method.addEventListener('click', function() {
+                    paymentMethods.forEach(m => m.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+            
+            // Renewal request functionality
+            const renewalButtons = document.querySelectorAll('.prescription-actions .btn-primary');
+            renewalButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    alert('Prescription renewal request would be submitted in a real application.');
+                });
+            });
+            
+            // Medicine details buttons
+            const detailsButtons = document.querySelectorAll('.btn-secondary .fa-info-circle').forEach(icon => {
+                icon.closest('.btn').addEventListener('click', function() {
+                    alert('Medicine details would be displayed in a real application.');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

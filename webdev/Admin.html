@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmaCare - Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-clinic-medical"></i>
+                    <h1>PharmaCare Management</h1>
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar">AD</div>
+                    <div>
+                        <div class="user-name">Admin User</div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="dashboard">
+            <div class="sidebar">
+                <ul class="sidebar-menu">
+                    <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="#"><i class="fas fa-users"></i> User Management</a></li>
+                    <li><a href="#"><i class="fas fa-clinic-medical"></i> Branch Management</a></li>
+                    <li><a href="#"><i class="fas fa-chart-bar"></i> Reports & Analytics</a></li>
+                    <li><a href="#"><i class="fas fa-cog"></i> System Settings</a></li>
+                </ul>
+            </div>
+            <div class="main-content">
+                <div class="content-header">
+                    <h2>Administrator Dashboard</h2>
+                    <div class="header-actions">
+                        <button class="btn btn-primary"><i class="fas fa-plus"></i> Add User</button>
+                        <button class="btn btn-primary"><i class="fas fa-plus"></i> Add Branch</button>
+                    </div>
+                </div>
+                
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <i class="fas fa-users"></i>
+                        <h3>Total Users</h3>
+                        <div class="value">247</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-clinic-medical"></i>
+                        <h3>Branches</h3>
+                        <div class="value">12</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-user-check"></i>
+                        <h3>Active Users</h3>
+                        <div class="value">189</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-user-slash"></i>
+                        <h3>Inactive Users</h3>
+                        <div class="value">58</div>
+                    </div>
+                </div>
+
+                <div class="search-filter">
+                    <input type="text" class="search-box" placeholder="Search users or branches...">
+                    <select class="filter-select">
+                        <option value="">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="deactivated">Deactivated</option>
+                    </select>
+                    <select class="filter-select">
+                        <option value="">All Roles</option>
+                        <option value="doctor">Doctor</option>
+                        <option value="pharmacist">Pharmacist</option>
+                        <option value="manager">Manager</option>
+                        <option value="patient">Patient</option>
+                    </select>
+                </div>
+
+                <div class="content-section">
+                    <h3>User Management</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>User ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>USR001</td>
+                                <td>Dr. Sarah Johnson</td>
+                                <td>s.johnson@example.com</td>
+                                <td>Doctor</td>
+                                <td><span class="status-badge status-active">Active</span></td>
+                                <td class="action-buttons">
+                                    <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>USR002</td>
+                                <td>Michael Chen</td>
+                                <td>m.chen@example.com</td>
+                                <td>Pharmacist</td>
+                                <td><span class="status-badge status-active">Active</span></td>
+                                <td class="action-buttons">
+                                    <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>USR003</td>
+                                <td>Robert Williams</td>
+                                <td>r.williams@example.com</td>
+                                <td>Manager</td>
+                                <td><span class="status-badge status-inactive">Inactive</span></td>
+                                <td class="action-buttons">
+                                    <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>USR004</td>
+                                <td>Lisa Rodriguez</td>
+                                <td>l.rodriguez@example.com</td>
+                                <td>Patient</td>
+                                <td><span class="status-badge status-deactivated">Deactivated</span></td>
+                                <td class="action-buttons">
+                                    <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="content-section">
+                    <h3>Branch Management</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Branch ID</th>
+                                <th>Branch Name</th>
+                                <th>Location</th>
+                                <th>Manager</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>BR001</td>
+                                <td>Downtown Pharmacy</td>
+                                <td>123 Main St</td>
+                                <td>Robert Williams</td>
+                                <td><span class="status-badge status-active">Active</span></td>
+                                <td class="action-buttons">
+                                    <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>BR002</td>
+                                <td>Westside Pharmacy</td>
+                                <td>456 Oak Ave</td>
+                                <td>Jennifer Lee</td>
+                                <td><span class="status-badge status-active">Active</span></td>
+                                <td class="action-buttons">
+                                    <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>BR003</td>
+                                <td>Northside Pharmacy</td>
+                                <td>789 Pine Rd</td>
+                                <td>James Wilson</td>
+                                <td><span class="status-badge status-inactive">Inactive</span></td>
+                                <td class="action-buttons">
+                                    <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="content-section">
+                    <h3>User Role Assignment</h3>
+                    <div class="form-container">
+                        <div class="form-group">
+                            <label for="user-select">Select User</label>
+                            <select id="user-select" class="form-control">
+                                <option value="">Choose a user...</option>
+                                <option value="USR001">Dr. Sarah Johnson</option>
+                                <option value="USR002">Michael Chen</option>
+                                <option value="USR003">Robert Williams</option>
+                                <option value="USR004">Lisa Rodriguez</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="role-assign">Assign Role</label>
+                            <select id="role-assign" class="form-control">
+                                <option value="">Select role...</option>
+                                <option value="admin">Administrator</option>
+                                <option value="doctor">Doctor</option>
+                                <option value="pharmacist">Pharmacist</option>
+                                <option value="manager">Manager</option>
+                                <option value="patient">Patient</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="user-status">User Status</label>
+                            <select id="user-status" class="form-control">
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                                <option value="deactivated">Deactivated</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary">Update User Role & Status</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple JavaScript for interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Edit button functionality
+            const editButtons = document.querySelectorAll('.action-btn.edit');
+            editButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    alert('Edit functionality would open a form to modify this record.');
+                });
+            });
+            
+            // Delete button functionality
+            const deleteButtons = document.querySelectorAll('.action-btn.delete');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (confirm('Are you sure you want to delete this record?')) {
+                        alert('Record would be deleted in a real application.');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
