@@ -162,7 +162,7 @@ class PrescriptionManager {
             // Clear existing options except the first one
             patientSelect.innerHTML = '<option value="">Choose a patient...</option>';
             
-            this.patients.forEach(patient => {
+            this.getPatients().forEach(patient => {
                 const option = document.createElement('option');
                 option.value = patient.patient_id;
                 option.textContent = `${patient.first_name} ${patient.last_name} (${patient.patient_id})`;
@@ -350,7 +350,7 @@ class PrescriptionManager {
             html = '<p>No prescriptions found</p>';
         } else {
             this.getPrescriptions().forEach(prescription => {
-                const patient = this.patients.find(p => p.patient_id === prescription.patient_id);
+                const patient = this.getPatients().find(p => p.patient_id === prescription.patient_id);
                 const patientName = patient ? `${patient.first_name} ${patient.last_name}` : 'Unknown Patient';
                 
                 html += `
