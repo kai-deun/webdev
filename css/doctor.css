@@ -502,3 +502,215 @@ header {
         flex-direction: column;
     }
 }
+
+/* Prescription Preview Styles */
+.prescription-preview {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.prescription-preview h4 {
+    color: var(--doctor-primary);
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.prescription-preview ul {
+    list-style: none;
+    padding: 0;
+}
+
+.prescription-preview li {
+    background: white;
+    padding: 10px 15px;
+    margin: 8px 0;
+    border-radius: 5px;
+    border-left: 4px solid var(--secondary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.prescription-preview .btn-sm {
+    padding: 5px 10px;
+    font-size: 0.8em;
+    margin-left: 10px;
+}
+
+/* Prescription Card Styles */
+.prescription-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 15px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid var(--primary);
+}
+
+.prescription-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.prescription-header h4 {
+    color: var(--doctor-primary);
+    margin: 0;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.status-active {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-completed {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.prescription-details p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.prescription-actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.prescription-actions .btn {
+    padding: 8px 16px;
+    font-size: 0.9em;
+}
+
+/* Patient Card Styles */
+.patient-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 15px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid var(--secondary);
+}
+
+.patient-name {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: var(--doctor-primary);
+    margin-bottom: 8px;
+}
+
+.patient-details {
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.patient-contact {
+    color: #888;
+    font-size: 0.9em;
+    margin-bottom: 15px;
+}
+
+.patient-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.patient-actions .btn {
+    padding: 8px 16px;
+    font-size: 0.9em;
+}
+
+/* Modal Styles */
+.modal {
+    display: block;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    background: var(--doctor-primary);
+    color: white;
+    padding: 20px;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+}
+
+.close {
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close:hover {
+    opacity: 0.7;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.medicines-list h4 {
+    color: var(--doctor-primary);
+    margin: 20px 0 10px 0;
+}
+
+.medicines-list ul {
+    list-style: none;
+    padding: 0;
+}
+
+.medicines-list li {
+    background: #f8f9fa;
+    padding: 10px 15px;
+    margin: 8px 0;
+    border-radius: 5px;
+    border-left: 4px solid var(--secondary);
+}
+
+/* Button Enhancements */
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 0.8em;
+}
