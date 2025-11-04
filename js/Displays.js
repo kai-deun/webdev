@@ -23,10 +23,10 @@ export class Display {
                             </div>
                         </div>
                         <div class="patient-actions">
-                            <button class="btn btn-primary" onclick="PrescriptionManager.selectPatient('${patient.patient_id}')">
+                            <button class="btn btn-primary js-select-patient" data-patient-id="${patient.patient_id}">
                                 <i class="fas fa-file-medical"></i> Medical History
                             </button>
-                            <button class="btn btn-success" onclick="PrescriptionManager.createPrescriptionForPatient('${patient.patient_id}')">
+                            <button class="btn btn-success js-new-prescription" data-patient-id="${patient.patient_id}">
                                 <i class="fas fa-prescription"></i> New Prescription
                             </button>
                         </div>
@@ -73,7 +73,7 @@ export class Display {
                 const patientName = patient ? `${patient.first_name} ${patient.last_name}` : 'Unknown Patient';
                 
                 html += `
-                    <div class="prescription-card">
+                    <div class="prescription-card" data-prescription-id="${prescription.prescription_id}">
                         <div class="prescription-info">
                             <div class="prescription-header">
                                 <h4>Prescription #${prescription.prescription_id}</h4>
@@ -87,13 +87,13 @@ export class Display {
                             </div>
                         </div>
                         <div class="prescription-actions">
-                            <button class="btn btn-primary" onclick="PrescriptionManager.viewPrescription(${prescription.prescription_id})">
+                            <button class="btn btn-primary js-view-prescription">
                                 <i class="fas fa-eye"></i> View Details
                             </button>
-                            <button class="btn btn-warning" onclick="PrescriptionManager.editPrescription(${prescription.prescription_id})">
+                            <button class="btn btn-warning js-edit-prescription">
                                 <i class="fas fa-edit"></i> Edit
                             </button>
-                            <button class="btn btn-danger" onclick="PrescriptionManager.deletePrescription(${prescription.prescription_id})">
+                            <button class="btn btn-danger js-delete-prescription">
                                 <i class="fas fa-trash"></i> Delete
                             </button>
                         </div>
@@ -128,7 +128,7 @@ export class Display {
                         ${medicine.medicine_name} (${medicine.dosage}) - 
                         Qty: ${medicine.quantity} - 
                         ${medicine.instructions}
-                        <button type="button" onclick="meds.removeMedicine(${index})" class="btn btn-danger btn-sm">Remove</button>
+                        <button type="button" data-medicine-index="${index}" class="btn btn-danger btn-sm js-remove-medicine">Remove</button>
                     </li>
                 `;
             });
@@ -158,10 +158,10 @@ export class Display {
                             </div>
                         </div>
                         <div class="patient-actions">
-                            <button class="btn btn-primary" onclick="PrescriptionManager.selectPatient('${patient.patient_id}')">
+                            <button class="btn btn-primary js-select-patient" data-patient-id="${patient.patient_id}">
                                 <i class="fas fa-file-medical"></i> Medical History
                             </button>
-                            <button class="btn btn-success" onclick="PrescriptionManager.createPrescriptionForPatient('${patient.patient_id}')">
+                            <button class="btn btn-success js-new-prescription" data-patient-id="${patient.patient_id}">
                                 <i class="fas fa-prescription"></i> New Prescription
                             </button>
                         </div>
@@ -181,11 +181,12 @@ export class Display {
             html = '<p>No prescriptions found matching the criteria</p>';
         } else {
             prescriptions.forEach(prescription => {
-                const patient = this.getPatients().find(p => p.patient_id === prescription.patient_id);
+                // FIXED: Used prescriptObj.getPatients() instead of this.getPatients()
+                const patient = prescriptObj.getPatients().find(p => p.patient_id === prescription.patient_id);
                 const patientName = patient ? `${patient.first_name} ${patient.last_name}` : 'Unknown Patient';
                 
                 html += `
-                    <div class="prescription-card">
+                    <div class="prescription-card" data-prescription-id="${prescription.prescription_id}">
                         <div class="prescription-info">
                             <div class="prescription-header">
                                 <h4>Prescription #${prescription.prescription_id}</h4>
@@ -195,16 +196,17 @@ export class Display {
                                 <p><strong>Patient:</strong> ${patientName} (${prescription.patient_id})</p>
                                 <p><strong>Date:</strong> ${prescription.prescription_date}</p>
                                 <p><strong>Diagnosis:</strong> ${prescription.diagnosis || 'Not specified'}</p>
+                                <p><strong>Notes:</strong> ${prescription.notes || 'No additional notes'}</p>
                             </div>
                         </div>
                         <div class="prescription-actions">
-                            <button class="btn btn-primary" onclick="PrescriptionManager.viewPrescription(${prescription.prescription_id})">
+                            <button class="btn btn-primary js-view-prescription">
                                 <i class="fas fa-eye"></i> View Details
                             </button>
-                            <button class="btn btn-warning" onclick="PrescriptionManager.editPrescription(${prescription.prescription_id})">
+                            <button class="btn btn-warning js-edit-prescription">
                                 <i class="fas fa-edit"></i> Edit
                             </button>
-                            <button class="btn btn-danger" onclick="PrescriptionManager.deletePrescription(${prescription.prescription_id})">
+                            <button class="btn btn-danger js-delete-prescription">
                                 <i class="fas fa-trash"></i> Delete
                             </button>
                         </div>
