@@ -65,7 +65,7 @@ export class BindEvents {
                     patient.selectPatient(patientId); 
                 } else if (button.classList.contains('js-new-prescription')) {
                     console.log(`Creating prescription for: ${patientId}`);
-                    prescriptions.createPrescriptionForPatient(patientId);
+                    patient.createPrescriptionForPatient(patientId);
                 }
             } 
             
