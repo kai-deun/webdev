@@ -44,6 +44,7 @@ export class Prescriptions {
                 alert('Prescription saved successfully!');
                 prescriptUtils.clearPrescriptionForm();
                 prescriptUtils.loadPrescriptions(); // Refresh prescriptions list
+                prescriptUtils.loadPatients(); //Refresh patient list
             } else {
                 alert('Error saving prescription: ' + result.message);
             }
@@ -80,8 +81,10 @@ export class Prescriptions {
             
             if (result.success) {
                 alert('Prescription updated successfully!');
+                prescriptUtils.resetEditMode();
                 prescriptUtils.clearPrescriptionForm();
                 prescriptUtils.loadPrescriptions(); // Refresh prescriptions list
+                prescriptUtils.loadPatients(); //Refresh patient list
             } else {
                 alert('Error updating prescription: ' + result.message);
             }

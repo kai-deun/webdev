@@ -108,6 +108,31 @@ export class PrescriptionUtils {
         document.getElementById('duration-days').value = '';
     }
 
+    //resets all the changes made from the editPrescription function.
+    resetEditMode() {
+        //Revert back the Header to its original title
+        document.querySelector('.content-section h3').innerHTML = 'Create New Prescription';
+
+        //Revet the patient selector
+        const patient_input_field = document.getElementById('patient-select');
+        const patient_selector_field = document.createElement('select');
+        patient_selector_field.setAttribute('id', 'patient-select');
+        patient_selector_field.setAttribute('name', patient_input_field.name);
+        patient_selector_field.classList.add('form-control');//CSS style as the other input fields
+        patient_input_field.replaceWith(patient_selector_field);
+
+        //Revert the button
+        const updateBtn = document.getElementById('update-prescription');
+        if (updateBtn) {
+            const saveBtn = updateBtn.cloneNode(true);
+            saveBtn.id = 'save-prescription';
+            updateBtn.replaceWith(saveBtn);
+        }
+
+        //Revert the Date Input Field
+        document.getElementById('prescription-date').readOnly = false; 
+    }
+
     filterPatients(searchTerm) {
         const filteredPatients = this.prescriptObj.getPatients().filter(patient => {
             const fullName = `${patient.first_name} ${patient.last_name}`.toLowerCase();
@@ -120,7 +145,7 @@ export class PrescriptionUtils {
         display.displayFilteredPatients(filteredPatients);
     }
 
-     filterPrescriptions(searchTerm) {
+    filterPrescriptions(searchTerm) {
         const filteredPrescriptions = prescriptObj.getPrescriptions().filter(prescription => {
             const patient = prescriptObj.getPatients().find(p => p.patient_id === prescription.patient_id);
             const patientName = patient ? `${patient.first_name} ${patient.last_name}` : '';
