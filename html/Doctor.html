@@ -189,7 +189,7 @@
           </div>
 
           <div class="content-section">
-            <h3>Create New Prescription</h3>
+            <h3 id="prescription-tab-title">Create New Prescription</h3>
             <div class="form-container">
               <div class="form-row">
                 <div class="form-group">
@@ -277,6 +277,7 @@
                   <div class="form-group">
                     <label for="dosage-frequency">Dosage Frequency</label>
                     <select id="dosage-frequency" class="form-control">
+                      <option value="Select Duration">Select Duration...</option>
                       <option value="Once daily">Once daily</option>
                       <option value="Twice daily">Twice daily</option>
                       <option value="Three times daily">Three times daily</option>
@@ -296,7 +297,6 @@
                       class="form-control"
                       placeholder="Number of days"
                       min="1"
-                      value="7"
                     />
                   </div>
                 </div>

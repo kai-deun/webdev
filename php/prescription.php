@@ -205,6 +205,10 @@ function savePrescription($pdo) {
     
     $data = $input['data'];
     
+    // Check for unique ID to determine action (INSERT or UPDATE)
+    $is_update = !empty($data['prescription_id']);
+    $prescriptionId = $data['prescription_id'] ?? null;
+    
     // Validate required fields
     if (empty($data['patient_id']) || empty($data['prescription_date']) || empty($data['medicines'])) {
         http_response_code(400);
@@ -214,25 +218,60 @@ function savePrescription($pdo) {
     
     try {
         $pdo->beginTransaction();
+
+        if ($is_update) {
+            // ======================================
+            // 🔄 UPDATE Existing Prescription
+            // ======================================
+
+            // 1. Update the main prescription record
+            $stmt = $pdo->prepare("
+                UPDATE prescriptions 
+                SET patient_id = ?, prescription_date = ?, diagnosis = ?, notes = ?, status = 'Active'
+                WHERE prescription_id = ? AND doctor_id = ? 
+            ");
+            
+            $stmt->execute([
+                $data['patient_id'],
+                $data['prescription_date'],
+                $data['diagnosis'] ?? '',
+                $data['notes'] ?? '',
+                $prescriptionId, // WHERE clause ID
+                'DR001' // doctor_id used for security/ownership check
+            ]);
+
+            // 2. Clear all existing medicines for this prescription
+            // This is the simplest way to handle updates: delete all and re-insert the new list.
+            $stmt = $pdo->prepare("DELETE FROM prescription_medicines WHERE prescription_id = ?");
+            $stmt->execute([$prescriptionId]);
+
+        } else {
+            // ======================================
+            // ✨ INSERT New Prescription
+            // ======================================
+            
+            // 1. Insert prescription
+            $stmt = $pdo->prepare("
+                INSERT INTO prescriptions (patient_id, doctor_id, prescription_date, diagnosis, notes, status)
+                VALUES (?, ?, ?, ?, ?, 'Active')
+            ");
+            
+            $stmt->execute([
+                $data['patient_id'],
+                'DR001', // Default doctor ID
+                $data['prescription_date'],
+                $data['diagnosis'] ?? '',
+                $data['notes'] ?? ''
+            ]);
+            
+            $prescriptionId = $pdo->lastInsertId();
+        }
         
-        // Insert prescription
-        $stmt = $pdo->prepare("
-            INSERT INTO prescriptions (patient_id, doctor_id, prescription_date, diagnosis, notes, status)
-            VALUES (?, ?, ?, ?, ?, 'Active')
-        ");
-        
-        // For now, use DR001 as default doctor (in real app, this would come from session/auth)
-        $stmt->execute([
-            $data['patient_id'],
-            'DR001', // Default doctor ID
-            $data['prescription_date'],
-            $data['diagnosis'] ?? '',
-            $data['notes'] ?? ''
-        ]);
-        
-        $prescriptionId = $pdo->lastInsertId();
-        
-        // Insert prescription medicines
+        // ======================================
+        // 3. Insert/Re-insert Prescription Medicines
+        // This runs for both INSERT (new) and UPDATE (after deletion)
+        // ======================================
+
         $stmt = $pdo->prepare("
             INSERT INTO prescription_medicines (prescription_id, medicine_id, quantity, instructions, dosage_frequency, duration_days)
             VALUES (?, ?, ?, ?, ?, ?)
@@ -251,16 +290,18 @@ function savePrescription($pdo) {
         
         $pdo->commit();
         
+        $message = $is_update ? 'Prescription updated successfully' : 'Prescription saved successfully';
+
         echo json_encode([
             'success' => true,
-            'message' => 'Prescription saved successfully',
+            'message' => $message,
             'prescription_id' => $prescriptionId
         ]);
         
     } catch (PDOException $e) {
         $pdo->rollBack();
         http_response_code(500);
-        echo json_encode(['success' => false, 'message' => 'Error saving prescription: ' . $e->getMessage()]);
+        echo json_encode(['success' => false, 'message' => 'Error saving/updating prescription: ' . $e->getMessage()]);
     }
 }
 

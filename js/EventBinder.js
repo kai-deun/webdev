@@ -88,7 +88,7 @@ export class BindEvents {
                 }
             }
 
-            // --- 3. Current Prescription Removal (Medicine) ---
+            // --- 3. Current Prescription Medicine Removal ---
             else if (button.classList.contains('js-remove-medicine')) {
                 // Get the index directly from the data attribute
                 const index = parseInt(button.dataset.medicineIndex, 10);
