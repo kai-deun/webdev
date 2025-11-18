@@ -19,14 +19,15 @@ $dbname = 'vitalsoft_db';
 $username = 'root';
 $password = '';
 
-try {
-    $mysqli = new mysqli("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
-    $mysqli->setAttribute(mysqli::ATTR_ERRMODE, mysqli::ERRMODE_EXCEPTION);
-} catch (mysqliException $e) {
+$mysqli = new mysqli($host, $username, $password, $dbname);
+
+if ($mysqli->connect_error) {
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . $e->getMessage()]);
+    echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . $mysqli->connect_error]);
     exit;
 }
+
+$mysqli->set_charset("utf8");
 
 // Parse JSON body once (so we don't consume php://input multiple times)
 $rawInput = file_get_contents('php://input');
@@ -91,14 +92,41 @@ switch ($action) {
 
 function getPatients($mysqli) {
     try {
-        $stmt = $mysqli->query("SELECT * FROM patients ORDER BY first_name, last_name");
-        $patients = $stmt->fetchAll(mysqli::FETCH_ASSOC);
+        // Return patient and user basic info. Cast patient_id to string and alias phone_number -> phone
+        $result = $mysqli->query("
+         SELECT u.user_id,
+             u.username,
+             u.first_name,
+             u.last_name,
+             u.email,
+             u.phone_number AS phone,
+             CAST(p.patient_id AS CHAR) AS patient_id,
+             p.insurance_number,
+             p.insurance_provider,
+             p.blood_type,
+             p.allergies,
+             TIMESTAMPDIFF(YEAR, u.date_of_birth, CURDATE()) AS age,
+             '' AS gender
+            FROM users u
+            LEFT JOIN patients p ON u.user_id = p.user_id
+            WHERE u.role_id = (SELECT role_id FROM roles WHERE role_name = 'Patient')
+            ORDER BY u.first_name, u.last_name
+        ");
+        
+        if (!$result) {
+            throw new Exception("Query failed: " . $mysqli->error);
+        }
+        
+        $patients = [];
+        while ($row = $result->fetch_assoc()) {
+            $patients[] = $row;
+        }
         
         echo json_encode([
             'success' => true,
             'patients' => $patients
         ]);
-    } catch (mysqliException $e) {
+    } catch (Exception $e) {
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Error fetching patients: ' . $e->getMessage()]);
     }
@@ -106,14 +134,35 @@ function getPatients($mysqli) {
 
 function getMedicines($mysqli) {
     try {
-        $stmt = $mysqli->query("SELECT * FROM medicines ORDER BY medicine_name");
-        $medicines = $stmt->fetchAll(mysqli::FETCH_ASSOC);
+        // Provide a "dosage" field (used by frontend) and select commonly used columns
+        $sql = "SELECT medicine_id, medicine_name, generic_name, manufacturer, description, dosage_form, strength, unit_price, requires_prescription, "
+             . "CONCAT(COALESCE(dosage_form, ''), ' ', COALESCE(strength, '')) AS dosage "
+             . "FROM medicines "
+             . "ORDER BY medicine_name";
+
+        $result = $mysqli->query($sql);
+        
+        if (!$result) {
+            throw new Exception("Query failed: " . $mysqli->error);
+        }
+        
+        $medicines = [];
+        while ($row = $result->fetch_assoc()) {
+            // ensure frontend-consumed keys exist
+            if (!isset($row['medicine_type'])) {
+                $row['medicine_type'] = $row['dosage_form'] ?? '';
+            }
+            if (!isset($row['dosage'])) {
+                $row['dosage'] = trim(($row['dosage_form'] ?? '') . ' ' . ($row['strength'] ?? ''));
+            }
+            $medicines[] = $row;
+        }
         
         echo json_encode([
             'success' => true,
             'medicines' => $medicines
         ]);
-    } catch (mysqliException $e) {
+    } catch (Exception $e) {
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Error fetching medicines: ' . $e->getMessage()]);
     }
@@ -121,22 +170,34 @@ function getMedicines($mysqli) {
 
 function getPrescriptions($mysqli) {
     try {
-        $stmt = $mysqli->query("
-            SELECT p.*, 
-                   CONCAT(pat.first_name, ' ', pat.last_name) as patient_name,
-                   CONCAT(d.first_name, ' ', d.last_name) as doctor_name
+        $query = "
+            SELECT p.prescription_id, CAST(p.patient_id AS CHAR) AS patient_id, p.doctor_id, p.prescription_date, p.expiry_date, 
+                   p.diagnosis, p.notes, p.status, p.renewal_requested, p.created_at, p.updated_at,
+                   CONCAT(u_pat.first_name, ' ', u_pat.last_name) as patient_name,
+                   CONCAT(u_doc.first_name, ' ', u_doc.last_name) as doctor_name
             FROM prescriptions p
             JOIN patients pat ON p.patient_id = pat.patient_id
-            JOIN doctors d ON p.doctor_id = d.doctor_id
+            JOIN users u_pat ON pat.user_id = u_pat.user_id
+            JOIN users u_doc ON p.doctor_id = u_doc.user_id
             ORDER BY p.prescription_date DESC, p.prescription_id DESC
-        ");
-        $prescriptions = $stmt->fetchAll(mysqli::FETCH_ASSOC);
+        ";
+        
+        $result = $mysqli->query($query);
+        
+        if (!$result) {
+            throw new Exception("Query failed: " . $mysqli->error);
+        }
+        
+        $prescriptions = [];
+        while ($row = $result->fetch_assoc()) {
+            $prescriptions[] = $row;
+        }
         
         echo json_encode([
             'success' => true,
             'prescriptions' => $prescriptions
         ]);
-    } catch (mysqliException $e) {
+    } catch (Exception $e) {
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Error fetching prescriptions: ' . $e->getMessage()]);
     }
@@ -153,17 +214,24 @@ function getPrescriptionDetails($mysqli) {
     
     try {
         // Get prescription details
-        $stmt = $mysqli->prepare("
-            SELECT p.*, 
-                   CONCAT(pat.first_name, ' ', pat.last_name) as patient_name,
-                   CONCAT(d.first_name, ' ', d.last_name) as doctor_name
+        $query = "
+            SELECT p.prescription_id, CAST(p.patient_id AS CHAR) AS patient_id, p.doctor_id, p.prescription_date, p.expiry_date,
+                   p.diagnosis, p.notes, p.status, p.renewal_requested, p.created_at, p.updated_at,
+                   CONCAT(u_pat.first_name, ' ', u_pat.last_name) as patient_name,
+                   CONCAT(u_doc.first_name, ' ', u_doc.last_name) as doctor_name
             FROM prescriptions p
             JOIN patients pat ON p.patient_id = pat.patient_id
-            JOIN doctors d ON p.doctor_id = d.doctor_id
+            JOIN users u_pat ON pat.user_id = u_pat.user_id
+            JOIN users u_doc ON p.doctor_id = u_doc.user_id
             WHERE p.prescription_id = ?
-        ");
-        $stmt->execute([$prescriptionId]);
-        $prescription = $stmt->fetch(mysqli::FETCH_ASSOC);
+        ";
+        
+        $stmt = $mysqli->prepare($query);
+        $stmt->bind_param("i", $prescriptionId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $prescription = $result->fetch_assoc();
+        $stmt->close();
         
         if (!$prescription) {
             http_response_code(404);
@@ -171,24 +239,37 @@ function getPrescriptionDetails($mysqli) {
             return;
         }
         
-        // Get prescription medicines
-        $stmt = $mysqli->prepare("
-            SELECT pm.*, m.medicine_name, m.dosage
-            FROM prescription_medicines pm
-            JOIN medicines m ON pm.medicine_id = m.medicine_id
-            WHERE pm.prescription_id = ?
-            ORDER BY pm.id
-        ");
-        $stmt->execute([$prescriptionId]);
-        $medicines = $stmt->fetchAll(mysqli::FETCH_ASSOC);
+        // Get prescription items
+        $query = "
+            SELECT pi.item_id, pi.prescription_id, pi.medicine_id, pi.dosage, pi.quantity,
+                   pi.frequency, pi.duration, pi.instructions, pi.created_at,
+                   m.medicine_name, m.generic_name, m.strength, m.unit_price
+            FROM prescription_items pi
+            JOIN medicines m ON pi.medicine_id = m.medicine_id
+            WHERE pi.prescription_id = ?
+            ORDER BY pi.item_id
+        ";
         
-        $prescription['medicines'] = $medicines;
+        $stmt = $mysqli->prepare($query);
+        $stmt->bind_param("i", $prescriptionId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $items = [];
+        while ($row = $result->fetch_assoc()) {
+            $items[] = $row;
+        }
+        $stmt->close();
+        
+    // Return items under both keys for compatibility with different front-end modules
+    $prescription['items'] = $items;
+    $prescription['medicines'] = $items;
         
         echo json_encode([
             'success' => true,
             'prescription' => $prescription
         ]);
-    } catch (mysqliException $e) {
+    } catch (Exception $e) {
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Error fetching prescription details: ' . $e->getMessage()]);
     }
@@ -205,50 +286,101 @@ function savePrescription($mysqli) {
     
     $data = $input['data'];
     
-    // Validate required fields
-    if (empty($data['patient_id']) || empty($data['prescription_date']) || empty($data['medicines'])) {
+    // Normalize incoming items/medicines and validate required fields
+    $itemsInput = $data['items'] ?? ($data['medicines'] ?? null);
+
+    if (empty($data['patient_id']) || empty($data['prescription_date']) || empty($itemsInput)) {
         http_response_code(400);
-        echo json_encode(['success' => false, 'message' => 'Missing required fields']);
+        echo json_encode(['success' => false, 'message' => 'Missing required fields (patient_id, prescription_date, medicines/items expected)']);
+        return;
+    }
+
+    // Ensure we have a doctor_id; if not provided, pick the first user with Doctor role
+    $doctorId = $data['doctor_id'] ?? null;
+    if (empty($doctorId)) {
+        $res = $mysqli->query("SELECT user_id FROM users WHERE role_id = (SELECT role_id FROM roles WHERE role_name = 'Doctor') LIMIT 1");
+        if ($res && $row = $res->fetch_assoc()) {
+            $doctorId = (int)$row['user_id'];
+        }
+    }
+
+    if (empty($doctorId)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Doctor ID not provided and no doctor account found.']);
         return;
     }
     
     try {
-        $mysqli->beginTransaction();
+        $mysqli->begin_transaction();
         
         // Insert prescription
-        $stmt = $mysqli->prepare("
-            INSERT INTO prescriptions (patient_id, doctor_id, prescription_date, diagnosis, notes, status)
-            VALUES (?, ?, ?, ?, ?, 'Active')
-        ");
+        $query = "
+            INSERT INTO prescriptions (patient_id, doctor_id, prescription_date, expiry_date, diagnosis, notes, status)
+            VALUES (?, ?, ?, ?, ?, ?, 'active')
+        ";
         
-        // For now, use DR001 as default doctor (in real app, this would come from session/auth)
-        $stmt->execute([
-            $data['patient_id'],
-            'DR001', // Default doctor ID
-            $data['prescription_date'],
-            $data['diagnosis'] ?? '',
-            $data['notes'] ?? ''
-        ]);
-        
-        $prescriptionId = $mysqli->lastInsertId();
-        
-        // Insert prescription medicines
-        $stmt = $mysqli->prepare("
-            INSERT INTO prescription_medicines (prescription_id, medicine_id, quantity, instructions, dosage_frequency, duration_days)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ");
-        
-        foreach ($data['medicines'] as $medicine) {
-            $stmt->execute([
-                $prescriptionId,
-                $medicine['medicine_id'],
-                $medicine['quantity'],
-                $medicine['instructions'],
-                $medicine['dosage_frequency'] ?? 'As directed',
-                $medicine['duration_days'] ?? 7
-            ]);
+        $stmt = $mysqli->prepare($query);
+        if (!$stmt) {
+            throw new Exception("Prepare failed: " . $mysqli->error);
         }
         
+        $diagnosis = $data['diagnosis'] ?? '';
+        $notes = $data['notes'] ?? '';
+        $expiry_date = $data['expiry_date'] ?? null;
+        
+        $stmt->bind_param(
+            "iissss",
+            $data['patient_id'],
+            $doctorId,
+            $data['prescription_date'],
+            $expiry_date,
+            $diagnosis,
+            $notes
+        );
+        
+        if (!$stmt->execute()) {
+            throw new Exception("Failed to insert prescription: " . $stmt->error);
+        }
+        
+        $prescriptionId = $mysqli->insert_id;
+        $stmt->close();
+        
+        // Insert prescription items
+        $query = "
+            INSERT INTO prescription_items (prescription_id, medicine_id, dosage, quantity, frequency, duration, instructions)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ";
+        
+        $stmt = $mysqli->prepare($query);
+        if (!$stmt) {
+            throw new Exception("Prepare failed: " . $mysqli->error);
+        }
+        
+        foreach ($itemsInput as $item) {
+            // Support both keys used by front-end: dosage_frequency/duration_days or frequency/duration
+            $frequency = $item['dosage_frequency'] ?? ($item['frequency'] ?? 'As directed');
+            $duration = isset($item['duration_days']) ? (string)$item['duration_days'] : ($item['duration'] ?? '7');
+            $instructions = $item['instructions'] ?? '';
+            $dosage = $item['dosage'] ?? '';
+            $quantity = isset($item['quantity']) ? (int)$item['quantity'] : 1;
+
+            $stmt->bind_param(
+                "iisisss",
+                $prescriptionId,
+                $item['medicine_id'],
+                $dosage,
+                $quantity,
+                $frequency,
+                $duration,
+                $instructions
+            );
+
+            if (!$stmt->execute()) {
+                throw new Exception("Failed to insert item: " . $stmt->error);
+            }
+        }
+        
+        $stmt->close();
         $mysqli->commit();
         
         echo json_encode([
@@ -257,8 +389,8 @@ function savePrescription($mysqli) {
             'prescription_id' => $prescriptionId
         ]);
         
-    } catch (mysqliException $e) {
-        $mysqli->rollBack();
+    } catch (Exception $e) {
+        $mysqli->rollback();
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Error saving prescription: ' . $e->getMessage()]);
     }
@@ -276,18 +408,38 @@ function deletePrescription($mysqli) {
     $prescriptionId = $input['prescription_id'];
     
     try {
-        $mysqli->beginTransaction();
+        $mysqli->begin_transaction();
         
-        // Delete prescription medicines first (due to foreign key constraints)
-        $stmt = $mysqli->prepare("DELETE FROM prescription_medicines WHERE prescription_id = ?");
-        $stmt->execute([$prescriptionId]);
+        // Delete prescription items first (due to foreign key constraints)
+        $stmt = $mysqli->prepare("DELETE FROM prescription_items WHERE prescription_id = ?");
+        if (!$stmt) {
+            throw new Exception("Prepare failed: " . $mysqli->error);
+        }
+        
+        $stmt->bind_param("i", $prescriptionId);
+        
+        if (!$stmt->execute()) {
+            throw new Exception("Failed to delete items: " . $stmt->error);
+        }
+        $stmt->close();
         
         // Delete prescription
         $stmt = $mysqli->prepare("DELETE FROM prescriptions WHERE prescription_id = ?");
-        $stmt->execute([$prescriptionId]);
+        if (!$stmt) {
+            throw new Exception("Prepare failed: " . $mysqli->error);
+        }
         
-        if ($stmt->rowCount() === 0) {
-            $mysqli->rollBack();
+        $stmt->bind_param("i", $prescriptionId);
+        
+        if (!$stmt->execute()) {
+            throw new Exception("Failed to delete prescription: " . $stmt->error);
+        }
+        
+        $affected_rows = $stmt->affected_rows;
+        $stmt->close();
+        
+        if ($affected_rows === 0) {
+            $mysqli->rollback();
             http_response_code(404);
             echo json_encode(['success' => false, 'message' => 'Prescription not found']);
             return;
@@ -300,8 +452,8 @@ function deletePrescription($mysqli) {
             'message' => 'Prescription deleted successfully'
         ]);
         
-    } catch (mysqliException $e) {
-        $mysqli->rollBack();
+    } catch (Exception $e) {
+        $mysqli->rollback();
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Error deleting prescription: ' . $e->getMessage()]);
     }

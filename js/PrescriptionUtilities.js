@@ -4,7 +4,7 @@ export class PrescriptionUtils {
     
     async loadPatients() {
         try {
-            const response = await fetch('/php/prescription.php?action=getPatients');
+            const response = await fetch('../php/prescription.php?action=getPatients');
             const data = await response.json();
                 
             if (data.success) {
@@ -21,7 +21,7 @@ export class PrescriptionUtils {
 
     async loadMedicines() {
          try {
-            const response = await fetch('/php/prescription.php?action=getMedicines');
+            const response = await fetch('../php/prescription.php?action=getMedicines');
             const data = await response.json();
             
             if (data.success) {
@@ -37,7 +37,7 @@ export class PrescriptionUtils {
 
     async loadPrescriptions() {
         try {
-            const response = await fetch('/php/prescription.php?action=getPrescriptions');
+            const response = await fetch('../php/prescription.php?action=getPrescriptions');
             const data = await response.json();
             
             if (data.success) {
@@ -118,6 +118,23 @@ export class PrescriptionUtils {
         });
         
         display.displayFilteredPatients(filteredPatients);
+    }
+
+    // Filter patients by last name initial (A-Z). Pass 'All' to clear filter.
+    filterPatientsByInitial(letter) {
+        if (!letter || letter === 'All') {
+            // Show all patients
+            display.displayPatients();
+            return;
+        }
+
+        const initial = letter.toLowerCase();
+        const filtered = this.prescriptObj.getPatients().filter(p => {
+            const last = (p.last_name || '').toString().trim().toLowerCase();
+            return last.startsWith(initial);
+        });
+
+        display.displayFilteredPatients(filtered);
     }
 
      filterPrescriptions(searchTerm) {

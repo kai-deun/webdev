@@ -44,6 +44,20 @@ export class BindEvents {
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', (e) => prescriptUtils.switchTab(e.target));
         });
+
+        // A-Z filter buttons (patients)
+        const azFilter = document.querySelector('.az-filter');
+        if (azFilter) {
+            azFilter.addEventListener('click', (e) => {
+                const btn = e.target.closest('.az-btn');
+                if (!btn) return;
+                const letter = btn.dataset.letter;
+                // update active state visually
+                azFilter.querySelectorAll('.az-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                prescriptUtils.filterPatientsByInitial(letter);
+            });
+        }
     }
 
     // Handles elements that are dynamically added to the DOM (like patient cards)

@@ -27,7 +27,7 @@ export class Prescriptions {
         };
 
         try {
-            const response = await fetch('/php/prescription.php', {
+            const response = await fetch('../php/prescription.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ export class Prescriptions {
 
     async viewPrescription(prescriptionId) {
         try {
-            const response = await fetch(`/php/prescription.php?action=getPrescriptionDetails&id=${prescriptionId}`);
+            const response = await fetch(`../php/prescription.php?action=getPrescriptionDetails&id=${prescriptionId}`);
             const data = await response.json();
             
             if (data.success) {
@@ -72,7 +72,7 @@ export class Prescriptions {
     async deletePrescription(prescriptionId) {
         if (confirm('Are you sure you want to delete this prescription?')) {
             try {
-                const response = await fetch('/php/prescription.php', {
+                const response = await fetch('../php/prescription.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
