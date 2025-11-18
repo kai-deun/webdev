@@ -174,20 +174,7 @@ function savePrescription($mysqli)
         $query->execute();
 
         // for multiple medicines
-        $med_query = $mysqli->prepare(
-            "INSERT INTO medication_assignements (prescription_id, medicine_id, dosage, meds_quantity, instructions, additional_notes)
-        VALUES (?, ?, ?, ?, ?, ?)"
-        );
-        foreach ($added_meds as $med) {
-            $medicine_id = sanitizeInput($med['medicine_id']);
-            $dosage = floatval($med['dosage']);
-            $medsquantity = intval($med['meds_quantity']);
-            $instructions = sanitizeInput($med['instructions']);
-            $addionalnotes = sanitizeInput($med['additional_notes'] ?? null);
-
-            $med_query->bind_param('ssdiis', $prescription_id, $medicine_id, $dosage, $medsquantity, $instructions, $addionalnotes);
-            $med_query->execute();
-        }
+        medicines($mysqli, $added_meds);
 
         echo json_encode([
             'success' => true,
@@ -198,14 +185,45 @@ function savePrescription($mysqli)
         http_response_code(500);
         echo json_encode([
             'success' => false,
-            'message' => 'Failed to save prescription: ' + $e->getMessage()
+            'message' => 'Failed to save prescription: ' . $e->getMessage()
         ]);
     }
 }
 
 function updatePrescription($mysqli)
 {
-    //TODO: main function is to delete the past prescription and replace with the updated one
+    try {
+        $prescriptionid = sanitizeInput($_POST['prescription_id'] ?? '');
+        $doctorid = sanitizeInput($_POST['doctor_id'] ?? '');
+        $patientid = sanitizeInput($_POST['patient_id'] ?? '');
+        $datecreated = sanitizeInput($_POST['date_created'] ?? '');
+        $status = sanitizeInput($_POST['status'] ?? 'valid');
+        $diagnose = sanitizeInput($_POST['diagnosis'] ?? '');
+        $added_meds = $_POST['assigned_meds'] ?? [];
+
+        // replace new (update)
+        $query = $mysqli->prepare(
+            "UPDATE prescriptions SET doctor_id = ?, patient_id = ?, date_created = ?, status = ?, diagnosis = ? WHERE prescription_id = ?"
+        );
+        $query->bind_param('ssssss', $doctorid, $patientid, $datecreated, $status, $diagnose, $prescriptionid);
+        $query->execute();
+
+        // delete old
+        $del_query = $mysqli->prepare("DELETE FROM medication_assignments WHERE prescription_id = ?");
+        $del_query->bind_param('s', $prescriptionid);
+        $del_query->execute();
+
+        // for new assigned meds
+        medicines($mysqli, $added_meds);
+    } catch (mysqli_sql_exception $e) {
+        http_response_code(500);
+        echo json_encode(
+            [
+                'success' => false,
+                'message' => 'Error updating information: ' . $e->getMessage()
+            ]
+        );
+    }
 }
 
 function deletePrescription($mysqli)
@@ -222,4 +240,23 @@ function validateDate($date, $format = 'Y-m-d')
 function sanitizeInput($input)
 {
     return htmlspecialchars(strip_tags(trim($input)));
+}
+
+// reusable function for inserting/updating list of medicines
+function medicines(mysqli $mysqli, mysqli $added_meds)
+{
+    $meds_query = $mysqli->prepare(
+        "INSERT INTO medication_assignements (prescription_id, medicine_id, dosage, meds_quantity, instructions, additional_notes)
+            VALUES (?, ?, ?, ?, ?, ?)"
+    );
+    foreach ($added_meds as $med) {
+        $medicine_id = sanitizeInput($med['medicine_id']);
+        $dosage = floatval($med['dosage']);
+        $medsquantity = intval($med['meds_quantity']);
+        $instructions = sanitizeInput($med['instructions']);
+        $additionalnotes = sanitizeInput($med['additional_notes'] ?? null);
+
+        $meds_query->bind_param('ssdiis', $prescriptionid, $medicine_id, $dosage, $medsquantity, $instructions, $additionalnotes);
+        $meds_query->execute();
+    }
 }
