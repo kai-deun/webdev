@@ -59,6 +59,25 @@ function getMedicineList($mysqli, $query_statement)
     }
 }
 
+// reusable function for inserting/updating list of medicines
+function updateMedicineList(mysqli $mysqli, mysqli $added_meds)
+{
+    $meds_query = $mysqli->prepare(
+        "INSERT INTO medication_assignements (prescription_id, medicine_id, dosage, meds_quantity, instructions, additional_notes)
+            VALUES (?, ?, ?, ?, ?, ?)"
+    );
+    foreach ($added_meds as $med) {
+        $medicine_id = sanitizeInput($med['medicine_id']);
+        $dosage = floatval($med['dosage']);
+        $medsquantity = intval($med['meds_quantity']);
+        $instructions = sanitizeInput($med['instructions']);
+        $additionalnotes = sanitizeInput($med['additional_notes'] ?? null);
+
+        $meds_query->bind_param('ssdiis', $prescriptionid, $medicine_id, $dosage, $medsquantity, $instructions, $additionalnotes);
+        $meds_query->execute();
+    }
+}
+
 //fetch all of the prescriptions available in the database
 function getPrescriptions($mysqli, $query_statement)
 {
@@ -268,23 +287,4 @@ function validateDate($date, $format = 'Y-m-d')
 function sanitizeInput($input)
 {
     return htmlspecialchars(strip_tags(trim($input)));
-}
-
-// reusable function for inserting/updating list of medicines
-function medicines(mysqli $mysqli, mysqli $added_meds)
-{
-    $meds_query = $mysqli->prepare(
-        "INSERT INTO medication_assignements (prescription_id, medicine_id, dosage, meds_quantity, instructions, additional_notes)
-            VALUES (?, ?, ?, ?, ?, ?)"
-    );
-    foreach ($added_meds as $med) {
-        $medicine_id = sanitizeInput($med['medicine_id']);
-        $dosage = floatval($med['dosage']);
-        $medsquantity = intval($med['meds_quantity']);
-        $instructions = sanitizeInput($med['instructions']);
-        $additionalnotes = sanitizeInput($med['additional_notes'] ?? null);
-
-        $meds_query->bind_param('ssdiis', $prescriptionid, $medicine_id, $dosage, $medsquantity, $instructions, $additionalnotes);
-        $meds_query->execute();
-    }
 }
