@@ -1,6 +1,5 @@
 <?php
-include('php/prescription_utilities.php');
-
+include('../php/prescription_utilities.php');
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
@@ -17,7 +16,7 @@ $username = 'root';
 $password = '';
 $dbname = 'vitalsoft_db';
 
-mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_EXCEPTION); //for reporting errors.
+mysqli_report(MYSQLI_REPORT_ERROR); //for reporting errors.
 
 $mysqli = connectDB($host, $username, $password, $dbname);
 
