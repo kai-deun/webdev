@@ -1,5 +1,6 @@
 <?php
-include('../php/prescription_utilities.php');
+include './prescription_utilities.php';
+
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
@@ -55,45 +56,19 @@ if (!$action && is_array($parsedJson)) {
     }
 }
 
-//queries to be used
-$patient_query=
-    "SELECT user.* 
-    FROM user 
-    JOIN patient ON user.user_id = patient.patientid 
-    ORDER BY user.first_name, user.last_name"
-
-$medicine_query=
-    "SELECT * 
-    FROM medicine 
-    ORDER BY brand_name"
-
-$prescription_query=
-    "SELECT 
-        med_assign.*, 
-        med.*, 
-        pres.date_created, 
-        pres.status, 
-        CONCAT(user.first_name, ' ', user.last_name) as user_name
-    FROM medication_assignments as med_assign
-    JOIN prescription as pres ON med_assign.prescript_id = pres.prescriptionid
-    JOIN medicine as med ON med_assign.meds_id = med.medicineid
-    JOIN user ON pres.patient_id = user.user_id
-    WHERE pres.prescriptionid = ?"
-
-
 switch ($action) {
     case 'getPatientList':
-        getPatientList($mysqli, $patient_query);
+        getPatientList($mysqli);
         break;
     case 'getMedicineList':
-        getMedicineList($mysqli, $medicine_query);
+        getMedicineList($mysqli);
         break;
     case 'getPrescriptionList':
-        getPrescriptionList($mysqli, $prescription_query);
+        getPrescriptionList($mysqli);
         break;
     case 'getPrescriptionDetails':
         //similar query to get prescription list because inside this function is an embedded query that will get the neccesary details.
-        getPrescriptionDetails($mysqli, $prescription_query);
+        getPrescriptionDetails($mysqli);
         break;
     case 'savePrescription':
         savePrescription($mysqli);

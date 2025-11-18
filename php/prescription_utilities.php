@@ -7,7 +7,7 @@ function connectDB($host, $username, $password, $dbname)
     try {
         $mysqli = new mysqli($host, $username, $password, $dbname);
         $mysqli->set_charset('utf8');
-
+        
         return $mysqli;
     } catch (mysqli_sql_exception $e) {
         http_response_code(500);
@@ -20,11 +20,19 @@ function connectDB($host, $username, $password, $dbname)
 }
 
 //fetch all of the patient available in the database
-function getPatientList($mysqli, $query_statement)
+function getPatientList($mysqli)
 {
     try {
-        $result = $mysqli->query($query_statement);
-        $patient_list = $result->fetch_all(MYSQLI_ASSOC);
+        $query = $mysqli->prepare(
+            "SELECT user.* 
+            FROM user 
+            JOIN patient ON user.user_id = patient.patientid 
+            ORDER BY user.first_name, user.last_name"
+        );
+
+        $query->execute();
+        $result = $query->get_result();
+        $patient_list = $result->fetch_assoc();
 
         echo json_encode([
             'success' => true,
@@ -40,11 +48,18 @@ function getPatientList($mysqli, $query_statement)
 }
 
 //fetch all of the medicine available in the database
-function getMedicineList($mysqli, $query_statement)
+function getMedicineList($mysqli)
 {
     try {
-        $result = $mysqli->query($query_statement);
-        $medicines = $result->fetch_all(MYSQLI_ASSOC);
+        $query = $mysqli->prepare(
+            "SELECT * 
+            FROM medicines
+            ORDER BY brand_name"
+        );
+
+        $query->execute();
+        $result = $query->get_result();
+        $medicines = $result->fetch_assoc();
 
         echo json_encode([
             'success' => true,
@@ -79,11 +94,26 @@ function updateMedicineList(mysqli $mysqli, mysqli $added_meds)
 }
 
 //fetch all of the prescriptions available in the database
-function getPrescriptions($mysqli, $query_statement)
+function getPrescriptions($mysqli)
 {
     try {
-        $result = $mysqli->query($query_statement);
-        $prescriptions = $result->fetch_all(MYSQLI_ASSOC);
+        $query = $mysqli->prepare(
+            "SELECT 
+                med_assign.*, 
+                med.*, 
+                pres.date_created, 
+                pres.status, 
+                CONCAT(user.first_name, ' ', user.last_name) as user_name
+            FROM medication_assignments as med_assign
+            JOIN prescription as pres ON med_assign.prescript_id = pres.prescriptionid
+            JOIN medicine as med ON med_assign.meds_id = med.medicineid
+            JOIN user ON pres.patient_id = user.user_id
+            WHERE pres.prescriptionid = ?"
+        );
+
+        $query->execute();
+        $result = $query->get_result();
+        $prescriptions = $result->fetch_assoc();
 
         echo json_encode([
             'success' => true,
@@ -98,7 +128,7 @@ function getPrescriptions($mysqli, $query_statement)
     }
 }
 
-function getPrescriptionDetails($mysqli, $query_statement)
+function getPrescriptionDetails($mysqli)
 {
     $prescription_id = $_GET['id'] ?? '';
 
@@ -112,7 +142,20 @@ function getPrescriptionDetails($mysqli, $query_statement)
     }
 
     try {
-        $query = $mysqli->prepare($query_statement);
+        $query = $mysqli->prepare(
+            "SELECT 
+                med_assign.*, 
+                med.*, 
+                pres.date_created, 
+                pres.status, 
+                CONCAT(user.first_name, ' ', user.last_name) as user_name
+            FROM medication_assignments as med_assign
+            JOIN prescription as pres ON med_assign.prescript_id = pres.prescriptionid
+            JOIN medicine as med ON med_assign.meds_id = med.medicineid
+            JOIN user ON pres.patient_id = user.user_id
+            WHERE pres.prescriptionid = ?"
+        );
+
         $query->bind_param("i", $prescription_id); //bind parameter to a certain datatype
         $query->execute();
 
@@ -171,7 +214,6 @@ function getMedsForPrescriptDetails($mysqli, $prescription_id)
         ]);
     }
 }
-
 
 function savePrescription($mysqli)
 {
@@ -275,17 +317,6 @@ function deletePrescription($mysqli)
             'success' => false,
             'message' => 'Error deleting prescription: ' . $e->getMessage()
         ]);
-    }
-}
-
-function idGenerator($mysqli, $target_entity) {
-    if ($target_entity == 'prescription') {
-        $result = $mysqli->query(
-            "SELECT prescription_id
-            FROM prescriptions
-            ORDER BY prescription_id"
-        )
-        $prescription_id = $result->fetch_all(MYSQLI_ASSOC)
     }
 }
 
