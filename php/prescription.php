@@ -39,9 +39,17 @@ if (!$action && is_array($parsedJson)) {
     } else {
         // Infer action for common POST JSON bodies
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (isset($parsedJson['data'])) {
+            
+            //validation for updatePrescription: ID and new data must be present
+            if (isset($parsedJson['prescription_id']) && isset($parsedJson['data'])) {
+                $action = 'updatePrescription';
+            }
+            //validation for savePrescription: data must be present
+            elseif (isset($parsedJson['data'])) {
                 $action = 'savePrescription';
-            } elseif (isset($parsedJson['prescription_id'])) {
+            }
+            //validation for deletePrescription: ID must be present (to locate the presscription to be deleted)
+            elseif (isset($parsedJson['prescription_id'])) {
                 $action = 'deletePrescription';
             }
         }
@@ -84,5 +92,4 @@ switch ($action) {
         ]);
         break;
 }
-
 ?>
