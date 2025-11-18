@@ -46,8 +46,26 @@ export class PrescriptionUtils {
             const data = await response.json();
             
             if (data.success) {
-                prescriptObj.setMedicines(data.medicines);
+                console.debug('[PrescriptionUtils] getMedicines response', data);
+                prescriptObj.setMedicines(data.medicines || []);
+                // If there are no medicines in the DB, attempt to create sample medicines (useful for fresh installs)
+                if ((!data.medicines || data.medicines.length === 0)) {
+                    console.info('[PrescriptionUtils] No medicines found, seeding sample medicines...');
+                    try {
+                        const seedResp = await fetch('../php/prescription.php?action=createSampleMedicines');
+                        const seedData = await seedResp.json();
+                        console.info('[PrescriptionUtils] Seed response:', seedData);
+                        // Try fetching medicines again after seeding
+                        const retryResp = await fetch('../php/prescription.php?action=getMedicines');
+                        const retryData = await retryResp.json();
+                        if (retryData.success) prescriptObj.setMedicines(retryData.medicines || []);
+                    } catch (seedErr) {
+                        console.error('Error seeding medicines:', seedErr);
+                    }
+                }
                 this.populateMedicineSuggestions();
+                // Also refresh inventory table in case the Inventory tab is visible
+                try { display.displayMedicines(); } catch (e) { console.debug('displayMedicines not available yet', e); }
             } else {
                 console.error('Error loading medicines:', data.message);
             }
@@ -299,7 +317,43 @@ export class PrescriptionUtils {
         
         if (tabId === 'prescriptions-tab') {
             this.filterPrescriptionsByStatus(filterValue);
+        } else if (tabId === 'inventory-tab') {
+            // If the select has class 'inventory-status-select', treat as status filter; otherwise it's handled elsewhere
+            if (filterSelect.classList.contains('inventory-status-select')) {
+                this.filterMedicinesByInventoryStatus(filterValue);
+            } else {
+                // Could be medicine type filter - do simple client-side filtering by medicine_type
+                const all = prescriptObj.getMedicines();
+                const filtered = filterValue ? all.filter(m => (m.medicine_type || '').toLowerCase() === filterValue.toLowerCase()) : all;
+                display.displayMedicines(filtered);
+            }
         }
+    }
+
+    filterMedicinesByInventoryStatus(status) {
+        const all = prescriptObj.getMedicines();
+        const today = new Date().toISOString().split('T')[0];
+        let filtered;
+        if (!status) {
+            filtered = all;
+        } else if (status === 'expired') {
+            filtered = all.filter(m => m.expiry_date && m.expiry_date < today);
+        } else if (status === 'low') {
+            filtered = all.filter(m => {
+                const stock = typeof m.stock !== 'undefined' ? m.stock : (m.quantity ?? null);
+                return stock !== null && stock < 20;
+            });
+        } else if (status === 'in_stock') {
+            filtered = all.filter(m => {
+                const stock = typeof m.stock !== 'undefined' ? m.stock : (m.quantity ?? null);
+                return stock !== null && stock >= 20;
+            });
+        } else {
+            filtered = all;
+        }
+
+        // update display (don't replace master array stored in prescriptObj)
+        display.displayMedicines(filtered);
     }
 
     switchTab(clickedTab) {

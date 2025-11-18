@@ -130,7 +130,7 @@
                 class="search-box"
                 placeholder="Search medicines..."
               />
-              <select class="filter-select">
+              <select class="filter-select type-filter">
                 <option value="">All Types</option>
                 <option value="Tablet">Tablet</option>
                 <option value="Capsule">Capsule</option>
@@ -138,6 +138,12 @@
                 <option value="Injection">Injection</option>
                 <option value="Cream">Cream</option>
                 <option value="Other">Other</option>
+              </select>
+              <select class="filter-select inventory-status-select">
+                <option value="">All Status</option>
+                <option value="in_stock">In Stock</option>
+                <option value="low">Low Stock</option>
+                <option value="expired">Expired</option>
               </select>
               <button class="btn btn-primary">
                 <i class="fas fa-search"></i> Search
@@ -152,12 +158,14 @@
                     <th>Dosage</th>
                     <th>Manufacturer</th>
                     <th>Type</th>
+                    <th>Expiry</th>
+                    <th>Stock</th>
                     <th>Description</th>
                   </tr>
                 </thead>
                 <tbody id="medicines-table-body">
                   <tr>
-                    <td colspan="5">Loading medicines...</td>
+                    <td colspan="8">Loading medicines...</td>
                   </tr>
                 </tbody>
               </table>

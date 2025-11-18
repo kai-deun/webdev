@@ -66,6 +66,9 @@ switch ($action) {
     case 'getMedicines':
         getMedicines($mysqli);
         break;
+    case 'createSampleMedicines':
+        createSampleMedicines($mysqli);
+        break;
     case 'getPrescriptions':
         getPrescriptions($mysqli);
         break;
@@ -180,11 +183,14 @@ function getPatients($mysqli) {
 
 function getMedicines($mysqli) {
     try {
-        // Provide a "dosage" field (used by frontend) and select commonly used columns
-        $sql = "SELECT medicine_id, medicine_name, generic_name, manufacturer, description, dosage_form, strength, unit_price, requires_prescription, "
-             . "CONCAT(COALESCE(dosage_form, ''), ' ', COALESCE(strength, '')) AS dosage "
-             . "FROM medicines "
-             . "ORDER BY medicine_name";
+        // Provide a "dosage" field (used by frontend) and select commonly used columns.
+        // expiry_date and stock are stored per-branch in branch_inventory; aggregate them here so the front-end can display a representative expiry and total stock.
+       $sql = "SELECT m.medicine_id, m.medicine_name, m.generic_name, m.manufacturer, m.description, m.dosage_form, m.strength, m.unit_price, m.requires_prescription, "
+           . "COALESCE(inv.expiry_date, '') AS expiry_date, COALESCE(inv.total_stock, 0) AS stock, "
+           . "CONCAT(COALESCE(m.dosage_form, ''), ' ', COALESCE(m.strength, '')) AS dosage "
+           . "FROM medicines m "
+           . "LEFT JOIN (SELECT medicine_id, MIN(expiry_date) AS expiry_date, SUM(quantity) AS total_stock FROM branch_inventory GROUP BY medicine_id) inv ON m.medicine_id = inv.medicine_id "
+           . "ORDER BY m.medicine_name";
 
         $result = $mysqli->query($sql);
         
@@ -629,11 +635,21 @@ function updatePrescription($mysqli) {
             return;
         }
 
-        $stmt = $mysqli->prepare("UPDATE prescriptions SET diagnosis = ?, notes = ?, status = ?, expiry_date = ?, prescription_date = ?, updated_at = NOW() WHERE prescription_id = ?");
+    $stmt = $mysqli->prepare("UPDATE prescriptions SET diagnosis = ?, notes = ?, status = ?, expiry_date = ?, prescription_date = ?, updated_at = NOW() WHERE prescription_id = ?");
         if (!$stmt) throw new Exception('Prepare failed: ' . $mysqli->error);
 
         // Use NULL for empty expiry_date
         $expiry_param = $expiry_date === '' ? null : $expiry_date;
+
+        // If transitioning to dispensed, attempt inventory deduction first
+        if (strtolower($status) === 'dispensed') {
+            $ok = reduceInventoryForPrescription($mysqli, $prescriptionId);
+            if ($ok !== true) {
+                // reduceInventoryForPrescription returns true on success or an array with details on partial/insufficient stock
+                // We'll still proceed to update status but return a warning message to the client
+                $inventoryWarning = is_array($ok) ? ($ok['message'] ?? 'Inventory partially updated') : (string)$ok;
+            }
+        }
 
         $stmt->bind_param('sssssi', $diagnosis, $notes, $status, $expiry_param, $prescription_date, $prescriptionId);
         if (!$stmt->execute()) {
@@ -642,10 +658,153 @@ function updatePrescription($mysqli) {
         $affected = $stmt->affected_rows;
         $stmt->close();
 
-        echo json_encode(['success' => true, 'message' => 'Prescription updated', 'affected_rows' => $affected]);
+        $resp = ['success' => true, 'message' => 'Prescription updated', 'affected_rows' => $affected];
+        if (isset($inventoryWarning)) $resp['inventory_warning'] = $inventoryWarning;
+        echo json_encode($resp);
     } catch (Exception $e) {
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Error updating prescription: ' . $e->getMessage()]);
+    }
+}
+
+/**
+ * Reduce inventory for a prescription by subtracting quantities from branch_inventory.
+ * Attempts to deduct per item.quantity from branch_inventory rows (FIFO by expiry_date).
+ * Returns true on success, or an array with a message if partial/insufficient stock.
+ */
+function reduceInventoryForPrescription($mysqli, $prescriptionId, $branchId = 1) {
+    try {
+        $mysqli->begin_transaction();
+
+        // Get prescription items
+        $stmt = $mysqli->prepare("SELECT medicine_id, quantity FROM prescription_items WHERE prescription_id = ?");
+        if (!$stmt) throw new Exception('Prepare failed: ' . $mysqli->error);
+        $stmt->bind_param('i', $prescriptionId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $items = [];
+        while ($row = $result->fetch_assoc()) $items[] = $row;
+        $stmt->close();
+
+        if (empty($items)) {
+            // Nothing to deduct
+            $mysqli->commit();
+            return true;
+        }
+
+        $insufficient = [];
+        foreach ($items as $item) {
+            $need = (int)$item['quantity'];
+            $medId = (int)$item['medicine_id'];
+
+            // Fetch available inventory batches for this medicine and branch (not expired first)
+            $q = "SELECT inventory_id, quantity, reorder_level FROM branch_inventory WHERE medicine_id = ? AND branch_id = ? ORDER BY expiry_date ASC, inventory_id ASC";
+            $st = $mysqli->prepare($q);
+            if (!$st) throw new Exception('Prepare failed: ' . $mysqli->error);
+            $st->bind_param('ii', $medId, $branchId);
+            $st->execute();
+            $res = $st->get_result();
+            $batches = [];
+            while ($r = $res->fetch_assoc()) $batches[] = $r;
+            $st->close();
+
+            $totalAvailable = 0;
+            foreach ($batches as $b) $totalAvailable += (int)$b['quantity'];
+
+            if ($totalAvailable < $need) {
+                // Deduct what we can and record insufficiency
+                $remainingNeeded = $need;
+                foreach ($batches as $batch) {
+                    if ($remainingNeeded <= 0) break;
+                    $take = min($remainingNeeded, (int)$batch['quantity']);
+                    if ($take <= 0) continue;
+                    $newQty = (int)$batch['quantity'] - $take;
+                    $u = $mysqli->prepare('UPDATE branch_inventory SET quantity = ?, status = CASE WHEN ? <= reorder_level THEN "low_stock" WHEN ? = 0 THEN "out_of_stock" ELSE status END, updated_at = NOW() WHERE inventory_id = ?');
+                    if (!$u) throw new Exception('Prepare failed: ' . $mysqli->error);
+                    $u->bind_param('iiii', $newQty, $newQty, $newQty, $batch['inventory_id']);
+                    if (!$u->execute()) throw new Exception('Failed to update inventory: ' . $u->error);
+                    $u->close();
+                    $remainingNeeded -= $take;
+                }
+                $insufficient[] = "Medicine ID {$medId}: needed {$need}, available {$totalAvailable}";
+            } else {
+                // Enough total stock; deduct across batches FIFO
+                $remainingNeeded = $need;
+                foreach ($batches as $batch) {
+                    if ($remainingNeeded <= 0) break;
+                    $avail = (int)$batch['quantity'];
+                    if ($avail <= 0) continue;
+                    $take = min($avail, $remainingNeeded);
+                    $newQty = $avail - $take;
+                    $u = $mysqli->prepare('UPDATE branch_inventory SET quantity = ?, status = CASE WHEN ? <= reorder_level THEN "low_stock" WHEN ? = 0 THEN "out_of_stock" ELSE status END, updated_at = NOW() WHERE inventory_id = ?');
+                    if (!$u) throw new Exception('Prepare failed: ' . $mysqli->error);
+                    $u->bind_param('iiii', $newQty, $newQty, $newQty, $batch['inventory_id']);
+                    if (!$u->execute()) throw new Exception('Failed to update inventory: ' . $u->error);
+                    $u->close();
+                    $remainingNeeded -= $take;
+                }
+            }
+        }
+
+        $mysqli->commit();
+
+        if (!empty($insufficient)) {
+            return ['message' => 'Insufficient stock for some items', 'details' => $insufficient];
+        }
+
+        return true;
+    } catch (Exception $e) {
+        $mysqli->rollback();
+        return ['message' => 'Error reducing inventory: ' . $e->getMessage()];
+    }
+}
+
+function createSampleMedicines($mysqli) {
+    try {
+        $samples = [
+            ['Paracetamol 500mg', 'Paracetamol', 'Acme Pharma', 'Common pain reliever', 'Tablet', '500mg', 0.10],
+            ['Amoxicillin 500mg', 'Amoxicillin', 'HealthCorp', 'Antibiotic', 'Capsule', '500mg', 0.25],
+            ['Ibuprofen 200mg', 'Ibuprofen', 'MediLabs', 'Anti-inflammatory', 'Tablet', '200mg', 0.15]
+        ];
+
+        $inserted = [];
+        foreach ($samples as $s) {
+            // check existing
+            $check = $mysqli->prepare('SELECT medicine_id FROM medicines WHERE medicine_name = ? LIMIT 1');
+            $check->bind_param('s', $s[0]);
+            $check->execute();
+            $check->store_result();
+            if ($check->num_rows > 0) { $check->close(); continue; }
+            $check->close();
+
+            $stmt = $mysqli->prepare('INSERT INTO medicines (medicine_name, generic_name, manufacturer, description, dosage_form, strength, unit_price) VALUES (?, ?, ?, ?, ?, ?, ?)');
+            if (!$stmt) throw new Exception('Prepare failed: ' . $mysqli->error);
+            $stmt->bind_param('ssssssd', $s[0], $s[1], $s[2], $s[3], $s[4], $s[5], $s[6]);
+            if (!$stmt->execute()) throw new Exception('Insert medicine failed: ' . $stmt->error);
+            $medId = $mysqli->insert_id;
+            $stmt->close();
+
+            // create a branch inventory record for branch 1
+            $expiry = date('Y-m-d', strtotime('+1 year'));
+            $qty = 100;
+            $bi = $mysqli->prepare('INSERT INTO branch_inventory (branch_id, medicine_id, quantity, reorder_level, expiry_date, batch_number, status, last_updated_by) VALUES (?, ?, ?, ?, ?, ?, ?, NULL)');
+            if (!$bi) throw new Exception('Prepare failed: ' . $mysqli->error);
+            $branchId = 1;
+            $batch = 'BATCH-' . strtoupper(substr(md5(uniqid()), 0, 8));
+            $status = 'available';
+            $reorder = 10;
+            // types: branchId (i), medId (i), qty (i), reorder (i), expiry (s), batch (s), status (s)
+            $bi->bind_param('iiiisss', $branchId, $medId, $qty, $reorder, $expiry, $batch, $status);
+            if (!$bi->execute()) throw new Exception('Insert branch_inventory failed: ' . $bi->error);
+            $bi->close();
+
+            $inserted[] = $s[0];
+        }
+
+        echo json_encode(['success' => true, 'message' => 'Sample medicines created', 'inserted' => $inserted]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'Error creating sample medicines: ' . $e->getMessage()]);
     }
 }
 

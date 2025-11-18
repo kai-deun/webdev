@@ -442,6 +442,16 @@ header {
     color: var(--danger);
 }
 
+/* Expired medicine styling */
+.medicine-expired {
+    opacity: 0.9;
+    background-color: #fff6f0;
+}
+.expiry-date.expired {
+    color: #856404;
+    font-weight: 700;
+}
+
 .content-section {
     margin-top: 30px;
 }

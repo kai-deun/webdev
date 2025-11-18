@@ -50,17 +50,35 @@ export class Display {
         const medicinesTableBody = document.getElementById('medicines-table-body');
         if (!medicinesTableBody) return;
 
+        console.debug('[Display] displayMedicines called, prescriptObj medicines length =', prescriptObj.getMedicines().length);
+
         let html = '';
-        if (prescriptObj.getMedicines().length === 0) {
-            html = '<tr><td colspan="5">No medicines found</td></tr>';
+        const source = arguments[0] || prescriptObj.getMedicines();
+
+        console.debug('[Display] displayMedicines source length =', source ? source.length : 0, source && source.slice(0,3));
+
+        if (source.length === 0) {
+            html = '<tr><td colspan="8">No medicines found</td></tr>';
         } else {
-            prescriptObj.getMedicines().forEach(medicine => {
+            source.forEach(medicine => {
+                // Determine expiry and stock presentation
+                const expiry = medicine.expiry_date || '';
+                const today = new Date().toISOString().split('T')[0];
+                const isExpired = expiry && expiry < today;
+                const stock = typeof medicine.stock !== 'undefined' ? medicine.stock : (medicine.quantity ?? null);
+                let stockClass = 'high';
+                if (stock === null) stockClass = '';
+                else if (stock < 20) stockClass = 'low';
+                else if (stock < 100) stockClass = 'medium';
+
                 html += `
-                    <tr>
+                    <tr class="medicine-row ${isExpired ? 'medicine-expired' : ''}">
                         <td>${medicine.medicine_name}</td>
                         <td>${medicine.dosage}</td>
                         <td>${medicine.manufacturer || 'N/A'}</td>
                         <td>${medicine.medicine_type}</td>
+                        <td>${expiry ? `<span class="expiry-date ${isExpired ? 'expired' : ''}">${expiry}</span>` : ''}</td>
+                        <td>${stock !== null ? `<span class="stock-level ${stockClass}">${stock}</span>` : 'N/A'}</td>
                         <td>${medicine.description || 'No description'}</td>
                     </tr>
                 `;
