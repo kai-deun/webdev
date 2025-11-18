@@ -1,5 +1,25 @@
+import { eventBinder, prescriptionUtils } from "./singletons"
+
 /*
 This is like the main class in Java. This will be the one to be imported in the <script> tag in the html.
 */
 
-//TODO: based this one from the old code but make sure that it will work as intended.
+class PrescriptionManager {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        prescriptionUtils.loadPatients();//loads patient from database
+        prescriptionUtils.loadMedicines();//loads medicine from database
+        prescriptionUtils.loadPrescriptions();//loads prescriptions from database
+        prescriptionUtils.setCurrentDate();
+        eventBinder;
+    }
+}
+
+//create an instance of this class to initialize
+let prescriptionManager;
+document.addEventListener('DOMContentLoaded', function() {
+    prescriptionManager = new PrescriptionManager();
+});

@@ -56,18 +56,24 @@ if (!$action && is_array($parsedJson)) {
     }
 }
 
+//queries to be used
+$patient_query=""
+$medicine_query=""
+$prescription_query=""
+
 switch ($action) {
-    case 'getPatients':
-        getPatients($mysqli);
+    case 'getPatientList':
+        getPatientList($mysqli, $patient_query);
         break;
-    case 'getMedicines':
-        getMedicines($mysqli);
+    case 'getMedicineList':
+        getMedicineList($mysqli, $medicine_query);
         break;
-    case 'getPrescriptions':
-        getPrescriptions($mysqli);
+    case 'getPrescriptionList':
+        getPrescriptionList($mysqli, $prescription_query);
         break;
     case 'getPrescriptionDetails':
-        getPrescriptionDetails($mysqli);
+        //similar query to get prescription list because inside this function is an embedded query that will get the neccesary details.
+        getPrescriptionDetails($mysqli, $prescription_query);
         break;
     case 'savePrescription':
         savePrescription($mysqli);

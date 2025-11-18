@@ -1,5 +1,5 @@
 <?php
-//All of the php functions that will be used later are here.
+//all of the php functions that will be used later are present here.
 
 //database functions
 function connectDB($host, $username, $password, $dbname) {
