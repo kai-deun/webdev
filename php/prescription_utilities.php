@@ -150,17 +150,15 @@ function getMedsForPrescriptDetails($mysqli, $prescription_id) {
 
 
 function savePrescription($mysqli) {
-   //please do
+   //TODO: save prescription
 }
 
 function updatePrescription($mysqli) {
-    //please do
-    //main function is to delete the past prescription and replace with the updated one
+    //TODO: main function is to delete the past prescription and replace with the updated one
 }
 
 function deletePrescription($myssqli) {
-    //please do
-    //can be change to deactivate prescription if we will not going to delete a prescription.
+    //TODO: can be change to deactivate prescription if we will not going to delete a prescription.
 }
 
 function validateDate($date, $format = 'Y-m-d') {
