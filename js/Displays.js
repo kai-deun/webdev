@@ -81,16 +81,23 @@ export class Display {
         if (!source || source.length === 0) {
             html = '<p>No prescriptions found</p>';
         } else {
-            source.forEach(prescription => {
+                source.forEach(prescription => {
                 const patient = prescriptObj.getPatients().find(p => p.patient_id === prescription.patient_id);
                 const patientName = patient ? `${patient.first_name} ${patient.last_name}` : 'Unknown Patient';
+                // Normalize display for legacy 'completed' status -> show as 'Dispensed'
+                let statusKey = (prescription.status || '').toString().toLowerCase();
+                let statusLabel = prescription.status || '';
+                if (statusKey === 'completed') {
+                    statusKey = 'dispensed';
+                    statusLabel = 'Dispensed';
+                }
                 
                 html += `
                     <div class="prescription-card" data-prescription-id="${prescription.prescription_id}">
                         <div class="prescription-info">
                             <div class="prescription-header">
                                 <h4>Prescription #${prescription.prescription_id}</h4>
-                                <span class="status-badge status-${(prescription.status||'').toLowerCase()}">${prescription.status || ''}</span>
+                                <span class="status-badge status-${statusKey}">${statusLabel}</span>
                             </div>
                             <div class="prescription-details">
                                 <p><strong>Patient:</strong> ${patientName} (${prescription.patient_id})</p>
@@ -202,13 +209,20 @@ export class Display {
                 // FIXED: Used prescriptObj.getPatients() instead of this.getPatients()
                 const patient = prescriptObj.getPatients().find(p => p.patient_id === prescription.patient_id);
                 const patientName = patient ? `${patient.first_name} ${patient.last_name}` : 'Unknown Patient';
+                // Normalize 'completed' -> display as 'Dispensed'
+                let statusKey = (prescription.status || '').toString().toLowerCase();
+                let statusLabel = prescription.status || '';
+                if (statusKey === 'completed') {
+                    statusKey = 'dispensed';
+                    statusLabel = 'Dispensed';
+                }
                 
                 html += `
                     <div class="prescription-card" data-prescription-id="${prescription.prescription_id}">
                         <div class="prescription-info">
                             <div class="prescription-header">
                                 <h4>Prescription #${prescription.prescription_id}</h4>
-                                <span class="status-badge status-${prescription.status.toLowerCase()}">${prescription.status}</span>
+                                <span class="status-badge status-${statusKey}">${statusLabel}</span>
                             </div>
                             <div class="prescription-details">
                                 <p><strong>Patient:</strong> ${patientName} (${prescription.patient_id})</p>

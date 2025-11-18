@@ -78,6 +78,9 @@ switch ($action) {
     case 'savePrescription':
         savePrescription($mysqli);
         break;
+    case 'updatePrescription':
+        updatePrescription($mysqli);
+        break;
     case 'deletePrescription':
         deletePrescription($mysqli);
         break;
@@ -572,6 +575,77 @@ function deletePrescription($mysqli) {
         $mysqli->rollback();
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Error deleting prescription: ' . $e->getMessage()]);
+    }
+}
+
+function updatePrescription($mysqli) {
+    $input = isset($GLOBALS['REQUEST_JSON']) ? $GLOBALS['REQUEST_JSON'] : null;
+    if (!$input || !isset($input['data'])) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Invalid input']);
+        return;
+    }
+
+    $data = $input['data'];
+    $prescriptionId = isset($data['prescription_id']) ? (int)$data['prescription_id'] : 0;
+    if ($prescriptionId <= 0) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'prescription_id is required']);
+        return;
+    }
+
+    try {
+        // Fetch existing prescription
+        $stmt = $mysqli->prepare("SELECT diagnosis, notes, status, expiry_date, prescription_date FROM prescriptions WHERE prescription_id = ? LIMIT 1");
+        if (!$stmt) throw new Exception('Prepare failed: ' . $mysqli->error);
+        $stmt->bind_param('i', $prescriptionId);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $existing = $res->fetch_assoc();
+        $stmt->close();
+
+        if (!$existing) {
+            http_response_code(404);
+            echo json_encode(['success' => false, 'message' => 'Prescription not found']);
+            return;
+        }
+
+        // Determine new values (use provided or keep existing)
+        $diagnosis = isset($data['diagnosis']) ? sanitizeInput($data['diagnosis']) : $existing['diagnosis'];
+        $notes = isset($data['notes']) ? sanitizeInput($data['notes']) : $existing['notes'];
+        $status = isset($data['status']) ? sanitizeInput($data['status']) : $existing['status'];
+        $expiry_date = isset($data['expiry_date']) && $data['expiry_date'] !== '' ? $data['expiry_date'] : $existing['expiry_date'];
+        $prescription_date = isset($data['prescription_date']) && $data['prescription_date'] !== '' ? $data['prescription_date'] : $existing['prescription_date'];
+
+        // Validate dates if provided
+        if ($expiry_date && !validateDate($expiry_date)) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Invalid expiry_date format']);
+            return;
+        }
+        if ($prescription_date && !validateDate($prescription_date)) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Invalid prescription_date format']);
+            return;
+        }
+
+        $stmt = $mysqli->prepare("UPDATE prescriptions SET diagnosis = ?, notes = ?, status = ?, expiry_date = ?, prescription_date = ?, updated_at = NOW() WHERE prescription_id = ?");
+        if (!$stmt) throw new Exception('Prepare failed: ' . $mysqli->error);
+
+        // Use NULL for empty expiry_date
+        $expiry_param = $expiry_date === '' ? null : $expiry_date;
+
+        $stmt->bind_param('sssssi', $diagnosis, $notes, $status, $expiry_param, $prescription_date, $prescriptionId);
+        if (!$stmt->execute()) {
+            throw new Exception('Failed to update prescription: ' . $stmt->error);
+        }
+        $affected = $stmt->affected_rows;
+        $stmt->close();
+
+        echo json_encode(['success' => true, 'message' => 'Prescription updated', 'affected_rows' => $affected]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'Error updating prescription: ' . $e->getMessage()]);
     }
 }
 

@@ -358,6 +358,12 @@ header {
     color: #0c5460;
 }
 
+/* Dispensed status mirrors the previous 'completed' styling */
+.status-dispensed {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
 .prescription-medicines {
     margin-bottom: 15px;
 }

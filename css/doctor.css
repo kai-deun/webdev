@@ -621,6 +621,17 @@ header {
     color: #721c24;
 }
 
+.status-expired {
+    background: #fff3cd;
+    color: #856404;
+}
+
+/* Dispensed status (alias of completed semantics but different label) */
+.status-dispensed {
+    background: #cce5ff;
+    color: #004085;
+}
+
 .prescription-details p {
     margin: 5px 0;
     color: #666;

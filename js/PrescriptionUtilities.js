@@ -259,10 +259,23 @@ export class PrescriptionUtils {
     }
     
     filterPrescriptionsByStatus(status) {
-        const filteredPrescriptions = status ? 
-            prescriptObj.getPrescriptions().filter(p => p.status.toLowerCase() === status.toLowerCase()) :
-            prescriptObj.getPrescriptions();
-        
+        // Handle legacy 'completed' values: treat 'dispensed' filter as matching both 'dispensed' and 'completed'
+        const all = prescriptObj.getPrescriptions();
+        let filteredPrescriptions;
+        if (!status) {
+            filteredPrescriptions = all;
+        } else {
+            const s = status.toString().toLowerCase();
+            if (s === 'dispensed') {
+                filteredPrescriptions = all.filter(p => {
+                    const st = (p.status || '').toString().toLowerCase();
+                    return st === 'dispensed' || st === 'completed';
+                });
+            } else {
+                filteredPrescriptions = all.filter(p => (p.status || '').toString().toLowerCase() === s);
+            }
+        }
+
         display.displayFilteredPrescriptions(filteredPrescriptions);
     }
 
