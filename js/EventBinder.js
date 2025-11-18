@@ -37,6 +37,17 @@ export class BindEvents {
             box.addEventListener('input', (e) => prescriptUtils.handleSearch(e.target));
         });
 
+        // Support clicking the search button next to inputs to trigger the same search
+        document.querySelectorAll('.search-filter .btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const container = btn.closest('.search-filter');
+                if (!container) return;
+                const input = container.querySelector('.search-box');
+                if (!input) return;
+                prescriptUtils.handleSearch(input);
+            });
+        });
+
         document.querySelectorAll('.filter-select').forEach(select => {
             select.addEventListener('change', (e) => prescriptUtils.handleFilter(e.target));
         });
@@ -45,19 +56,7 @@ export class BindEvents {
             btn.addEventListener('click', (e) => prescriptUtils.switchTab(e.target));
         });
 
-        // A-Z filter buttons (patients)
-        const azFilter = document.querySelector('.az-filter');
-        if (azFilter) {
-            azFilter.addEventListener('click', (e) => {
-                const btn = e.target.closest('.az-btn');
-                if (!btn) return;
-                const letter = btn.dataset.letter;
-                // update active state visually
-                azFilter.querySelectorAll('.az-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                prescriptUtils.filterPatientsByInitial(letter);
-            });
-        }
+        // A–Z filter removed from UI; search input handles filtering now.
     }
 
     // Handles elements that are dynamically added to the DOM (like patient cards)
@@ -74,8 +73,9 @@ export class BindEvents {
                 const patientId = button.dataset.patientId;
 
                 if (button.classList.contains('js-select-patient')) {
-                    console.log(`Selecting patient: ${patientId}`);
-                    patient.selectPatient(patientId); 
+                    console.log(`Viewing medical history for patient: ${patientId}`);
+                    // Open medical history modal (different from selecting patient for prescription)
+                    patient.viewMedicalHistory(patientId);
                 } else if (button.classList.contains('js-new-prescription')) {
                     console.log(`Creating prescription for: ${patientId}`);
                     patient.createPrescriptionForPatient(patientId);

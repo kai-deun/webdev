@@ -1,6 +1,20 @@
 import { prescriptObj, display } from "./Instances"
 
 export class PrescriptionUtils {
+    constructor() {
+        // batch rendering state for patients list
+        this.batchSize = 25;
+        this.renderedCount = 0;
+        this.currentPatients = [];
+        this.loading = false;
+        this._onScrollBound = this._onScroll.bind(this);
+        // prescriptions batching
+        this.presBatchSize = 20;
+        this.presRenderedCount = 0;
+        this.currentPrescriptions = [];
+        this.presLoading = false;
+        this._onPresScrollBound = this._onPresScroll.bind(this);
+    }
     
     async loadPatients() {
         try {
@@ -10,7 +24,14 @@ export class PrescriptionUtils {
             if (data.success) {
                 prescriptObj.setPatients(data.patients);
                 this.populatePatientSelect();
-                display.displayPatients();
+                // initialize batch rendering
+                this.currentPatients = data.patients || [];
+                this.renderedCount = 0;
+                const patientsList = document.querySelector('.patients-list');
+                if (patientsList) patientsList.innerHTML = '';
+                this._hideLoading();
+                this._ensureScrollHandler();
+                this.loadMorePatients();
             } else {
                 console.error('Error loading patients:', data.message);
             }
@@ -42,7 +63,14 @@ export class PrescriptionUtils {
             
             if (data.success) {
                 prescriptObj.setPrescriptions(data.prescriptions);
-                display.displayPrescriptions();
+                // initialize prescriptions batching
+                this.currentPrescriptions = data.prescriptions || [];
+                this.presRenderedCount = 0;
+                const presList = document.querySelector('.prescriptions-list');
+                if (presList) presList.innerHTML = '';
+                this._hidePresLoading();
+                this._ensurePrescriptionsScrollHandler();
+                this.loadMorePrescriptions();
             } else {
                 console.error('Error loading prescriptions:', data.message);
             }
@@ -109,45 +137,125 @@ export class PrescriptionUtils {
     }
 
     filterPatients(searchTerm) {
-        const filteredPatients = this.prescriptObj.getPatients().filter(patient => {
-            const fullName = `${patient.first_name} ${patient.last_name}`.toLowerCase();
-            return fullName.includes(searchTerm) ||
-                   patient.patient_id.toLowerCase().includes(searchTerm) ||
-                   (patient.phone && patient.phone.includes(searchTerm)) ||
-                   (patient.email && patient.email.toLowerCase().includes(searchTerm));
-        });
-        
-        display.displayFilteredPatients(filteredPatients);
+        // Search by first name only (case-insensitive)
+        const term = (searchTerm || '').toString().trim().toLowerCase();
+        let filteredPatients;
+        if (!term) {
+            filteredPatients = prescriptObj.getPatients();
+        } else {
+            // Match by first name prefix (startsWith) similar to prescription ID behavior
+            filteredPatients = prescriptObj.getPatients().filter(patient => {
+                const first = (patient.first_name || '').toString().toLowerCase();
+                return first.startsWith(term);
+            });
+        }
+
+        // debug: report filter results
+        console.debug('[PrescriptionUtils] filterPatients', { term, total: prescriptObj.getPatients().length, matched: filteredPatients.length });
+
+        // Use batching: set currentPatients to filtered results and render batches
+        this.currentPatients = filteredPatients;
+        this.renderedCount = 0;
+        const patientsList = document.querySelector('.patients-list');
+        if (patientsList) patientsList.innerHTML = '';
+        this._hideLoading();
+        this.loadMorePatients();
     }
 
     // Filter patients by last name initial (A-Z). Pass 'All' to clear filter.
     filterPatientsByInitial(letter) {
         if (!letter || letter === 'All') {
-            // Show all patients
-            display.displayPatients();
+            // Show all patients (reset to master list)
+            this.currentPatients = prescriptObj.getPatients();
+        } else {
+            const initial = letter.toLowerCase();
+            this.currentPatients = prescriptObj.getPatients().filter(p => {
+                const last = (p.last_name || '').toString().trim().toLowerCase();
+                return last.startsWith(initial);
+            });
+        }
+
+        // reset rendering and show first batch
+        this.renderedCount = 0;
+        const patientsList = document.querySelector('.patients-list');
+        if (patientsList) patientsList.innerHTML = '';
+        this._hideLoading();
+        this.loadMorePatients();
+    }
+
+    // --- Prescriptions batch helpers ---
+    _ensurePrescriptionsScrollHandler() {
+        const container = document.getElementById('prescriptions-container');
+        if (!container) return;
+        if (!container._infinitePresBound) {
+            container.addEventListener('scroll', this._onPresScrollBound);
+            container._infinitePresBound = true;
+        }
+    }
+
+    _onPresScroll(e) {
+        const container = e.target;
+        if (this.presLoading) return;
+        if (this.presRenderedCount >= (this.currentPrescriptions ? this.currentPrescriptions.length : 0)) return;
+        if (container.scrollTop + container.clientHeight >= container.scrollHeight - 60) {
+            this.loadMorePrescriptions();
+        }
+    }
+
+    loadMorePrescriptions() {
+        if (!this.currentPrescriptions) this.currentPrescriptions = prescriptObj.getPrescriptions() || [];
+        if (this.presLoading) return;
+        const remaining = this.currentPrescriptions.length - this.presRenderedCount;
+        if (remaining <= 0) {
+            this._hidePresLoading();
             return;
         }
 
-        const initial = letter.toLowerCase();
-        const filtered = this.prescriptObj.getPatients().filter(p => {
-            const last = (p.last_name || '').toString().trim().toLowerCase();
-            return last.startsWith(initial);
-        });
+        this.presLoading = true;
+        this._showPresLoading();
 
-        display.displayFilteredPatients(filtered);
+        const nextSlice = this.currentPrescriptions.slice(this.presRenderedCount, this.presRenderedCount + this.presBatchSize);
+        // append next slice
+        display.displayPrescriptions(nextSlice, true);
+        this.presRenderedCount += nextSlice.length;
+
+        this.presLoading = false;
+        if (this.presRenderedCount >= this.currentPrescriptions.length) {
+            this._hidePresLoading();
+        } else {
+            this._hidePresLoading();
+        }
     }
 
-     filterPrescriptions(searchTerm) {
-        const filteredPrescriptions = prescriptObj.getPrescriptions().filter(prescription => {
-            const patient = prescriptObj.getPatients().find(p => p.patient_id === prescription.patient_id);
-            const patientName = patient ? `${patient.first_name} ${patient.last_name}` : '';
-            
-            return patientName.toLowerCase().includes(searchTerm) ||
-                   prescription.prescription_id.toString().includes(searchTerm) ||
-                   (prescription.diagnosis && prescription.diagnosis.toLowerCase().includes(searchTerm));
-        });
-        
-        display.displayFilteredPrescriptions(filteredPrescriptions);
+    _showPresLoading() {
+        const el = document.getElementById('prescriptions-loading');
+        if (el) el.style.display = 'block';
+    }
+
+    _hidePresLoading() {
+        const el = document.getElementById('prescriptions-loading');
+        if (el) el.style.display = 'none';
+    }
+
+    filterPrescriptions(searchTerm) {
+        // Search by prescription ID only. If empty, reset to all.
+        const term = (searchTerm || '').toString().trim();
+        let filteredPrescriptions;
+        if (!term) {
+            filteredPrescriptions = prescriptObj.getPrescriptions();
+        } else {
+            filteredPrescriptions = prescriptObj.getPrescriptions().filter(prescription => {
+                return prescription.prescription_id.toString().includes(term);
+            });
+        }
+
+        // Use batching: set currentPrescriptions to filtered and render from start
+        this.currentPrescriptions = filteredPrescriptions;
+        this.presRenderedCount = 0;
+        const presList = document.querySelector('.prescriptions-list');
+        if (presList) presList.innerHTML = '';
+        this._hidePresLoading();
+        this.loadMorePrescriptions();
     }
     
     filterPrescriptionsByStatus(status) {
@@ -159,9 +267,12 @@ export class PrescriptionUtils {
     }
 
     handleSearch(searchBox) {
-        const searchTerm = searchBox.value.toLowerCase();
-        const tabId = searchBox.closest('.tab-content').id;
-        
+        const raw = searchBox.value;
+        const searchTerm = (raw || '').toString().toLowerCase();
+        const tabId = searchBox.closest('.tab-content') ? searchBox.closest('.tab-content').id : 'unknown';
+        // debug: log user search actions
+        console.debug('[PrescriptionUtils] handleSearch', { tabId, searchTerm });
+
         if (tabId === 'prescriptions-tab') {
             this.filterPrescriptions(searchTerm);
         } else if (tabId === 'patients-tab') {
@@ -200,7 +311,16 @@ export class PrescriptionUtils {
         } else if (tabId === 'inventory') {
             display.displayMedicines();
         } else if (tabId === 'patients') {
-            display.displayPatients();
+            // If patients are already loaded, reset batch rendering; otherwise fetch
+            if (this.currentPatients && this.currentPatients.length > 0) {
+                this.renderedCount = 0;
+                const patientsList = document.querySelector('.patients-list');
+                if (patientsList) patientsList.innerHTML = '';
+                this._ensureScrollHandler();
+                this.loadMorePatients();
+            } else {
+                this.loadPatients();
+            }
         }
     }
 
@@ -210,5 +330,59 @@ export class PrescriptionUtils {
             const today = new Date().toISOString().split('T')[0];
             dateInput.value = today;
         }
+    }
+
+    /* --- Infinite scroll helpers for patients container --- */
+    _ensureScrollHandler() {
+        const container = document.getElementById('patients-container');
+        if (!container) return;
+        if (!container._infiniteBound) {
+            container.addEventListener('scroll', this._onScrollBound);
+            container._infiniteBound = true;
+        }
+    }
+
+    _onScroll(e) {
+        const container = e.target;
+        if (this.loading) return;
+        if (this.renderedCount >= (this.currentPatients ? this.currentPatients.length : 0)) return;
+        if (container.scrollTop + container.clientHeight >= container.scrollHeight - 60) {
+            this.loadMorePatients();
+        }
+    }
+
+    loadMorePatients() {
+        if (!this.currentPatients) this.currentPatients = prescriptObj.getPatients() || [];
+        if (this.loading) return;
+        const remaining = this.currentPatients.length - this.renderedCount;
+        if (remaining <= 0) {
+            this._hideLoading();
+            return;
+        }
+
+        this.loading = true;
+        this._showLoading();
+
+        const nextSlice = this.currentPatients.slice(this.renderedCount, this.renderedCount + this.batchSize);
+        // append next slice
+        display.displayPatients(nextSlice, true);
+        this.renderedCount += nextSlice.length;
+
+        this.loading = false;
+        if (this.renderedCount >= this.currentPatients.length) {
+            this._hideLoading();
+        } else {
+            this._hideLoading();
+        }
+    }
+
+    _showLoading() {
+        const el = document.getElementById('patients-loading');
+        if (el) el.style.display = 'block';
+    }
+
+    _hideLoading() {
+        const el = document.getElementById('patients-loading');
+        if (el) el.style.display = 'none';
     }
 }

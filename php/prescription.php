@@ -60,6 +60,9 @@ switch ($action) {
     case 'getPatients':
         getPatients($mysqli);
         break;
+    case 'getMedicalHistory':
+        getMedicalHistory($mysqli);
+        break;
     case 'getMedicines':
         getMedicines($mysqli);
         break;
@@ -88,6 +91,43 @@ switch ($action) {
             ]
         ]);
         break;
+}
+
+function getMedicalHistory($mysqli) {
+    $patientId = $_GET['patient_id'] ?? '';
+    if (empty($patientId)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'patient_id is required']);
+        return;
+    }
+
+    try {
+        $query = "
+            SELECT mh.history_id, mh.patient_id, mh.doctor_id, mh.diagnosis, mh.notes, mh.visit_date, mh.created_at,
+                   CONCAT(u.first_name, ' ', u.last_name) AS doctor_name
+            FROM medical_history mh
+            LEFT JOIN users u ON mh.doctor_id = u.user_id
+            WHERE mh.patient_id = ?
+            ORDER BY mh.visit_date DESC, mh.history_id DESC
+        ";
+
+        $stmt = $mysqli->prepare($query);
+        if (!$stmt) throw new Exception('Prepare failed: ' . $mysqli->error);
+        $stmt->bind_param('i', $patientId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $records = [];
+        while ($row = $result->fetch_assoc()) {
+            $records[] = $row;
+        }
+        $stmt->close();
+
+        echo json_encode(['success' => true, 'records' => $records]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'Error fetching medical history: ' . $e->getMessage()]);
+    }
 }
 
 function getPatients($mysqli) {

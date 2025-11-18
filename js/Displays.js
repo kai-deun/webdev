@@ -2,15 +2,19 @@ import { prescriptObj } from "./Instances";
 
 export class Display {
 
-    displayPatients() {
+    // displayPatients: render a provided patients array or all patients by default.
+    // If append === true, appends to the existing list instead of replacing it.
+    displayPatients(patients = null, append = false) {
         const patientsList = document.querySelector('.patients-list');
         if (!patientsList) return;
 
+        const source = patients || prescriptObj.getPatients();
+
         let html = '';
-        if (prescriptObj.getPatients().length === 0) {
+        if (!source || source.length === 0) {
             html = '<p>No patients found</p>';
         } else {
-            prescriptObj.getPatients().forEach(patient => {
+            source.forEach(patient => {
                 html += `
                     <div class="patient-card">
                         <div class="patient-info">
@@ -34,7 +38,12 @@ export class Display {
                 `;
             });
         }
-        patientsList.innerHTML = html;
+
+        if (append) {
+            patientsList.insertAdjacentHTML('beforeend', html);
+        } else {
+            patientsList.innerHTML = html;
+        }
     }
 
     displayMedicines() {
@@ -61,14 +70,18 @@ export class Display {
     }
 
     displayPrescriptions() {
+        // Accept optional array and append flag to support batching
         const prescriptionsList = document.querySelector('.prescriptions-list');
         if (!prescriptionsList) return;
 
+        const source = arguments[0] || prescriptObj.getPrescriptions();
+        const append = arguments[1] || false;
+
         let html = '';
-        if (prescriptObj.getPrescriptions().length === 0) {
+        if (!source || source.length === 0) {
             html = '<p>No prescriptions found</p>';
         } else {
-            prescriptObj.getPrescriptions().forEach(prescription => {
+            source.forEach(prescription => {
                 const patient = prescriptObj.getPatients().find(p => p.patient_id === prescription.patient_id);
                 const patientName = patient ? `${patient.first_name} ${patient.last_name}` : 'Unknown Patient';
                 
@@ -77,7 +90,7 @@ export class Display {
                         <div class="prescription-info">
                             <div class="prescription-header">
                                 <h4>Prescription #${prescription.prescription_id}</h4>
-                                <span class="status-badge status-${prescription.status.toLowerCase()}">${prescription.status}</span>
+                                <span class="status-badge status-${(prescription.status||'').toLowerCase()}">${prescription.status || ''}</span>
                             </div>
                             <div class="prescription-details">
                                 <p><strong>Patient:</strong> ${patientName} (${prescription.patient_id})</p>
@@ -101,7 +114,12 @@ export class Display {
                 `;
             });
         }
-        prescriptionsList.innerHTML = html;
+
+        if (append) {
+            prescriptionsList.insertAdjacentHTML('beforeend', html);
+        } else {
+            prescriptionsList.innerHTML = html;
+        }
     }
 
     displayCurrentPrescription() {

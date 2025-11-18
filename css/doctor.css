@@ -274,6 +274,41 @@ header {
     gap: 15px;
 }
 
+/* Scrollable container for patients to avoid long page scrolling */
+.patients-container {
+    max-height: 420px; /* adjust as needed */
+    overflow-y: auto;
+    padding-right: 8px; /* room for scrollbar */
+    border: 1px solid var(--light);
+    border-radius: 8px;
+    padding: 12px;
+    background: #fff;
+}
+
+/* Small visual for loading indicator inside container */
+.patients-container .loading {
+    text-align: center;
+    padding: 12px 0;
+    color: var(--gray);
+}
+
+/* Prescriptions container mirrors patients container for compact scrolling */
+.prescriptions-container {
+    max-height: 420px;
+    overflow-y: auto;
+    padding-right: 8px;
+    border: 1px solid var(--light);
+    border-radius: 8px;
+    padding: 12px;
+    background: #fff;
+}
+
+.prescriptions-container .loading {
+    text-align: center;
+    padding: 12px 0;
+    color: var(--gray);
+}
+
 .patient-card, .prescription-card {
     background-color: #f8f9fa;
     border-radius: 8px;
