@@ -32,32 +32,7 @@
 
     <div class="container">
       <div class="dashboard">
-        <div class="sidebar">
-          <ul class="sidebar-menu">
-            <li>
-              <a href="#" class="active"
-                ><i class="fas fa-tachometer-alt"></i> Dashboard</a
-              >
-            </li>
-            <li>
-              <a href="#"
-                ><i class="fas fa-user-injured"></i> Patient Management</a
-              >
-            </li>
-            <li>
-              <a href="#"><i class="fas fa-prescription"></i> Prescriptions</a>
-            </li>
-            <li>
-              <a href="#"><i class="fas fa-history"></i> Medical History</a>
-            </li>
-            <li>
-              <a href="#"><i class="fas fa-pills"></i> Medicine Inventory</a>
-            </li>
-            <li>
-              <a href="#"><i class="fas fa-calendar-alt"></i> Appointments</a>
-            </li>
-          </ul>
-        </div>
+        <!-- sidebar removed to simplify layout; main content will take full width -->
         <div class="main-content">
           <div class="content-header">
             <h2>Doctor Dashboard</h2>
@@ -75,22 +50,22 @@
             <div class="stat-card">
               <i class="fas fa-user-injured"></i>
               <h3>Today's Patients</h3>
-              <div class="value">8</div>
+              <div class="value" id="patients-today-stat">0</div>
             </div>
             <div class="stat-card">
               <i class="fas fa-prescription-bottle"></i>
               <h3>Prescriptions Today</h3>
-              <div class="value">12</div>
+              <div class="value" id="prescriptions-today-stat">0</div>
             </div>
             <div class="stat-card">
               <i class="fas fa-exclamation-triangle"></i>
               <h3>Low Stock Medicines</h3>
-              <div class="value">5</div>
+              <div class="value" id="low-stock-stat">0</div>
             </div>
             <div class="stat-card">
               <i class="fas fa-calendar-check"></i>
               <h3>Upcoming Appointments</h3>
-              <div class="value">3</div>
+              <div class="value" id="appointments-stat">0</div>
             </div>
           </div>
 
