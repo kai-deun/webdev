@@ -185,7 +185,7 @@ function savePrescription($mysqli)
             $instructions = sanitizeInput($med['instructions']);
             $addionalnotes = sanitizeInput($med['additional_notes'] ?? null);
 
-            $med_query->bind_param('ssdiis', $prescription_id, $medicine_id, $meds_quantity, $instructions, $addionalnotes);
+            $med_query->bind_param('ssdiis', $prescription_id, $medicine_id, $dosage, $medsquantity, $instructions, $addionalnotes);
             $med_query->execute();
         }
 
