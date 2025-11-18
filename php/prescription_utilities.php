@@ -222,7 +222,7 @@ function updatePrescription($mysqli)
 
         // replace new (update)
         $query = $mysqli->prepare(
-            "UPDATE prescriptions SET doctor_id = ?, patient_id = ?, date_created = ?, status = ?, diagnosis = ? WHERE prescription_id = ?"
+            "UPDATE prescriptions SET doctor_id = ?, patient_id = ?, date_created = ?, 'status' = ?, diagnosis = ? WHERE prescription_id = ?"
         );
         $query->bind_param('ssssss', $doctorid, $patientid, $datecreated, $status, $diagnose, $prescriptionid);
         $query->execute();
@@ -275,6 +275,17 @@ function deletePrescription($mysqli)
             'success' => false,
             'message' => 'Error deleting prescription: ' . $e->getMessage()
         ]);
+    }
+}
+
+function idGenerator($mysqli, $target_entity) {
+    if ($target_entity == 'prescription') {
+        $result = $mysqli->query(
+            "SELECT prescription_id
+            FROM prescriptions
+            ORDER BY prescription_id"
+        )
+        $prescription_id = $result->fetch_all(MYSQLI_ASSOC)
     }
 }
 
