@@ -7,7 +7,7 @@ function connectDB($host, $username, $password, $dbname) {
         $mysqli = new mysqli($host, $username, $password, $dbname);
         $mysqli->set_charset('utf8');
 
-        return $mysqli
+        return $mysqli;
     } catch (mysqli_sql_exception $e) {
         http_response_code(500);
         echo json_encode([

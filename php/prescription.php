@@ -1,6 +1,5 @@
 <?php
-include('php/prescription_utilities.php');
-
+include('../php/prescription_utilities.php');
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
@@ -17,7 +16,7 @@ $username = 'root';
 $password = '';
 $dbname = 'vitalsoft_db';
 
-mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_EXCEPTION); //for reporting errors.
+mysqli_report(MYSQLI_REPORT_ERROR); //for reporting errors.
 
 $mysqli = connectDB($host, $username, $password, $dbname);
 
@@ -58,16 +57,16 @@ if (!$action && is_array($parsedJson)) {
 
 switch ($action) {
     case 'getPatients':
-        getPatients($mysqli);
+        getPatientList($mysqli, $query_statement);
         break;
     case 'getMedicines':
-        getMedicines($mysqli);
+        getMedicineList($mysqli, $query_statement);
         break;
     case 'getPrescriptions':
-        getPrescriptions($mysqli);
+        getPrescriptions($mysqli, $query_statement);
         break;
     case 'getPrescriptionDetails':
-        getPrescriptionDetails($mysqli);
+        getPrescriptionDetails($mysqli, $query_statement);
         break;
     case 'savePrescription':
         savePrescription($mysqli);
