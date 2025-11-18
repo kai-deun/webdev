@@ -1,0 +1,88 @@
+<?php
+include('php/prescription_utilities.php');
+
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
+header('Access-Control-Allow-Headers: Content-Type');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204);
+    exit;
+}
+
+//db config
+$host = 'localhost';
+$username = 'root';
+$password = '';
+$dbname = 'vitalsoft_db';
+
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_EXCEPTION); //for reporting errors.
+
+$mysqli = connectDB($host, $username, $password, $dbname);
+
+// Parse JSON body once (so we don't consume php://input multiple times)
+$rawInput = file_get_contents('php://input');
+$parsedJson = null;
+if ($rawInput !== false && strlen($rawInput) > 0) {
+    $parsedJson = json_decode($rawInput, true);
+    if (json_last_error() === JSON_ERROR_NONE) {
+        $GLOBALS['REQUEST_JSON'] = $parsedJson;
+    }
+}
+
+// Handle different actions (accept from GET, POST form, or JSON body)
+$action = $_GET['action'] ?? ($_POST['action'] ?? '');
+if (!$action && is_array($parsedJson)) {
+    if (isset($parsedJson['action'])) {
+        $action = $parsedJson['action'];
+    } else {
+        // Infer action for common POST JSON bodies
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($parsedJson['data'])) {
+                $action = 'savePrescription';
+            } elseif (isset($parsedJson['prescription_id'])) {
+                $action = 'deletePrescription';
+            }
+        }
+    }
+}
+
+switch ($action) {
+    case 'getPatients':
+        getPatients($mysqli);
+        break;
+    case 'getMedicines':
+        getMedicines($mysqli);
+        break;
+    case 'getPrescriptions':
+        getPrescriptions($mysqli);
+        break;
+    case 'getPrescriptionDetails':
+        getPrescriptionDetails($mysqli);
+        break;
+    case 'savePrescription':
+        savePrescription($mysqli);
+        break;
+    case 'updatePrescription':
+        updatePrescription($mysqli);
+        break;
+    case 'deletePrescription':
+        deletePrescription($mysqli);
+        break;
+    default:
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Invalid action',
+            'details' => [
+                'method' => $_SERVER['REQUEST_METHOD'] ?? 'unknown',
+                'received_action' => $action,
+                'has_json' => is_array($parsedJson),
+                'json_keys' => is_array($parsedJson) ? array_keys($parsedJson) : null
+            ]
+        ]);
+        break;
+}
+
+?>

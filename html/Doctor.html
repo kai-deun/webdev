@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VitalSoft - Doctor Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../css/doctor.css" />
+  </head>
+  <body>
+    <script src="../js/common.js"></script>
+    <header>
+      <div class="container">
+        <div class="header-content">
+          <div class="logo">
+            <i class="fas fa-user-md"></i>
+            <h1>VitalSoft - Doctor Portal</h1>
+          </div>
+          <div class="user-info">
+            <div class="user-avatar">DR</div>
+            <div>
+              <div class="user-name">Dr. Sarah Johnson</div>
+              <div class="user-role">Medical Doctor</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="dashboard">
+        <div class="sidebar">
+          <ul class="sidebar-menu">
+            <li>
+              <a href="#" class="active"
+                ><i class="fas fa-tachometer-alt"></i> Dashboard</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><i class="fas fa-user-injured"></i> Patient Management</a
+              >
+            </li>
+            <li>
+              <a href="#"><i class="fas fa-prescription"></i> Prescriptions</a>
+            </li>
+            <li>
+              <a href="#"><i class="fas fa-history"></i> Medical History</a>
+            </li>
+            <li>
+              <a href="#"><i class="fas fa-pills"></i> Medicine Inventory</a>
+            </li>
+            <li>
+              <a href="#"><i class="fas fa-calendar-alt"></i> Appointments</a>
+            </li>
+          </ul>
+        </div>
+        <div class="main-content">
+          <div class="content-header">
+            <h2>Doctor Dashboard</h2>
+            <div class="header-actions">
+              <button class="btn btn-primary">
+                <i class="fas fa-plus"></i> New Prescription
+              </button>
+              <button class="btn btn-primary">
+                <i class="fas fa-user-plus"></i> Add Patient
+              </button>
+            </div>
+          </div>
+
+          <div class="stats-cards">
+            <div class="stat-card">
+              <i class="fas fa-user-injured"></i>
+              <h3>Today's Patients</h3>
+              <div class="value">8</div>
+            </div>
+            <div class="stat-card">
+              <i class="fas fa-prescription-bottle"></i>
+              <h3>Prescriptions Today</h3>
+              <div class="value">12</div>
+            </div>
+            <div class="stat-card">
+              <i class="fas fa-exclamation-triangle"></i>
+              <h3>Low Stock Medicines</h3>
+              <div class="value">5</div>
+            </div>
+            <div class="stat-card">
+              <i class="fas fa-calendar-check"></i>
+              <h3>Upcoming Appointments</h3>
+              <div class="value">3</div>
+            </div>
+          </div>
+
+          <div class="content-tabs">
+            <button class="tab-btn active" data-tab="patients">Patients</button>
+            <button class="tab-btn" data-tab="prescriptions">
+              Prescriptions
+            </button>
+            <button class="tab-btn" data-tab="inventory">
+              Medicine Inventory
+            </button>
+          </div>
+
+          <div class="tab-content active" id="patients-tab">
+            <div class="search-filter">
+              <input
+                type="text"
+                class="search-box"
+                placeholder="Search patients..."
+              />
+              <button class="btn btn-primary">
+                <i class="fas fa-search"></i> Search
+              </button>
+            </div>
+
+            <div class="patients-list">
+              <!-- Patient data will be loaded dynamically -->
+              <p>Loading patients...</p>
+            </div>
+          </div>
+
+          <div class="tab-content" id="prescriptions-tab">
+            <div class="search-filter">
+              <input
+                type="text"
+                class="search-box"
+                placeholder="Search prescriptions..."
+              />
+              <select class="filter-select">
+                <option value="">All Status</option>
+                <option value="active">Active</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+              <button class="btn btn-primary">
+                <i class="fas fa-search"></i> Filter
+              </button>
+            </div>
+
+            <div class="prescriptions-list">
+              <!-- Prescription data will be loaded dynamically -->
+              <p>Loading prescriptions...</p>
+            </div>
+          </div>
+
+          <div class="tab-content" id="inventory-tab">
+            <div class="search-filter">
+              <input
+                type="text"
+                class="search-box"
+                placeholder="Search medicines..."
+              />
+              <select class="filter-select">
+                <option value="">All Types</option>
+                <option value="Tablet">Tablet</option>
+                <option value="Capsule">Capsule</option>
+                <option value="Syrup">Syrup</option>
+                <option value="Injection">Injection</option>
+                <option value="Cream">Cream</option>
+                <option value="Other">Other</option>
+              </select>
+              <button class="btn btn-primary">
+                <i class="fas fa-search"></i> Search
+              </button>
+            </div>
+
+            <div class="inventory-table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Medicine Name</th>
+                    <th>Dosage</th>
+                    <th>Manufacturer</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody id="medicines-table-body">
+                  <!-- Medicine data will be loaded dynamically -->
+                  <tr>
+                    <td colspan="5">Loading medicines...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="content-section">
+            <h3 id="prescription-tab-title">Create New Prescription</h3>
+            <div class="form-container">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="patient-select">Select Patient</label>
+                  <select id="patient-select" class="form-control">
+                    <option value="">Choose a patient...</option>
+                    <!-- Patients will be loaded dynamically -->
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="prescription-date">Prescription Date</label>
+                  <input
+                    type="date"
+                    id="prescription-date"
+                    class="form-control"
+                  />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="diagnosis">Diagnosis</label>
+                  <input
+                    type="text"
+                    id="diagnosis"
+                    class="form-control"
+                    placeholder="Enter diagnosis"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="notes">Notes</label>
+                  <input
+                    type="text"
+                    id="notes"
+                    class="form-control"
+                    placeholder="Additional notes"
+                  />
+                </div>
+              </div>
+
+              <div class="medicine-form">
+                <h4>Add Medicine</h4>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="medicine-name">Medicine Name</label>
+                    <input
+                      type="text"
+                      id="medicine-name"
+                      class="form-control"
+                      placeholder="Enter medicine name"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="medicine-dosage">Dosage</label>
+                    <input
+                      type="text"
+                      id="medicine-dosage"
+                      class="form-control"
+                      placeholder="e.g., 500mg"
+                    />
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="medicine-quantity">Quantity</label>
+                    <input
+                      type="number"
+                      id="medicine-quantity"
+                      class="form-control"
+                      placeholder="Number of units"
+                      min="1"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="medicine-instructions">Instructions</label>
+                    <input
+                      type="text"
+                      id="medicine-instructions"
+                      class="form-control"
+                      placeholder="Usage instructions"
+                    />
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="dosage-frequency">Dosage Frequency</label>
+                    <select id="dosage-frequency" class="form-control">
+                      <option value="Select Duration">Select Duration...</option>
+                      <option value="Once daily">Once daily</option>
+                      <option value="Twice daily">Twice daily</option>
+                      <option value="Three times daily">Three times daily</option>
+                      <option value="Four times daily">Four times daily</option>
+                      <option value="Every 6 hours">Every 6 hours</option>
+                      <option value="Every 8 hours">Every 8 hours</option>
+                      <option value="Every 12 hours">Every 12 hours</option>
+                      <option value="As needed">As needed</option>
+                      <option value="As directed">As directed</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="duration-days">Duration (Days)</label>
+                    <input
+                      type="number"
+                      id="duration-days"
+                      class="form-control"
+                      placeholder="Number of days"
+                      min="1"
+                    />
+                  </div>
+                </div>
+                <button class="btn btn-secondary">
+                  <i class="fas fa-plus"></i> Add Medicine
+                </button>
+              </div>
+
+              <div class="form-actions">
+                <button class="btn btn-success" id="save-prescription">
+                  <i class="fas fa-save"></i> Save Prescription
+                </button>
+                <button class="btn btn-secondary">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Tab functionality
+        const tabBtns = document.querySelectorAll(".tab-btn");
+        const tabContents = document.querySelectorAll(".tab-content");
+
+        tabBtns.forEach((btn) => {
+          btn.addEventListener("click", function () {
+            const tabId = this.getAttribute("data-tab");
+
+            // Remove active class from all buttons and contents
+            tabBtns.forEach((b) => b.classList.remove("active"));
+            tabContents.forEach((c) => c.classList.remove("active"));
+
+            // Add active class to current button and content
+            this.classList.add("active");
+            document.getElementById(`${tabId}-tab`).classList.add("active");
+          });
+        });
+
+        // Prescription actions
+        const editButtons = document.querySelectorAll(
+          ".prescription-actions .btn-warning"
+        );
+        editButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            alert("Edit prescription functionality would open here.");
+          });
+        });
+
+        const deleteButtons = document.querySelectorAll(
+          ".prescription-actions .btn-danger"
+        );
+        deleteButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            if (confirm("Are you sure you want to delete this prescription?")) {
+              alert("Prescription would be deleted in a real application.");
+            }
+          });
+        });
+      });
+    </script>
+    <script src="../js/PrescriptionManager.js" type="module"></script>
+  </body>
+</html>
