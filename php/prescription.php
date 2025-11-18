@@ -20,9 +20,9 @@ $username = 'root';
 $password = '';
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
+    $mysqli = new mysqli("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
+    $mysqli->setAttribute(mysqli::ATTR_ERRMODE, mysqli::ERRMODE_EXCEPTION);
+} catch (mysqliException $e) {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . $e->getMessage()]);
     exit;
@@ -57,22 +57,22 @@ if (!$action && is_array($parsedJson)) {
 
 switch ($action) {
     case 'getPatients':
-        getPatients($pdo);
+        getPatients($mysqli);
         break;
     case 'getMedicines':
-        getMedicines($pdo);
+        getMedicines($mysqli);
         break;
     case 'getPrescriptions':
-        getPrescriptions($pdo);
+        getPrescriptions($mysqli);
         break;
     case 'getPrescriptionDetails':
-        getPrescriptionDetails($pdo);
+        getPrescriptionDetails($mysqli);
         break;
     case 'savePrescription':
-        savePrescription($pdo);
+        savePrescription($mysqli);
         break;
     case 'deletePrescription':
-        deletePrescription($pdo);
+        deletePrescription($mysqli);
         break;
     default:
         http_response_code(400);
@@ -89,39 +89,39 @@ switch ($action) {
         break;
 }
 
-function getPatients($pdo) {
+function getPatients($mysqli) {
     try {
-        $stmt = $pdo->query("SELECT * FROM patients ORDER BY first_name, last_name");
-        $patients = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $mysqli->query("SELECT * FROM patients ORDER BY first_name, last_name");
+        $patients = $stmt->fetchAll(mysqli::FETCH_ASSOC);
         
         echo json_encode([
             'success' => true,
             'patients' => $patients
         ]);
-    } catch (PDOException $e) {
+    } catch (mysqliException $e) {
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Error fetching patients: ' . $e->getMessage()]);
     }
 }
 
-function getMedicines($pdo) {
+function getMedicines($mysqli) {
     try {
-        $stmt = $pdo->query("SELECT * FROM medicines ORDER BY medicine_name");
-        $medicines = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $mysqli->query("SELECT * FROM medicines ORDER BY medicine_name");
+        $medicines = $stmt->fetchAll(mysqli::FETCH_ASSOC);
         
         echo json_encode([
             'success' => true,
             'medicines' => $medicines
         ]);
-    } catch (PDOException $e) {
+    } catch (mysqliException $e) {
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Error fetching medicines: ' . $e->getMessage()]);
     }
 }
 
-function getPrescriptions($pdo) {
+function getPrescriptions($mysqli) {
     try {
-        $stmt = $pdo->query("
+        $stmt = $mysqli->query("
             SELECT p.*, 
                    CONCAT(pat.first_name, ' ', pat.last_name) as patient_name,
                    CONCAT(d.first_name, ' ', d.last_name) as doctor_name
@@ -130,19 +130,19 @@ function getPrescriptions($pdo) {
             JOIN doctors d ON p.doctor_id = d.doctor_id
             ORDER BY p.prescription_date DESC, p.prescription_id DESC
         ");
-        $prescriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $prescriptions = $stmt->fetchAll(mysqli::FETCH_ASSOC);
         
         echo json_encode([
             'success' => true,
             'prescriptions' => $prescriptions
         ]);
-    } catch (PDOException $e) {
+    } catch (mysqliException $e) {
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Error fetching prescriptions: ' . $e->getMessage()]);
     }
 }
 
-function getPrescriptionDetails($pdo) {
+function getPrescriptionDetails($mysqli) {
     $prescriptionId = $_GET['id'] ?? '';
     
     if (empty($prescriptionId)) {
@@ -153,7 +153,7 @@ function getPrescriptionDetails($pdo) {
     
     try {
         // Get prescription details
-        $stmt = $pdo->prepare("
+        $stmt = $mysqli->prepare("
             SELECT p.*, 
                    CONCAT(pat.first_name, ' ', pat.last_name) as patient_name,
                    CONCAT(d.first_name, ' ', d.last_name) as doctor_name
@@ -163,7 +163,7 @@ function getPrescriptionDetails($pdo) {
             WHERE p.prescription_id = ?
         ");
         $stmt->execute([$prescriptionId]);
-        $prescription = $stmt->fetch(PDO::FETCH_ASSOC);
+        $prescription = $stmt->fetch(mysqli::FETCH_ASSOC);
         
         if (!$prescription) {
             http_response_code(404);
@@ -172,7 +172,7 @@ function getPrescriptionDetails($pdo) {
         }
         
         // Get prescription medicines
-        $stmt = $pdo->prepare("
+        $stmt = $mysqli->prepare("
             SELECT pm.*, m.medicine_name, m.dosage
             FROM prescription_medicines pm
             JOIN medicines m ON pm.medicine_id = m.medicine_id
@@ -180,7 +180,7 @@ function getPrescriptionDetails($pdo) {
             ORDER BY pm.id
         ");
         $stmt->execute([$prescriptionId]);
-        $medicines = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $medicines = $stmt->fetchAll(mysqli::FETCH_ASSOC);
         
         $prescription['medicines'] = $medicines;
         
@@ -188,13 +188,13 @@ function getPrescriptionDetails($pdo) {
             'success' => true,
             'prescription' => $prescription
         ]);
-    } catch (PDOException $e) {
+    } catch (mysqliException $e) {
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Error fetching prescription details: ' . $e->getMessage()]);
     }
 }
 
-function savePrescription($pdo) {
+function savePrescription($mysqli) {
     $input = isset($GLOBALS['REQUEST_JSON']) ? $GLOBALS['REQUEST_JSON'] : null;
     
     if (!$input || !isset($input['data'])) {
@@ -217,6 +217,7 @@ function savePrescription($pdo) {
     }
     
     try {
+<<<<<<< HEAD
         $pdo->beginTransaction();
 
         if ($is_update) {
@@ -273,6 +274,29 @@ function savePrescription($pdo) {
         // ======================================
 
         $stmt = $pdo->prepare("
+=======
+        $mysqli->beginTransaction();
+        
+        // Insert prescription
+        $stmt = $mysqli->prepare("
+            INSERT INTO prescriptions (patient_id, doctor_id, prescription_date, diagnosis, notes, status)
+            VALUES (?, ?, ?, ?, ?, 'Active')
+        ");
+        
+        // For now, use DR001 as default doctor (in real app, this would come from session/auth)
+        $stmt->execute([
+            $data['patient_id'],
+            'DR001', // Default doctor ID
+            $data['prescription_date'],
+            $data['diagnosis'] ?? '',
+            $data['notes'] ?? ''
+        ]);
+        
+        $prescriptionId = $mysqli->lastInsertId();
+        
+        // Insert prescription medicines
+        $stmt = $mysqli->prepare("
+>>>>>>> b3477267dfa2d2e234023502090c810a16f60943
             INSERT INTO prescription_medicines (prescription_id, medicine_id, quantity, instructions, dosage_frequency, duration_days)
             VALUES (?, ?, ?, ?, ?, ?)
         ");
@@ -288,7 +312,7 @@ function savePrescription($pdo) {
             ]);
         }
         
-        $pdo->commit();
+        $mysqli->commit();
         
         $message = $is_update ? 'Prescription updated successfully' : 'Prescription saved successfully';
 
@@ -298,14 +322,14 @@ function savePrescription($pdo) {
             'prescription_id' => $prescriptionId
         ]);
         
-    } catch (PDOException $e) {
-        $pdo->rollBack();
+    } catch (mysqliException $e) {
+        $mysqli->rollBack();
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Error saving/updating prescription: ' . $e->getMessage()]);
     }
 }
 
-function deletePrescription($pdo) {
+function deletePrescription($mysqli) {
     $input = isset($GLOBALS['REQUEST_JSON']) ? $GLOBALS['REQUEST_JSON'] : null;
     
     if (!$input || empty($input['prescription_id'])) {
@@ -317,32 +341,32 @@ function deletePrescription($pdo) {
     $prescriptionId = $input['prescription_id'];
     
     try {
-        $pdo->beginTransaction();
+        $mysqli->beginTransaction();
         
         // Delete prescription medicines first (due to foreign key constraints)
-        $stmt = $pdo->prepare("DELETE FROM prescription_medicines WHERE prescription_id = ?");
+        $stmt = $mysqli->prepare("DELETE FROM prescription_medicines WHERE prescription_id = ?");
         $stmt->execute([$prescriptionId]);
         
         // Delete prescription
-        $stmt = $pdo->prepare("DELETE FROM prescriptions WHERE prescription_id = ?");
+        $stmt = $mysqli->prepare("DELETE FROM prescriptions WHERE prescription_id = ?");
         $stmt->execute([$prescriptionId]);
         
         if ($stmt->rowCount() === 0) {
-            $pdo->rollBack();
+            $mysqli->rollBack();
             http_response_code(404);
             echo json_encode(['success' => false, 'message' => 'Prescription not found']);
             return;
         }
         
-        $pdo->commit();
+        $mysqli->commit();
         
         echo json_encode([
             'success' => true,
             'message' => 'Prescription deleted successfully'
         ]);
         
-    } catch (PDOException $e) {
-        $pdo->rollBack();
+    } catch (mysqliException $e) {
+        $mysqli->rollBack();
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Error deleting prescription: ' . $e->getMessage()]);
     }
