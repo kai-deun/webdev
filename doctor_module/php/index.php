@@ -2,7 +2,9 @@
 <?php include('config.php'); ?>
 
 <h1 id="main_title">List of Current Prescription</h1>
+
 <a class="btn create-prescription" href="../doctor_module/php/create.php">Create Prescription</a>
+
 <table class="table table-hover table-bordered table-striped" id="recent_table">
     <thead>
         <tr>
