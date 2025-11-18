@@ -56,9 +56,30 @@ if (!$action && is_array($parsedJson)) {
 }
 
 //queries to be used
-$patient_query=""
-$medicine_query=""
-$prescription_query=""
+$patient_query=
+    "SELECT user.* 
+    FROM user 
+    JOIN patient ON user.user_id = patient.patientid 
+    ORDER BY user.first_name, user.last_name"
+
+$medicine_query=
+    "SELECT * 
+    FROM medicine 
+    ORDER BY brand_name"
+
+$prescription_query=
+    "SELECT 
+        med_assign.*, 
+        med.*, 
+        pres.date_created, 
+        pres.status, 
+        CONCAT(user.first_name, ' ', user.last_name) as user_name
+    FROM medication_assignments as med_assign
+    JOIN prescription as pres ON med_assign.prescript_id = pres.prescriptionid
+    JOIN medicine as med ON med_assign.meds_id = med.medicineid
+    JOIN user ON pres.patient_id = user.user_id
+    WHERE pres.prescriptionid = ?"
+
 
 switch ($action) {
     case 'getPatientList':
