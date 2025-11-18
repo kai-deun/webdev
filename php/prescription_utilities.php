@@ -229,6 +229,34 @@ function updatePrescription($mysqli)
 function deletePrescription($mysqli)
 {
     //TODO: can be change to deactivate prescription if we will not going to delete a prescription.
+    try {
+        $prescriptionid = sanitizeInput($_POST['prescription_id'] ?? '');
+
+        // delete assignments (for referential integrity)
+        $del_assign = $mysqli->prepare(
+            "DELETE FROM medication_assignements WHERE prescription_id = ?"
+        );
+        $del_assign->bind_param('s', $prescriptionid);
+        $del_assign->execute();
+
+        // delete function
+        $del_query = $mysqli->prepare(
+            "DELETE FROM prescriptions WHERE prescription_id = ?"
+        );
+        $del_query->bind_param('s', $prescriptionid);
+        $del_query->execute();
+
+        echo json_encode([
+            'success' => true, 
+            'message' => 'Prescription successfully deleted'
+        ]);
+    } catch (mysqli_sql_exception $e) {
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Error deleting prescription: ' . $e->getMessage()
+        ]);
+    }
 }
 
 function validateDate($date, $format = 'Y-m-d')
