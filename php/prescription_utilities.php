@@ -181,19 +181,19 @@ function savePrescription($mysqli)
         $patient_id = sanitizeInput($_POST['patient_id'] ?? '');
         $date_made = sanitizeInput($_POST['date_created'] ?? '');
         $status = sanitizeInput($_POST['status'] ?? 'valid');
-        $diagnose = sanitizeInput($_POST['diagnosis'] ?? '');
+        $diagnosis = sanitizeInput($_POST['diagnosis'] ?? '');
         $added_meds = $_POST['assigned_meds'] ?? [];
 
         $query = $mysqli->prepare(
-            "INSERT INTO prescriptions (prescription_id, doctor_id, patient_id, date_created, status, diagnosis)
+            "INSERT INTO prescriptions (prescription_id, doctor_id, patient_id, date_created, 'status', diagnosis)
         VALUES (?, ?, ?, ?, ?, ?)"
         );
 
-        $query->bind_param('ssssss', $prescription_id, $doctor_id, $patient_id, $date_made, $status, $diagnose);
+        $query->bind_param('ssssss', $prescription_id, $doctor_id, $patient_id, $date_made, $status, $diagnosis);
         $query->execute();
 
         // for multiple medicines
-        medicines($mysqli, $added_meds);
+        updateMedicineList($mysqli, $added_meds);
 
         echo json_encode([
             'success' => true,
@@ -233,7 +233,7 @@ function updatePrescription($mysqli)
         $del_query->execute();
 
         // for new assigned meds
-        medicines($mysqli, $added_meds);
+        updateMedicineList($mysqli, $added_meds);
     } catch (mysqli_sql_exception $e) {
         http_response_code(500);
         echo json_encode(
