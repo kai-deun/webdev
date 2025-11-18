@@ -69,6 +69,9 @@ switch ($action) {
     case 'getPrescriptions':
         getPrescriptions($mysqli);
         break;
+    case 'addPatient':
+        addPatient($mysqli);
+        break;
     case 'getPrescriptionDetails':
         getPrescriptionDetails($mysqli);
         break;
@@ -433,6 +436,79 @@ function savePrescription($mysqli) {
         $mysqli->rollback();
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Error saving prescription: ' . $e->getMessage()]);
+    }
+}
+
+function addPatient($mysqli) {
+    $input = isset($GLOBALS['REQUEST_JSON']) ? $GLOBALS['REQUEST_JSON'] : null;
+    if (!$input) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Invalid input']);
+        return;
+    }
+
+    $data = $input['data'] ?? $input;
+
+    // required
+    $username = trim($data['username'] ?? '');
+    $email = trim($data['email'] ?? '');
+    $first_name = trim($data['first_name'] ?? '');
+    $last_name = trim($data['last_name'] ?? '');
+
+    if ($username === '' || $email === '' || $first_name === '' || $last_name === '') {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Missing required fields']);
+        return;
+    }
+
+    $phone = $data['phone_number'] ?? null;
+    $dob = $data['date_of_birth'] ?? null;
+    $address = $data['address'] ?? null;
+    $insurance_number = $data['insurance_number'] ?? null;
+    $insurance_provider = $data['insurance_provider'] ?? null;
+    $password = $data['password'] ?? 'password123';
+
+    try {
+        // role id for Patient
+        $res = $mysqli->query("SELECT role_id FROM roles WHERE role_name = 'Patient' LIMIT 1");
+        if (!$res || $res->num_rows === 0) throw new Exception('Patient role not found');
+        $r = $res->fetch_assoc();
+        $roleId = (int)$r['role_id'];
+
+        // check unique username/email
+        $stmt = $mysqli->prepare("SELECT user_id FROM users WHERE username = ? OR email = ? LIMIT 1");
+        $stmt->bind_param('ss', $username, $email);
+        $stmt->execute();
+        $stmt->store_result();
+        if ($stmt->num_rows > 0) {
+            $stmt->close();
+            http_response_code(409);
+            echo json_encode(['success' => false, 'message' => 'Username or email already exists']);
+            return;
+        }
+        $stmt->close();
+
+        // insert into users
+        $password_hash = password_hash($password, PASSWORD_DEFAULT);
+        $stmt = $mysqli->prepare("INSERT INTO users (username, email, password_hash, role_id, first_name, last_name, phone_number, date_of_birth, address, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')");
+        if (!$stmt) throw new Exception('Prepare failed: ' . $mysqli->error);
+        $stmt->bind_param('sssisssss', $username, $email, $password_hash, $roleId, $first_name, $last_name, $phone, $dob, $address);
+        if (!$stmt->execute()) throw new Exception('Insert user failed: ' . $stmt->error);
+        $userId = $mysqli->insert_id;
+        $stmt->close();
+
+        // insert into patients
+        $stmt = $mysqli->prepare("INSERT INTO patients (user_id, insurance_number, insurance_provider) VALUES (?, ?, ?)");
+        if (!$stmt) throw new Exception('Prepare failed: ' . $mysqli->error);
+        $stmt->bind_param('iss', $userId, $insurance_number, $insurance_provider);
+        if (!$stmt->execute()) throw new Exception('Insert patient failed: ' . $stmt->error);
+        $patientId = $mysqli->insert_id;
+        $stmt->close();
+
+        echo json_encode(['success' => true, 'message' => 'Patient added', 'user_id' => $userId, 'patient_id' => $patientId]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'Error adding patient: ' . $e->getMessage()]);
     }
 }
 

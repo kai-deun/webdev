@@ -44,6 +44,27 @@ export class BindEvents {
                 }
             });
         }
+
+        // Header: Add Patient button opens add-patient modal
+        const addPatientBtn = document.getElementById('btn-add-patient');
+        if (addPatientBtn) {
+            addPatientBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (patient && typeof patient.createPatientModal === 'function') {
+                    patient.createPatientModal();
+                }
+            });
+        }
+
+        // When a patient is added elsewhere in the app, refresh the patients list
+        document.addEventListener('patients:added', (e) => {
+            try {
+                console.debug('patients:added event received', e.detail);
+                prescriptUtils.loadPatients();
+            } catch (err) {
+                console.error('Error handling patients:added', err);
+            }
+        });
     
         // Save prescription button
         const savePrescriptionBtn = document.getElementById('save-prescription');
