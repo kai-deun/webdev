@@ -23,6 +23,27 @@ export class BindEvents {
                 display.displayCurrentPrescription(); // Refresh the list
             });
         }
+
+        // Header: New Prescription button scrolls to the create form and opens the Prescriptions tab
+        const newPresBtn = document.getElementById('btn-new-prescription');
+        if (newPresBtn) {
+            newPresBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Activate prescriptions tab
+                const presTabBtn = document.querySelector('.tab-btn[data-tab="prescriptions"]');
+                if (presTabBtn) presTabBtn.click();
+
+                // Scroll to the create form content section
+                const formSection = document.querySelector('.content-section');
+                if (formSection) {
+                    setTimeout(() => {
+                        formSection.scrollIntoView({ behavior: 'smooth' });
+                        const patientSelect = document.getElementById('patient-select');
+                        if (patientSelect) patientSelect.focus();
+                    }, 200);
+                }
+            });
+        }
     
         // Save prescription button
         const savePrescriptionBtn = document.getElementById('save-prescription');
