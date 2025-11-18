@@ -25,14 +25,14 @@ DROP TABLE IF EXISTS `admin`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `admin` (
-  `adminid` varchar(25) NOT NULL,
+  `admin_id` varchar(25) NOT NULL,
   `level` enum('superuser','admin') NOT NULL,
   `date_assigned` date NOT NULL,
   `role` char(2) NOT NULL,
-  UNIQUE KEY `adminid_UNIQUE` (`adminid`),
+  UNIQUE KEY `adminid_UNIQUE` (`admin_id`),
   KEY `admin role_idx` (`role`) /*!80000 INVISIBLE */,
-  CONSTRAINT `admin role` FOREIGN KEY (`role`) REFERENCES `user_role` (`roleid`),
-  CONSTRAINT `admin user` FOREIGN KEY (`adminid`) REFERENCES `user` (`user_id`)
+  CONSTRAINT `admin role` FOREIGN KEY (`role`) REFERENCES `user_role` (`role_id`),
+  CONSTRAINT `admin user` FOREIGN KEY (`admin_id`) REFERENCES `user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -54,15 +54,15 @@ DROP TABLE IF EXISTS `doctor`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `doctor` (
-  `doctorid` varchar(25) NOT NULL,
+  `doctor_id` varchar(25) NOT NULL,
   `license_no` varchar(45) NOT NULL,
   `specialization` varchar(45) NOT NULL,
   `role` char(2) NOT NULL,
-  UNIQUE KEY `doctorid_UNIQUE` (`doctorid`),
-  KEY `doctor user_idx` (`doctorid`),
+  UNIQUE KEY `doctorid_UNIQUE` (`doctor_id`),
+  KEY `doctor user_idx` (`doctor_id`),
   KEY `doctor role_idx` (`role`),
-  CONSTRAINT `doctor role` FOREIGN KEY (`role`) REFERENCES `user_role` (`roleid`),
-  CONSTRAINT `doctor user` FOREIGN KEY (`doctorid`) REFERENCES `user` (`user_id`)
+  CONSTRAINT `doctor role` FOREIGN KEY (`role`) REFERENCES `user_role` (`role_id`),
+  CONSTRAINT `doctor user` FOREIGN KEY (`doctor_id`) REFERENCES `user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -84,16 +84,16 @@ DROP TABLE IF EXISTS `medication_assignments`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `medication_assignments` (
-  `prescripts_id` varchar(255) NOT NULL,
-  `meds_id` varchar(255) NOT NULL,
+  `prescription_id` varchar(255) NOT NULL,
+  `medicine_id` varchar(255) NOT NULL,
   `dosage` decimal(10,0) NOT NULL,
   `meds_quantity` int NOT NULL,
   `instructions` text NOT NULL,
-  `additional notes` longtext,
-  PRIMARY KEY (`prescripts_id`,`meds_id`),
-  KEY `meds ref_idx` (`meds_id`) /*!80000 INVISIBLE */,
-  CONSTRAINT `meds ref` FOREIGN KEY (`meds_id`) REFERENCES `medicine` (`medicineid`),
-  CONSTRAINT `prescripts ref` FOREIGN KEY (`prescripts_id`) REFERENCES `prescription` (`prescriptionid`)
+  `additional_notes` longtext,
+  PRIMARY KEY (`prescription_id`,`medicine_id`),
+  KEY `meds ref_idx` (`medicine_id`) /*!80000 INVISIBLE */,
+  CONSTRAINT `meds ref` FOREIGN KEY (`medicine_id`) REFERENCES `medicine` (`medicine_id`),
+  CONSTRAINT `prescripts ref` FOREIGN KEY (`prescription_id`) REFERENCES `prescription` (`prescription_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='junction table for storing prescriptions with multiple assigned medicines';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -115,16 +115,16 @@ DROP TABLE IF EXISTS `medicine`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `medicine` (
-  `medicineid` varchar(255) NOT NULL,
+  `medicine_id` varchar(255) NOT NULL,
   `generic_name` varchar(45) NOT NULL,
   `brand_name` varchar(45) NOT NULL,
   `description` longtext NOT NULL,
   `category` varchar(45) NOT NULL,
   `unitprice` decimal(10,4) NOT NULL,
-  `expirydate` date NOT NULL,
+  `expiry_date` date NOT NULL,
   `stock` int NOT NULL,
-  PRIMARY KEY (`medicineid`),
-  UNIQUE KEY `medicineid_UNIQUE` (`medicineid`),
+  PRIMARY KEY (`medicine_id`),
+  UNIQUE KEY `medicineid_UNIQUE` (`medicine_id`),
   UNIQUE KEY `scientific_name_UNIQUE` (`brand_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -147,14 +147,14 @@ DROP TABLE IF EXISTS `patient`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `patient` (
-  `patientid` varchar(25) NOT NULL,
+  `patient_id` varchar(25) NOT NULL,
   `birthdate` date NOT NULL,
   `gender` enum('male','female') NOT NULL,
   `role` char(2) NOT NULL,
-  UNIQUE KEY `userid_UNIQUE` (`patientid`),
+  UNIQUE KEY `userid_UNIQUE` (`patient_id`),
   KEY `patient role_idx` (`role`),
-  CONSTRAINT `patient role` FOREIGN KEY (`role`) REFERENCES `user_role` (`roleid`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `patient user` FOREIGN KEY (`patientid`) REFERENCES `user` (`user_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+  CONSTRAINT `patient role` FOREIGN KEY (`role`) REFERENCES `user_role` (`role_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `patient user` FOREIGN KEY (`patient_id`) REFERENCES `user` (`user_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -176,15 +176,15 @@ DROP TABLE IF EXISTS `pharmacist`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `pharmacist` (
-  `pharmacistid` varchar(25) NOT NULL,
+  `pharmacist_id` varchar(25) NOT NULL,
   `start_shift` datetime NOT NULL,
   `end_shift` datetime NOT NULL,
   `schedule` set('monday','tuesday','wednesday','thursday','friday','saturday','sunday') NOT NULL,
   `role` char(2) NOT NULL,
-  UNIQUE KEY `userid_UNIQUE` (`pharmacistid`),
+  UNIQUE KEY `userid_UNIQUE` (`pharmacist_id`),
   KEY `ph role_idx` (`role`),
-  CONSTRAINT `pharmacist role` FOREIGN KEY (`role`) REFERENCES `user_role` (`roleid`),
-  CONSTRAINT `pharmacist user` FOREIGN KEY (`pharmacistid`) REFERENCES `user` (`user_id`)
+  CONSTRAINT `pharmacist role` FOREIGN KEY (`role`) REFERENCES `user_role` (`role_id`),
+  CONSTRAINT `pharmacist user` FOREIGN KEY (`pharmacist_id`) REFERENCES `user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -206,15 +206,15 @@ DROP TABLE IF EXISTS `pharmacy_manager`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `pharmacy_manager` (
-  `pharmacy_managerid` varchar(25) NOT NULL,
+  `pharmacy_manager_id` varchar(25) NOT NULL,
   `employment_date` date NOT NULL,
   `approval_limit` int DEFAULT NULL,
   `years_of_experience` int NOT NULL,
   `role` char(2) NOT NULL,
-  UNIQUE KEY `userid_UNIQUE` (`pharmacy_managerid`),
+  UNIQUE KEY `userid_UNIQUE` (`pharmacy_manager_id`),
   KEY `pm role_idx` (`role`),
-  CONSTRAINT `manager role` FOREIGN KEY (`role`) REFERENCES `user_role` (`roleid`),
-  CONSTRAINT `manager user` FOREIGN KEY (`pharmacy_managerid`) REFERENCES `user` (`user_id`)
+  CONSTRAINT `manager role` FOREIGN KEY (`role`) REFERENCES `user_role` (`role_id`),
+  CONSTRAINT `manager user` FOREIGN KEY (`pharmacy_manager_id`) REFERENCES `user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -236,17 +236,18 @@ DROP TABLE IF EXISTS `prescription`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `prescription` (
-  `prescriptionid` varchar(255) NOT NULL,
+  `prescription_id` varchar(255) NOT NULL,
   `doctor_id` varchar(25) NOT NULL,
   `patient_id` varchar(25) NOT NULL,
   `date_created` date NOT NULL,
   `status` enum('valid','recurring','invalid') NOT NULL,
-  PRIMARY KEY (`prescriptionid`),
-  UNIQUE KEY `prescriptionid_UNIQUE` (`prescriptionid`),
+  `diagnosis` longtext,
+  PRIMARY KEY (`prescription_id`),
+  UNIQUE KEY `prescriptionid_UNIQUE` (`prescription_id`),
   KEY `doc id_idx` (`doctor_id`),
   KEY `patient id_idx` (`patient_id`),
-  CONSTRAINT `doctor id` FOREIGN KEY (`doctor_id`) REFERENCES `doctor` (`doctorid`),
-  CONSTRAINT `patient id` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patientid`)
+  CONSTRAINT `doctor id` FOREIGN KEY (`doctor_id`) REFERENCES `doctor` (`doctor_id`),
+  CONSTRAINT `patient id` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -256,7 +257,7 @@ CREATE TABLE `prescription` (
 
 LOCK TABLES `prescription` WRITE;
 /*!40000 ALTER TABLE `prescription` DISABLE KEYS */;
-INSERT INTO `prescription` VALUES ('P0001','D0001','PA0001','2025-11-17','valid');
+INSERT INTO `prescription` VALUES ('P0001','D0001','PA0001','2025-11-17','valid',NULL);
 /*!40000 ALTER TABLE `prescription` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -280,7 +281,7 @@ CREATE TABLE `user` (
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `userid_UNIQUE` (`user_id`),
   KEY `roles_idx` (`role_id`),
-  CONSTRAINT `roles` FOREIGN KEY (`role_id`) REFERENCES `user_role` (`roleid`)
+  CONSTRAINT `roles` FOREIGN KEY (`role_id`) REFERENCES `user_role` (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -293,6 +294,33 @@ LOCK TABLES `user` WRITE;
 INSERT INTO `user` VALUES ('A0001','irisadmin','1r1s','Iris','Perez','iris@gmail.com',NULL,'active','a'),('D0001','joe','joe','Joe','Doc','joe@gmail.com','09694206969','active','d'),('PA0001','juan','juan','Juan','Sakitin','juansakit@gmail.com',NULL,'active','pa'),('PH0001','maria','mare','Maria','Gamot','marg@gmail.com',NULL,'active','ph'),('PM0001','coco','c0c0','Mama','Coco','rememberme@gmail.com',NULL,'active','pm');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = '' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `user_BEFORE_INSERT` BEFORE INSERT ON `user` FOR EACH ROW BEGIN
+DECLARE num_seq INT;
+DECLARE prefix VARCHAR(2);
+
+SET prefix = UPPER(NEW.roleid);
+
+SELECT COALESCE(MAX(CAST(SUBSTRING(userid, LENGTH(prefix)+1) AS UNSIGNED)), 0) + 1
+INTO num_seq
+FROM user
+WHERE userid LIKE CONCAT(prefix, '%');
+
+SET NEW.userid = CONCAT(prefix, LPAD(num_seq, 4, '0'));
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `user_role`
@@ -302,11 +330,11 @@ DROP TABLE IF EXISTS `user_role`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_role` (
-  `roleid` char(2) NOT NULL,
-  `rolename` varchar(45) NOT NULL,
+  `role_id` char(2) NOT NULL,
+  `role_name` varchar(45) NOT NULL,
   `description` mediumtext,
-  PRIMARY KEY (`roleid`),
-  UNIQUE KEY `roleid_UNIQUE` (`roleid`)
+  PRIMARY KEY (`role_id`),
+  UNIQUE KEY `roleid_UNIQUE` (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -319,6 +347,42 @@ LOCK TABLES `user_role` WRITE;
 INSERT INTO `user_role` VALUES ('a','admin','administrator of vitalsoft'),('d','doctor','users of medical fields'),('pa','patient','client/customer'),('ph','pharmacist','employee of a pharmacy branch'),('pm','pharmacy manager','manager of an assigned pharmacy branch');
 /*!40000 ALTER TABLE `user_role` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Dumping events for database 'vitalsoft_db'
+--
+
+--
+-- Dumping routines for database 'vitalsoft_db'
+--
+/*!50003 DROP PROCEDURE IF EXISTS `sample_user` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = '' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sample_user`()
+BEGIN
+INSERT INTO user (username, password, first_name, last_name, email, contact_number, status, roleid)
+VALUES ('irisadmin', '1r1s', 'Iris', 'Perez', 'iris@gmail.com', NULL, 'active', 'a');
+INSERT INTO user (username, password, first_name, last_name, email, contact_number, status, roleid)
+VALUES ('joe', 'joe', 'Joe', 'Doc', 'joe@gmail.com', '09694206969', 'active', 'd');
+INSERT INTO user (username, password, first_name, last_name, email, contact_number, status, roleid)
+VALUES ('juan', 'juan', 'Juan', 'Sakitin', 'juansakit@gmail.com', NULL, 'active', 'pa');
+INSERT INTO user (username, password, first_name, last_name, email, contact_number, status, roleid)
+VALUES ('maria', 'mare', 'Maria', 'Gamot', 'marg@gmail.com', NULL, 'active', 'ph');
+INSERT INTO user (username, password, first_name, last_name, email, contact_number, status, roleid)
+VALUES ('coco', 'c0c0', 'Mama', 'Coco', 'rememberme@gmail.com', NULL, 'active', 'pm');
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -329,4 +393,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-17 23:42:32
+-- Dump completed on 2025-11-18 19:48:57
