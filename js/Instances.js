@@ -1,3 +1,4 @@
+// shared singletons used across modules (data + utils + display)
 import { PrescriptionObject } from "./PrescriptionObject";
 import { PrescriptionUtils } from "./PrescriptionUtilities";
 import { Prescriptions } from "./Prescriptions";

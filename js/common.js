@@ -1,4 +1,4 @@
-// Common functions used across all pages
+// API calls and small utilities used by Doctor page
 
 // API base URL
 const API_BASE = '/php/api.php';

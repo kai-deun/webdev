@@ -1,3 +1,4 @@
+// load data, filter and batch-render lists
 import { prescriptObj, display } from "./Instances"
 
 export class PrescriptionUtils {
@@ -168,7 +169,7 @@ export class PrescriptionUtils {
             });
         }
 
-        // debug: report filter results
+        // report filter results
         console.debug('[PrescriptionUtils] filterPatients', { term, total: prescriptObj.getPatients().length, matched: filteredPatients.length });
 
         // Use batching: set currentPatients to filtered results and render batches
@@ -277,7 +278,6 @@ export class PrescriptionUtils {
     }
     
     filterPrescriptionsByStatus(status) {
-        // Handle legacy 'completed' values: treat 'dispensed' filter as matching both 'dispensed' and 'completed'
         const all = prescriptObj.getPrescriptions();
         let filteredPrescriptions;
         if (!status) {
@@ -301,7 +301,7 @@ export class PrescriptionUtils {
         const raw = searchBox.value;
         const searchTerm = (raw || '').toString().toLowerCase();
         const tabId = searchBox.closest('.tab-content') ? searchBox.closest('.tab-content').id : 'unknown';
-        // debug: log user search actions
+        // report user search actions
         console.debug('[PrescriptionUtils] handleSearch', { tabId, searchTerm });
 
         if (tabId === 'prescriptions-tab') {

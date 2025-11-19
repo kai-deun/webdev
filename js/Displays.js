@@ -1,8 +1,9 @@
+// render patients, prescriptions, medicines to DOM
 import { prescriptObj } from "./Instances";
 
 export class Display {
 
-    // displayPatients: render a provided patients array or all patients by default.
+    // render a provided patients array or all patients by default.
     // If append === true, appends to the existing list instead of replacing it.
     displayPatients(patients = null, append = false) {
         const patientsList = document.querySelector('.patients-list');

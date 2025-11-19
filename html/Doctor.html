@@ -8,6 +8,7 @@
   </head>
   <body>
     <script src="../js/common.js"></script>
+    <!-- top bar with app title and logged-in user -->
     <header>
       <div class="container">
         <div class="header-content">
@@ -29,6 +30,7 @@
     <div class="container">
       <div class="dashboard">
         <div class="main-content">
+          <!-- title and quick action buttons -->
           <div class="content-header">
             <h2>Doctor Dashboard</h2>
             <div class="header-actions">
@@ -42,6 +44,7 @@
             <!-- A-Z filter removed; search bar will be used for filtering -->
           </div>
 
+          <!-- small cards showing counts (patients, prescriptions, low stock, appointments) -->
           <div class="stats-cards">
             <div class="stat-card">
               <i class="fas fa-user-injured"></i>
@@ -66,6 +69,7 @@
           </div>
           </div>
 
+          <!-- switch between Patients, Prescriptions, and Inventory views -->
           <div class="content-tabs">
             <button class="tab-btn active" data-tab="patients">Patients</button>
             <button class="tab-btn" data-tab="prescriptions">
@@ -76,6 +80,7 @@
             </button>
           </div>
 
+          <!-- searchable list with scroll/batch loading -->
           <div class="tab-content active" id="patients-tab">
             <div class="search-filter">
               <input
@@ -96,6 +101,7 @@
             </div>
           </div>
 
+          <!-- searchable and filterable list with batch scroll -->
           <div class="tab-content" id="prescriptions-tab">
             <div class="search-filter">
               <input
@@ -123,6 +129,7 @@
             </div>
           </div>
 
+          <!-- shows medicines and aggregated stock/expiry from branch_inventory -->
           <div class="tab-content" id="inventory-tab">
             <div class="search-filter">
               <input
@@ -172,6 +179,7 @@
             </div>
           </div>
 
+          <!-- select patient, add medicines, save prescription -->
           <div class="content-section">
             <h3>Create New Prescription</h3>
             <div class="form-container">
@@ -300,6 +308,7 @@
       </div>
     </div>
 
+    <!-- tab switching and placeholder actions (kept minimal) -->
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         // Tab functionality

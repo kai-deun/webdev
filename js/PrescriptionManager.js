@@ -1,5 +1,4 @@
-// Prescription Management JavaScript
-// Handles prescription form interactions and API calls
+// loads patients, medicines, prescriptions and initializes events
 import { prescriptUtils, eventBinder } from "./Instances";
 
 class PrescriptionManager {
