@@ -93,10 +93,10 @@ export class DisplayFunctions {
                     const patientName = patients[index][1];
 
                     html += `
-                        <div class"patient-prescription-card">
+                        <div class="patient-prescription-card">
                             <h3>${patientID}</h3>
                             <p><strong>Patient:</strong> ${patientName}</p>
-                    `
+                    `;
                     perPatientPrescription.forEach((prescription, index) => {
                         const prescriptionNum = index +1;
 
@@ -125,9 +125,9 @@ export class DisplayFunctions {
                                             </button>
                                         </div>
                                     </div>
-                            </div>
                         `;
-                    }); 
+                    });
+                    html += `</div>`; 
                 }
             });
         }

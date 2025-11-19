@@ -1,4 +1,4 @@
-import { eventBinder, prescriptionUtils } from "./singletons"
+import { eventBinder, prescriptionUtils } from "./singletons.js"
 
 /*
 This is like the main class in Java. This will be the one to be imported in the <script> tag in the html.

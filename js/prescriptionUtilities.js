@@ -1,4 +1,4 @@
-import { prescriptionObject, disp_funcs, pres_funcs, pat_funcs, med_funcs } from "./singletons";
+import { prescriptionObject, disp_funcs, pres_funcs, pat_funcs, med_funcs } from "./singletons.js";
 
 /*
 This class compiles all general functions that may be used to different data manipulation
@@ -9,7 +9,7 @@ export class PrescriptionUtilities {
 
     //function for getting specific functions in PHP mainly used by load functions.
     async fetchPhpFunction(function_name, method='GET', data_key=null, data_value=null) {
-        const url = './php/prescription.php';
+        const url = '../php/prescription.php';
         let response;
  
         if (method.toUpperCase() === 'POST' && data_key != null && data_value !=null) {
@@ -37,9 +37,9 @@ export class PrescriptionUtilities {
     }
 
     //uses the PHP function getPatientList($mysqli) to get the patient list from the database.
-    loadPatients() {
+    async loadPatients() {
         try {
-            const data = this.fetchPhpFunction('getPatientList');
+            const data = await this.fetchPhpFunction('getPatientList');
 
             if (data.success) {
                 prescriptionObject.setPatients(data.patients);
@@ -47,16 +47,24 @@ export class PrescriptionUtilities {
                 disp_funcs.displayPatients();
             } else {
                 console.error('Error loading patients:', data.message);
+                const patientsList = document.querySelector('.patients-list');
+                if (patientsList) {
+                    patientsList.innerHTML = '<p>Error loading patients: ' + (data.message || 'Unknown error') + '</p>';
+                }
             }
         } catch (error) {
             console.error('Error loading patients:', error);
+            const patientsList = document.querySelector('.patients-list');
+            if (patientsList) {
+                patientsList.innerHTML = '<p>Error loading patients. Please check the console for details.</p>';
+            }
         }
     }
 
     //uses the PHP function getMedicineList($mysqli) to get the patient list from the database.
-    loadMedicines() {
+    async loadMedicines() {
          try {
-             const data = this.fetchPhpFunction('getMedicineList');
+             const data = await this.fetchPhpFunction('getMedicineList');
             
             if (data.success) {
                 prescriptionObject.setMedicines(data.medicines);
@@ -70,18 +78,26 @@ export class PrescriptionUtilities {
     }
 
     //uses the PHP function getPrescriptionList($mysqli) to get the patient list from the database.
-    loadPrescriptions() {
+    async loadPrescriptions() {
         try {
-             const data = this.fetchPhpFunction('getPrescriptionList');
+             const data = await this.fetchPhpFunction('getPrescriptionList');
             
             if (data.success) {
                 prescriptionObject.setPrescriptions(data.prescriptions);
                 disp_funcs.displayPrescriptions();
             } else {
                 console.error('Error loading prescriptions:', data.message);
+                const prescriptionsList = document.querySelector('.prescriptions-list');
+                if (prescriptionsList) {
+                    prescriptionsList.innerHTML = '<p>Error loading prescriptions: ' + (data.message || 'Unknown error') + '</p>';
+                }
             }
         } catch (error) {
             console.error('Error loading prescriptions:', error);
+            const prescriptionsList = document.querySelector('.prescriptions-list');
+            if (prescriptionsList) {
+                prescriptionsList.innerHTML = '<p>Error loading prescriptions. Please check the console for details.</p>';
+            }
         }
     }
 
@@ -223,12 +239,12 @@ export class PrescriptionUtilities {
     filterPatientsByInitial(letter) {
         if (!letter || letter === 'All') {
             // Show all patients
-            display.displayPatients();
+            disp_funcs.displayPatients();
             return;
         }
 
         const initial = letter.toLowerCase();
-        const filtered = prescriptObj.getPatients().filter(p => {
+        const filtered = prescriptionObject.getPatients().filter(p => {
             const last = (p.last_name || '').toString().trim().toLowerCase();
             return last.startsWith(initial);
         });

@@ -1,4 +1,4 @@
-import { prescriptionObject, prescriptionUtils } from "./singletons";
+import { prescriptionObject, prescriptionUtils } from "./singletons.js";
 
 /*
 This class compiles all functions for patient data manipulation (actually only used by prescription form).

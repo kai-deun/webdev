@@ -1,4 +1,4 @@
-import { prescriptionObject } from "./singletons";
+import { prescriptionObject, prescriptionUtils, disp_funcs } from "./singletons.js";
 /*
 This class compiles all functions related to medicine data manipulation.
 */
@@ -44,7 +44,7 @@ export class MedicineFunctions {
         }
 
         // Find medicine ID
-        const medicine = prescriptObj.getMedicines().find(m => 
+        const medicine = prescriptionObject.getMedicines().find(m => 
             m.medicine_name.toLowerCase() === medicineName.toLowerCase().split(' (')[0]
         );
 
@@ -63,13 +63,13 @@ export class MedicineFunctions {
             duration_days: parseInt(durationDays)
         };
 
-        prescriptObj.getCurrentPrescription().medicines.push(medicineData);
-        display.displayCurrentPrescription();
-        prescriptUtils.clearMedicineForm();
+        prescriptionObject.getCurrentPrescription().medicines.push(medicineData);
+        disp_funcs.displayCurrentPrescription();
+        prescriptionUtils.clearMedicineForm();
     }
 
     removeMedicine(index) {
-        prescriptObj.getCurrentPrescription().medicines.splice(index, 1);
-        display.displayCurrentPrescription();
+        prescriptionObject.getCurrentPrescription().medicines.splice(index, 1);
+        disp_funcs.displayCurrentPrescription();
     }
 }

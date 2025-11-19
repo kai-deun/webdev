@@ -1,4 +1,4 @@
-import { prescriptionObject, prescriptionUtils } from "./singletons";
+import { prescriptionObject, prescriptionUtils } from "./singletons.js";
 
 /*
 This class compiles all of the functions related to prescription manipulation. 
@@ -8,7 +8,7 @@ Vague functions is moved to the PrescriptionUtilities.
 export class PrescriptionFunctions {
 
     //saves the prescription made to the database
-    savePrescription() {
+    async savePrescription() {
         const patientId = document.getElementById('patient-select').value;
         const prescriptionDate = document.getElementById('prescription-date').value;
         const diagnosis = document.getElementById('diagnosis').value;
@@ -33,18 +33,18 @@ export class PrescriptionFunctions {
         };
 
         try {
-            const result = prescriptionUtils.fetchPhpFunction(
+            const result = await prescriptionUtils.fetchPhpFunction(
                 'savePrescription', 
-                method='POST', 
-                data_key= 'data',
-                data_value= prescriptionData
-            )
+                'POST', 
+                'data',
+                prescriptionData
+            );
             
             if (result.success) {
                 alert('Prescription saved successfully!');
                 prescriptionUtils.clearPrescriptionForm();
-                prescriptionUtils.loadPrescriptions(); // Refresh prescriptions list
-                prescriptionUtils.loadPatients(); //Refresh patient list
+                await prescriptionUtils.loadPrescriptions(); // Refresh prescriptions list
+                await prescriptionUtils.loadPatients(); //Refresh patient list
             } else {
                 alert('Error saving prescription: ' + result.message);
             }
@@ -55,7 +55,7 @@ export class PrescriptionFunctions {
     }
 
     //updates existing prescriptions to the database
-    updatePrescription(prescriptionId, patientId, prescriptionDate, diagnosis, notes, medicines) {
+    async updatePrescription(prescriptionId, patientId, prescriptionDate, diagnosis, notes, medicines) {
 
         const prescriptionData = {
             prescription_id: prescriptionId,
@@ -67,19 +67,19 @@ export class PrescriptionFunctions {
         };
 
         try {
-            const result = prescriptionUtils.fetchPhpFunction(
+            const result = await prescriptionUtils.fetchPhpFunction(
                 'updatePrescription', 
-                method='POST', 
-                data_key= 'data',
-                data_value= prescriptionData
-            )
+                'POST', 
+                'data',
+                prescriptionData
+            );
             
             if (result.success) {
                 alert('Prescription updated successfully!');
                 prescriptionUtils.resetEditMode();
                 prescriptionUtils.clearPrescriptionForm();
-                prescriptionUtils.loadPrescriptions();
-                prescriptionUtils.loadPatients();
+                await prescriptionUtils.loadPrescriptions();
+                await prescriptionUtils.loadPatients();
             } else {
                 alert('Error updating prescription: ' + result.message);
             }
@@ -90,9 +90,9 @@ export class PrescriptionFunctions {
     }
 
     //display prescription as a popup/modal (view details button)
-    viewPrescription(prescriptionId) {
+    async viewPrescription(prescriptionId) {
         try {
-            const data = prescriptionUtils.fetchPhpFunction(`getPrescriptionDetails&id=${prescriptionId}`);
+            const data = await prescriptionUtils.fetchPhpFunction(`getPrescriptionDetails&id=${prescriptionId}`);
             
             if (data.success) {
                 this.showPrescriptionModal(data.prescription);
@@ -106,19 +106,19 @@ export class PrescriptionFunctions {
     }
 
     //deletes prescription from the database
-    deletePrescription(prescriptionId) {
+    async deletePrescription(prescriptionId) {
         if (confirm('Are you sure you want to delete this prescription?')) {
             try {
-                const result = prescriptionUtils.fetchPhpFunction(
+                const result = await prescriptionUtils.fetchPhpFunction(
                     'deletePrescription',
-                    method= 'POST',
-                    data_key='prescription_id',
-                    data_value= prescriptionId
-                )
+                    'POST',
+                    'prescription_id',
+                    prescriptionId
+                );
                 
                 if (result.success) {
                     alert('Prescription deleted successfully!');
-                    prescriptionUtils.loadPrescriptions(); // Refresh prescriptions list
+                    await prescriptionUtils.loadPrescriptions(); // Refresh prescriptions list
                 } else {
                     alert('Error deleting prescription: ' + result.message);
                 }
