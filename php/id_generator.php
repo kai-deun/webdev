@@ -1,13 +1,14 @@
 <?php
 
-function idGenerator($mysqli, $column_name, $table_name) {
+function idGenerator($mysqli, $column_name, $table_name)
+{
     $query = $mysqli->prepare(
-            "SELECT $column_name
+        "SELECT $column_name
             FROM $table_name
             ORDER BY $column_name DESC
             LIMIT 1"
-        );
-    
+    );
+
     if (!$query) {
         return "Error: Query preparation failed.";
     }
@@ -40,7 +41,7 @@ function idGenerator($mysqli, $column_name, $table_name) {
                 if ($table_name == 'patients') $latest_id = "PA0000";
                 if ($table_name == 'pharmacists') $latest_id = "PH0000";
                 if ($table_name == 'pharmacy_managers') $latest_id = "PM0000";
-                break; 
+                break;
             case 'medicines':
                 $prefix_length = 3;
                 $latest_id = "MED0000";
@@ -61,11 +62,12 @@ function idGenerator($mysqli, $column_name, $table_name) {
     if ($latest_id === null) {
         return "Error: ID could not be determined.";
     }
-    
+
     return generateNextId($latest_id, $prefix_length);
 }
 
-function generateNumericalPart($target_id, $num_of_letters_in_prefix) {
+function generateNumericalPart($target_id, $num_of_letters_in_prefix)
+{
     $prefix = substr($target_id, 0, $num_of_letters_in_prefix);
     $num_str = substr($target_id, $num_of_letters_in_prefix);
 
@@ -76,4 +78,3 @@ function generateNumericalPart($target_id, $num_of_letters_in_prefix) {
 
     return $prefix . $new_num_str;
 }
-?>

@@ -13,7 +13,7 @@ function connectDB($host, $username, $password, $dbname)
             'message' => 'Database connection failed: ' . $mysqli->connect_error
         ]);
 
-        exit; 
+        exit;
     }
 
     try {
@@ -27,7 +27,7 @@ function connectDB($host, $username, $password, $dbname)
         $mysqli->close();
         exit;
     }
-    
+
     return $mysqli;
 }
 
@@ -253,7 +253,7 @@ function savePrescription($mysqli)
         if (is_string($data)) {
             $data = json_decode($data, true) ?? [];
         }
-        
+
         $prescription_id = 'P' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
         $doctor_id = 'D0001'; // Default doctor - should be from session in real app
         $patient_id = sanitizeInput($data['patient_id'] ?? '');
@@ -295,7 +295,7 @@ function updatePrescription($mysqli)
         if (is_string($data)) {
             $data = json_decode($data, true) ?? [];
         }
-        
+
         $prescriptionid = sanitizeInput($data['prescription_id'] ?? '');
         $doctorid = 'D0001'; // Default doctor
         $patientid = sanitizeInput($data['patient_id'] ?? '');
@@ -350,7 +350,7 @@ function deletePrescription($mysqli)
         $del_query->execute();
 
         echo json_encode([
-            'success' => true, 
+            'success' => true,
             'message' => 'Prescription successfully deleted'
         ]);
     } catch (mysqli_sql_exception $e) {

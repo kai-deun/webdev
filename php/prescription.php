@@ -39,7 +39,7 @@ if (!$action && is_array($parsedJson)) {
     } else {
         // Infer action for common POST JSON bodies
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            
+
             //validation for updatePrescription: ID and new data must be present
             if (isset($parsedJson['prescription_id']) && isset($parsedJson['data'])) {
                 $action = 'updatePrescription';
@@ -93,4 +93,3 @@ switch ($action) {
         ]);
         break;
 }
-?>
