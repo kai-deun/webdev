@@ -1,22 +1,34 @@
 <?php
 //all of the php functions that will be used later are present here.
 
-//database functions
+//database function
 function connectDB($host, $username, $password, $dbname)
 {
+    $mysqli = new mysqli($host, $username, $password, $dbname);
+
+    if ($mysqli->connect_error) {
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Database connection failed: ' . $mysqli->connect_error
+        ]);
+
+        exit; 
+    }
+
     try {
-        $mysqli = new mysqli($host, $username, $password, $dbname);
         $mysqli->set_charset('utf8');
-        
-        return $mysqli;
     } catch (mysqli_sql_exception $e) {
         http_response_code(500);
         echo json_encode([
             'success' => false,
-            'message' => 'Database connection failed: ' . $e->getMessage()
+            'message' => 'Database character set error: ' . $e->getMessage()
         ]);
+        $mysqli->close();
         exit;
     }
+    
+    return $mysqli;
 }
 
 //fetch all of the patient available in the database
@@ -32,7 +44,7 @@ function getPatientList($mysqli)
 
         $query->execute();
         $result = $query->get_result();
-        $patient_list = $result->fetch_assoc();
+        $patient_list = $result->fetch_all(MYSQLI_ASSOC);
 
         echo json_encode([
             'success' => true,
@@ -59,7 +71,7 @@ function getMedicineList($mysqli)
 
         $query->execute();
         $result = $query->get_result();
-        $medicines = $result->fetch_assoc();
+        $medicines = $result->fetch_all(MYSQLI_ASSOC);
 
         echo json_encode([
             'success' => true,
@@ -75,7 +87,7 @@ function getMedicineList($mysqli)
 }
 
 // reusable function for inserting/updating list of medicines
-function updateMedicineList(mysqli $mysqli, mysqli $added_meds)
+function updateMedicineList(mysqli $mysqli, $added_meds)
 {
     $meds_query = $mysqli->prepare(
         "INSERT INTO medication_assignements (prescription_id, medicine_id, dosage, meds_quantity, instructions, additional_notes)
@@ -94,7 +106,7 @@ function updateMedicineList(mysqli $mysqli, mysqli $added_meds)
 }
 
 //fetch all of the prescriptions available in the database
-function getPrescriptions($mysqli)
+function getPrescriptionList($mysqli)
 {
     try {
         $query = $mysqli->prepare(
@@ -160,7 +172,7 @@ function getPrescriptionDetails($mysqli)
         $query->execute();
 
         $result = $query->get_result();
-        $prescription_details = $result->fetch_assoc();
+        $prescription_details = $result->fetch_all(MYSQLI_ASSOC);
 
         if (!$prescription_details) {
             http_response_code(404);

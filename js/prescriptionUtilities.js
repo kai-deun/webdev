@@ -9,6 +9,7 @@ export class PrescriptionUtilities {
 
     //function for getting specific functions in PHP mainly used by load functions.
     async fetchPhpFunction(function_name, method='GET', data_key=null, data_value=null) {
+        const url = './php/prescription.php';
         let response;
  
         if (method.toUpperCase() === 'POST' && data_key != null && data_value !=null) {
@@ -17,15 +18,15 @@ export class PrescriptionUtilities {
                 [data_key]: data_value
             }
 
-            response = await fetch('../php/prescription.php', {
-                method: `${method}`,
+            response = await fetch(url, {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({body_payload})
+                body: JSON.stringify(body_payload)
             });
         } else {
-            response = await fetch(`./php/prescription.php?action=${function_name}`);
+            response = await fetch(`${url}?action=${function_name}`);
         }
 
         if (!response.ok) {

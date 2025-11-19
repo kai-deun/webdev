@@ -1,5 +1,5 @@
 <?php
-include './prescription_utilities.php';
+require('php/prescription_utilities.php');
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
