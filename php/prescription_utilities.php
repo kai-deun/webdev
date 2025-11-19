@@ -125,7 +125,7 @@ function getPrescriptionList($mysqli)
 
         $query->execute();
         $result = $query->get_result();
-        $prescriptions = $result->fetch_assoc();
+        $prescriptions = $result->fetch_all(MYSQLI_ASSOC);
 
         echo json_encode([
             'success' => true,
