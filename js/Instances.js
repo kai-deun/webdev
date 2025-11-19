@@ -1,5 +1,5 @@
 import { PrescriptionObject } from "./PrescriptionObject";
-import { PrescriptionUtils } from "./PrescriptionUtilities";
+import { PrescriptionUtils } from "../php/includes/PrescriptionUtilities";
 import { Prescriptions } from "./Prescriptions";
 import { BindEvents } from "./EventBinder";
 import { Patient } from "./Patient";
