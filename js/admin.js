@@ -1,5 +1,62 @@
 // Admin Dashboard JavaScript
 
+// API base URL
+const API_BASE = '/php/api.php';
+const AUTH_API = '/php/auth.php';
+
+// Check if user is logged in
+async function checkAuth() {
+    try {
+        const response = await fetch(`${AUTH_API}?action=checkSession`);
+        const data = await response.json();
+        
+        if (!data.logged_in) {
+            window.location.href = 'login.html';
+            return null;
+        }
+        
+        return data.user;
+    } catch (error) {
+        console.error('Auth check failed:', error);
+        return null;
+    }
+}
+
+// Update user info in header
+function updateUserInfo(user) {
+    const userNameEl = document.querySelector('.user-name');
+    const userRoleEl = document.querySelector('.user-role');
+    const userAvatarEl = document.querySelector('.user-avatar');
+    
+    if (userNameEl && user) {
+        userNameEl.textContent = user.full_name;
+    }
+    if (userRoleEl && user) {
+        userRoleEl.textContent = user.role;
+    }
+    if (userAvatarEl && user) {
+        const initials = user.full_name.split(' ').map(n => n[0]).join('');
+        userAvatarEl.textContent = initials;
+    }
+}
+
+// Logout function
+async function logout() {
+    try {
+        await fetch(`${AUTH_API}?action=logout`);
+        window.location.href = 'login.html';
+    } catch (error) {
+        console.error('Logout failed:', error);
+    }
+}
+
+// Handle logout button click
+async function handleLogout() {
+    if (confirm('Are you sure you want to logout?')) {
+        await logout();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async function() {
     // Check authentication
     const user = await checkAuth();

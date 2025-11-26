@@ -162,3 +162,10 @@ async function logout() {
         console.error('Logout failed:', error);
     }
 }
+
+// Handle logout button click
+async function handleLogout() {
+    if (confirm('Are you sure you want to logout?')) {
+        await logout();
+    }
+}
