@@ -1,0 +1,4 @@
+#Things git should ignore (add more to this if needed) for security purposes
+
+/node_modules
+.env
