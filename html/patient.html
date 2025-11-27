@@ -262,6 +262,88 @@
         </div>
     </div>
 
+    <!-- Prescription Details Modal -->
+    <div id="prescription-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-prescription"></i> Prescription Details</h2>
+                <button class="modal-close" onclick="closePrescriptionModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="prescription-details-container">
+                    <!-- Header Info -->
+                    <div class="detail-section">
+                        <h3>Prescription Information</h3>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <label>Prescription ID</label>
+                                <div id="modal-prescription-id" class="detail-value">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <label>Date Issued</label>
+                                <div id="modal-prescription-date" class="detail-value">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <label>Expiry Date</label>
+                                <div id="modal-expiry-date" class="detail-value">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <label>Status</label>
+                                <div id="modal-status" class="detail-value">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <label>Doctor</label>
+                                <div id="modal-doctor" class="detail-value">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <label>Patient</label>
+                                <div id="modal-patient" class="detail-value">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Diagnosis -->
+                    <div class="detail-section">
+                        <h3>Diagnosis</h3>
+                        <div id="modal-diagnosis" class="detail-text">-</div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="detail-section">
+                        <h3>Instructions</h3>
+                        <div id="modal-notes" class="detail-text">-</div>
+                    </div>
+
+                    <!-- Medications -->
+                    <div class="detail-section">
+                        <h3>Prescribed Medications</h3>
+                        <div class="medications-table-container">
+                            <table class="medications-table">
+                                <thead>
+                                    <tr>
+                                        <th>Medicine</th>
+                                        <th>Dosage</th>
+                                        <th>Quantity</th>
+                                        <th>Frequency</th>
+                                        <th>Duration</th>
+                                        <th>Instructions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="modal-medications-tbody">
+                                    <tr><td colspan="6" class="text-center">No medications</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closePrescriptionModal()">Close</button>
+                <button class="btn btn-primary" onclick="requestRenewal()"><i class="fas fa-redo"></i> Request Renewal</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Define AUTH_API as global constant (fallback if common.js fails to load)
         window.AUTH_API = window.AUTH_API || '../php/auth.php';
@@ -505,10 +587,9 @@
                                 const detResp = await fetch(`../php/prescription.php?action=getPrescriptionDetails&id=${encodeURIComponent(rx)}`);
                                 const detJson = await detResp.json();
                                 if (detJson.success) {
-                                    const pres = detJson.prescription;
-                                    alert(`Prescription ${pres.prescription_id}\nDoctor: ${pres.doctor_name}\nItems: ${pres.items ? pres.items.length : 0}`);
+                                    showPrescriptionDetails(detJson.prescription, detJson.items || []);
                                 } else {
-                                    alert('Details not found');
+                                    alert('Details not found: ' + (detJson.message || 'Unknown error'));
                                 }
                             });
                         });
@@ -561,6 +642,312 @@
             // Kick off loading patient data
             loadPatientData();
         });
+
+        // Global variable to store current prescription for renewal
+        let currentPrescriptionId = null;
+
+        // Show prescription details in modal
+        function showPrescriptionDetails(prescription, items) {
+            currentPrescriptionId = prescription.prescription_id;
+            
+            // Populate header info
+            document.getElementById('modal-prescription-id').textContent = 'RX-' + prescription.prescription_id;
+            document.getElementById('modal-prescription-date').textContent = prescription.prescription_date || '-';
+            document.getElementById('modal-expiry-date').textContent = prescription.expiry_date || '-';
+            
+            // Status badge
+            const statusEl = document.getElementById('modal-status');
+            const status = prescription.status || 'unknown';
+            statusEl.innerHTML = `<span class="status-badge status-${status.toLowerCase()}">${status}</span>`;
+            
+            document.getElementById('modal-doctor').textContent = prescription.doctor_name || '-';
+            document.getElementById('modal-patient').textContent = prescription.patient_name || '-';
+            document.getElementById('modal-diagnosis').textContent = prescription.diagnosis || 'No diagnosis provided';
+            document.getElementById('modal-notes').textContent = prescription.notes || 'No additional notes';
+            
+            // Populate medications table
+            const tbody = document.getElementById('modal-medications-tbody');
+            tbody.innerHTML = '';
+            
+            if (items && items.length > 0) {
+                items.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>
+                            <strong>${item.medicine_name || '-'}</strong>
+                            <br><small style="color: #666;">${item.generic_name || ''}</small>
+                        </td>
+                        <td>${item.dosage || item.strength || '-'}</td>
+                        <td>${item.quantity || '-'}</td>
+                        <td>${item.frequency || '-'}</td>
+                        <td>${item.duration || '-'}</td>
+                        <td>${item.instructions || '-'}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center">No medications prescribed</td></tr>';
+            }
+            
+            // Show modal
+            document.getElementById('prescription-modal').style.display = 'flex';
+        }
+
+        // Close prescription modal
+        function closePrescriptionModal() {
+            document.getElementById('prescription-modal').style.display = 'none';
+            currentPrescriptionId = null;
+        }
+
+        // Request renewal from modal
+        function requestRenewal() {
+            if (currentPrescriptionId) {
+                alert(`Renewal request for Prescription #${currentPrescriptionId} would be submitted.\n\nThis feature connects to the prescription renewal system.`);
+                // In a real application, this would submit the renewal request
+                // closePrescriptionModal();
+            }
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('prescription-modal');
+            if (event.target === modal) {
+                closePrescriptionModal();
+            }
+        });
     </script>
+
+    <style>
+        /* Modal Styles - Compact Version */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 6px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.2s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 2px solid #e74c3c;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border-radius: 6px 6px 0 0;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 16px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 12px 16px;
+            border-top: 1px solid #eee;
+            background: #f8f9fa;
+            border-radius: 0 0 6px 6px;
+        }
+
+        .prescription-details-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .detail-section {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 4px;
+            border-left: 3px solid #e74c3c;
+        }
+
+        .detail-section h3 {
+            margin: 0 0 8px 0;
+            color: #2c3e50;
+            font-size: 0.95em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .detail-item {
+            background: white;
+            padding: 8px 10px;
+            border-radius: 3px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .detail-item label {
+            display: block;
+            font-size: 0.7em;
+            color: #666;
+            margin-bottom: 3px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            color: #2c3e50;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .detail-text {
+            background: white;
+            padding: 10px;
+            border-radius: 3px;
+            border: 1px solid #e0e0e0;
+            color: #2c3e50;
+            line-height: 1.4;
+            font-size: 0.9em;
+        }
+
+        .medications-table-container {
+            background: white;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
+
+        .medications-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85em;
+        }
+
+        .medications-table th {
+            background: #2c3e50;
+            color: white;
+            padding: 8px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.85em;
+            text-transform: uppercase;
+        }
+
+        .medications-table td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            color: #2c3e50;
+        }
+
+        .medications-table td strong {
+            font-size: 0.95em;
+        }
+
+        .medications-table td small {
+            font-size: 0.85em;
+        }
+
+        .medications-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .medications-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .text-center {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+            font-size: 0.9em;
+        }
+
+        /* Responsive modal */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                max-height: 90vh;
+            }
+
+            .detail-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .medications-table {
+                font-size: 0.75em;
+            }
+
+            .medications-table th,
+            .medications-table td {
+                padding: 6px;
+            }
+
+            .modal-header h2 {
+                font-size: 1em;
+            }
+        }
+    </style>
 </body>
 </html>
