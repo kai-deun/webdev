@@ -13,21 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Database configuration
-$host = 'localhost';
-$dbname = 'vitalsoft_db';
-$username = 'root';
-$password = '';
+// Start session to access user authentication
+session_start();
 
-$mysqli = new mysqli($host, $username, $password, $dbname);
-
-if ($mysqli->connect_error) {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . $mysqli->connect_error]);
-    exit;
-}
-
-$mysqli->set_charset("utf8");
+// Use centralized database connection from config.php
+require_once 'config.php';
+$mysqli = getDbConnection();
 
 // Parse JSON body once (so we don't consume php://input multiple times)
 $rawInput = file_get_contents('php://input');
@@ -149,9 +140,13 @@ function getPatients($mysqli) {
              u.last_name,
              u.email,
              u.phone_number AS phone,
+             u.address AS address,
+             u.date_of_birth,
              CAST(p.patient_id AS CHAR) AS patient_id,
              p.insurance_number,
              p.insurance_provider,
+             p.emergency_contact_name AS emergency_contact_name,
+             p.emergency_contact_phone AS emergency_contact_phone,
              p.blood_type,
              p.allergies,
              TIMESTAMPDIFF(YEAR, u.date_of_birth, CURDATE()) AS age,
@@ -222,6 +217,9 @@ function getMedicines($mysqli) {
 
 function getPrescriptions($mysqli) {
     try {
+        // Optionally allow filtering by patient_id for patient-specific views
+        $patientFilter = isset($_GET['patient_id']) && $_GET['patient_id'] !== '' ? (int)$_GET['patient_id'] : null;
+
         $query = "
             SELECT p.prescription_id, CAST(p.patient_id AS CHAR) AS patient_id, p.doctor_id, p.prescription_date, p.expiry_date, 
                    p.diagnosis, p.notes, p.status, p.renewal_requested, p.created_at, p.updated_at,
@@ -231,9 +229,14 @@ function getPrescriptions($mysqli) {
             JOIN patients pat ON p.patient_id = pat.patient_id
             JOIN users u_pat ON pat.user_id = u_pat.user_id
             JOIN users u_doc ON p.doctor_id = u_doc.user_id
-            ORDER BY p.prescription_date DESC, p.prescription_id DESC
         ";
-        
+
+        if ($patientFilter !== null) {
+            $query .= " WHERE p.patient_id = " . $patientFilter . " ";
+        }
+
+        $query .= " ORDER BY p.prescription_date DESC, p.prescription_id DESC ";
+
         $result = $mysqli->query($query);
         
         if (!$result) {

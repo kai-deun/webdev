@@ -1,0 +1,84 @@
+[27-Nov-2025 14:52:14 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Access denied for user ''@'localhost' (using password: NO) in C:\wamp64\www\webdev\php\config.php:34
+Stack trace:
+#0 C:\wamp64\www\webdev\php\config.php(34): mysqli->__construct(NULL, NULL, Object(SensitiveParameterValue), NULL)
+#1 C:\wamp64\www\webdev\php\prescription.php(18): getDbConnection()
+#2 {main}
+  thrown in C:\wamp64\www\webdev\php\config.php on line 34
+[27-Nov-2025 14:52:15 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Access denied for user ''@'localhost' (using password: NO) in C:\wamp64\www\webdev\php\config.php:34
+Stack trace:
+#0 C:\wamp64\www\webdev\php\config.php(34): mysqli->__construct(NULL, NULL, Object(SensitiveParameterValue), NULL)
+#1 C:\wamp64\www\webdev\php\prescription.php(18): getDbConnection()
+#2 {main}
+  thrown in C:\wamp64\www\webdev\php\config.php on line 34
+[27-Nov-2025 14:52:15 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Access denied for user ''@'localhost' (using password: NO) in C:\wamp64\www\webdev\php\config.php:34
+Stack trace:
+#0 C:\wamp64\www\webdev\php\config.php(34): mysqli->__construct(NULL, NULL, Object(SensitiveParameterValue), NULL)
+#1 C:\wamp64\www\webdev\php\prescription.php(18): getDbConnection()
+#2 {main}
+  thrown in C:\wamp64\www\webdev\php\config.php on line 34
+[27-Nov-2025 14:52:15 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Access denied for user ''@'localhost' (using password: NO) in C:\wamp64\www\webdev\php\config.php:34
+Stack trace:
+#0 C:\wamp64\www\webdev\php\config.php(34): mysqli->__construct(NULL, NULL, Object(SensitiveParameterValue), NULL)
+#1 C:\wamp64\www\webdev\php\prescription.php(18): getDbConnection()
+#2 {main}
+  thrown in C:\wamp64\www\webdev\php\config.php on line 34
+[27-Nov-2025 14:56:59 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Access denied for user ''@'localhost' (using password: NO) in C:\wamp64\www\webdev\php\config.php:34
+Stack trace:
+#0 C:\wamp64\www\webdev\php\config.php(34): mysqli->__construct(NULL, NULL, Object(SensitiveParameterValue), NULL)
+#1 C:\wamp64\www\webdev\php\prescription.php(18): getDbConnection()
+#2 {main}
+  thrown in C:\wamp64\www\webdev\php\config.php on line 34
+[27-Nov-2025 14:56:59 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Access denied for user ''@'localhost' (using password: NO) in C:\wamp64\www\webdev\php\config.php:34
+Stack trace:
+#0 C:\wamp64\www\webdev\php\config.php(34): mysqli->__construct(NULL, NULL, Object(SensitiveParameterValue), NULL)
+#1 C:\wamp64\www\webdev\php\prescription.php(18): getDbConnection()
+#2 {main}
+  thrown in C:\wamp64\www\webdev\php\config.php on line 34
+[27-Nov-2025 14:56:59 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Access denied for user ''@'localhost' (using password: NO) in C:\wamp64\www\webdev\php\config.php:34
+Stack trace:
+#0 C:\wamp64\www\webdev\php\config.php(34): mysqli->__construct(NULL, NULL, Object(SensitiveParameterValue), NULL)
+#1 C:\wamp64\www\webdev\php\prescription.php(18): getDbConnection()
+#2 {main}
+  thrown in C:\wamp64\www\webdev\php\config.php on line 34
+[27-Nov-2025 14:57:00 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Access denied for user ''@'localhost' (using password: NO) in C:\wamp64\www\webdev\php\config.php:34
+Stack trace:
+#0 C:\wamp64\www\webdev\php\config.php(34): mysqli->__construct(NULL, NULL, Object(SensitiveParameterValue), NULL)
+#1 C:\wamp64\www\webdev\php\prescription.php(18): getDbConnection()
+#2 {main}
+  thrown in C:\wamp64\www\webdev\php\config.php on line 34
+[27-Nov-2025 14:57:00 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Access denied for user ''@'localhost' (using password: NO) in C:\wamp64\www\webdev\php\config.php:34
+Stack trace:
+#0 C:\wamp64\www\webdev\php\config.php(34): mysqli->__construct(NULL, NULL, Object(SensitiveParameterValue), NULL)
+#1 C:\wamp64\www\webdev\php\prescription.php(18): getDbConnection()
+#2 {main}
+  thrown in C:\wamp64\www\webdev\php\config.php on line 34
+[27-Nov-2025 14:57:00 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Access denied for user ''@'localhost' (using password: NO) in C:\wamp64\www\webdev\php\config.php:34
+Stack trace:
+#0 C:\wamp64\www\webdev\php\config.php(34): mysqli->__construct(NULL, NULL, Object(SensitiveParameterValue), NULL)
+#1 C:\wamp64\www\webdev\php\prescription.php(18): getDbConnection()
+#2 {main}
+  thrown in C:\wamp64\www\webdev\php\config.php on line 34
+[27-Nov-2025 14:57:00 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Access denied for user ''@'localhost' (using password: NO) in C:\wamp64\www\webdev\php\config.php:34
+Stack trace:
+#0 C:\wamp64\www\webdev\php\config.php(34): mysqli->__construct(NULL, NULL, Object(SensitiveParameterValue), NULL)
+#1 C:\wamp64\www\webdev\php\prescription.php(18): getDbConnection()
+#2 {main}
+  thrown in C:\wamp64\www\webdev\php\config.php on line 34
+[27-Nov-2025 14:57:00 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Access denied for user ''@'localhost' (using password: NO) in C:\wamp64\www\webdev\php\config.php:34
+Stack trace:
+#0 C:\wamp64\www\webdev\php\config.php(34): mysqli->__construct(NULL, NULL, Object(SensitiveParameterValue), NULL)
+#1 C:\wamp64\www\webdev\php\prescription.php(18): getDbConnection()
+#2 {main}
+  thrown in C:\wamp64\www\webdev\php\config.php on line 34
+[27-Nov-2025 14:57:00 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Access denied for user ''@'localhost' (using password: NO) in C:\wamp64\www\webdev\php\config.php:34
+Stack trace:
+#0 C:\wamp64\www\webdev\php\config.php(34): mysqli->__construct(NULL, NULL, Object(SensitiveParameterValue), NULL)
+#1 C:\wamp64\www\webdev\php\prescription.php(18): getDbConnection()
+#2 {main}
+  thrown in C:\wamp64\www\webdev\php\config.php on line 34
+[27-Nov-2025 14:57:00 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Access denied for user ''@'localhost' (using password: NO) in C:\wamp64\www\webdev\php\config.php:34
+Stack trace:
+#0 C:\wamp64\www\webdev\php\config.php(34): mysqli->__construct(NULL, NULL, Object(SensitiveParameterValue), NULL)
+#1 C:\wamp64\www\webdev\php\prescription.php(18): getDbConnection()
+#2 {main}
+  thrown in C:\wamp64\www\webdev\php\config.php on line 34

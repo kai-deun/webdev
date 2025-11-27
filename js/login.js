@@ -1,6 +1,6 @@
 // Login Page JavaScript
 
-const AUTH_API = '/php/auth.php';
+const AUTH_API = '../php/auth.php';
 
 document.addEventListener('DOMContentLoaded', function() {
     setupLoginForm();

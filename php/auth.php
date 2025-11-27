@@ -18,24 +18,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // Start session
 session_start();
 
-// Database configuration
-$host = 'localhost';
-$dbname = 'vitalsoft_db';
-$username = 'root';
-$password = '';
+// Include the centralized database connection
+require_once 'config.php';
 
-// Create connection
-$mysqli = new mysqli($host, $username, $password, $dbname);
-
-// Check connection
-if ($mysqli->connect_error) {
-    http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Database connection failed: ' . $mysqli->connect_error
-    ]);
-    exit;
-}
+// Get the database connection
+$mysqli = getDbConnection();
 
 $mysqli->set_charset("utf8mb4");
 

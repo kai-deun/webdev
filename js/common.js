@@ -1,8 +1,8 @@
 // API calls and small utilities used by Doctor page
 
 // API base URL
-const API_BASE = '/php/api.php';
-const AUTH_API = '/php/auth.php';
+const API_BASE = '../php/api.php';
+const AUTH_API = '../php/auth.php';
 
 // Check if user is logged in
 async function checkAuth() {
@@ -156,10 +156,12 @@ function calculateAge(dob) {
 // Logout function
 async function logout() {
     try {
-        await fetch(`${AUTH_API}?action=logout`);
-        window.location.href = 'login.html';
+        const response = await fetch(`${AUTH_API}?action=logout`);
+        // Always redirect to login.html regardless of response
+        window.location.href = './login.html';
     } catch (error) {
         console.error('Logout failed:', error);
+        window.location.href = './login.html';
     }
 }
 

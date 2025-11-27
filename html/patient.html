@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VitalSoft - Patient Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../css/patient.css">
 </head>
 <body>
@@ -16,9 +17,9 @@
                     <h1>VitalSoft - Patient Portal</h1>
                 </div>
                 <div class="user-info">
-                    <div class="user-avatar">PT</div>
+                    <div class="user-avatar">--</div>
                     <div>
-                        <div class="user-name">Michael Thompson</div>
+                        <div class="user-name">Loading...</div>
                         <div class="user-role">Patient</div>
                     </div>
                     <button class="btn btn-logout" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -29,469 +30,536 @@
 
     <div class="container">
         <div class="dashboard">
-            
             <div class="main-content">
                 <div class="content-header">
-                    <h2>Welcome, Michael</h2>
+                    <h2>Patient Dashboard <span id="patient-identifier" style="font-size: 0.65em; color: #666; font-weight: normal;"></span></h2>
                     <div class="header-actions">
                         <button class="btn btn-primary"><i class="fas fa-file-medical"></i> Request Renewal</button>
                         <button class="btn btn-primary"><i class="fas fa-question"></i> Get Help</button>
                     </div>
                 </div>
-                
+
                 <div class="stats-cards">
                     <div class="stat-card">
                         <i class="fas fa-prescription-bottle"></i>
                         <h3>Active Prescriptions</h3>
-                        <div class="value">2</div>
+                        <div class="value" id="active-prescriptions-stat">0</div>
                     </div>
                     <div class="stat-card">
                         <i class="fas fa-calendar-check"></i>
                         <h3>Upcoming Refills</h3>
-                        <div class="value">1</div>
+                        <div class="value" id="upcoming-refills-stat">0</div>
                     </div>
                     <div class="stat-card">
                         <i class="fas fa-file-medical"></i>
                         <h3>Medical Records</h3>
-                        <div class="value">12</div>
+                        <div class="value" id="medical-records-stat">0</div>
                     </div>
                     <div class="stat-card">
                         <i class="fas fa-clock"></i>
                         <h3>Pending Requests</h3>
-                        <div class="value">1</div>
+                        <div class="value" id="pending-requests-stat">0</div>
                     </div>
                 </div>
+            </div>
 
-                <div class="content-tabs">
-                    <button class="tab-btn active" data-tab="prescriptions">My Prescriptions</button>
-                    <button class="tab-btn" data-tab="medical-history">Medical History</button>
-                    <button class="tab-btn" data-tab="profile">Personal Information</button>
-                    <button class="tab-btn" data-tab="payments">Payments</button>
+            <div class="content-tabs">
+                <button class="tab-btn active" data-tab="prescriptions">My Prescriptions</button>
+                <button class="tab-btn" data-tab="medical-history">Medical History</button>
+                <button class="tab-btn" data-tab="profile">Personal Information</button>
+            </div>
+
+            <div class="tab-content active" id="prescriptions-tab">
+                <div class="search-filter">
+                    <input type="text" id="prescription-search" class="search-box" placeholder="Search prescriptions...">
+                    <select id="prescription-status-filter" class="filter-select">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="dispensed">Dispensed</option>
+                        <option value="expired">Expired</option>
+                    </select>
+                    <button class="btn btn-primary" id="prescription-search-btn"><i class="fas fa-search"></i> Search</button>
                 </div>
 
-                <div class="tab-content active" id="prescriptions-tab">
-                    <div class="search-filter">
-                        <input type="text" class="search-box" placeholder="Search prescriptions...">
-                        <select class="filter-select">
-                            <option value="">All Status</option>
-                            <option value="active">Active</option>
-                            <option value="dispensed">Dispensed</option>
-                            <option value="expired">Expired</option>
-                        </select>
-                        <button class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
-                    </div>
+                <div class="table-container">
+                    <table class="data-table" id="prescriptions-table">
+                        <thead>
+                            <tr>
+                                <th>Prescription ID</th>
+                                <th>Date</th>
+                                <th>Doctor</th>
+                                <th>Medications</th>
+                                <th>Qty</th>
+                                <th>Refills</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Prescriptions will be populated from database -->
+                        </tbody>
+                    </table>
+                    <div class="loading" id="prescriptions-loading" style="display:none;">Loading...</div>
+                </div>
 
-                    <div class="prescriptions-list">
-                        <div class="prescription-card">
-                            <div class="prescription-header">
-                                <div class="prescription-info">
-                                    <div class="prescription-id">RX-2023-015</div>
-                                    <div class="prescription-date">Prescribed: 2023-10-18</div>
-                                    <div class="prescription-doctor">Dr. Sarah Johnson</div>
-                                </div>
-                                <div class="prescription-status status-active">Active</div>
-                            </div>
-                            <div class="prescription-medicines">
-                                <h4>Medications:</h4>
-                                <div class="medicine-item">
-                                    <div class="medicine-details">
-                                        <span class="medicine-name">Amoxicillin 500mg</span>
-                                        <span class="medicine-dosage">1 tablet every 8 hours</span>
-                                        <span class="medicine-instructions">Take with food. Complete full course.</span>
-                                    </div>
-                                    <div class="medicine-info">
-                                        <span class="medicine-quantity">Quantity: 21 tablets</span>
-                                        <span class="refill-status">Refills: 0 remaining</span>
-                                    </div>
-                                </div>
-                                <div class="medicine-item">
-                                    <div class="medicine-details">
-                                        <span class="medicine-name">Ibuprofen 400mg</span>
-                                        <span class="medicine-dosage">1 tablet as needed for pain</span>
-                                        <span class="medicine-instructions">Take with food or milk.</span>
-                                    </div>
-                                    <div class="medicine-info">
-                                        <span class="medicine-quantity">Quantity: 10 tablets</span>
-                                        <span class="refill-status">Refills: 1 remaining</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="prescription-actions">
-                                <button class="btn btn-primary"><i class="fas fa-redo"></i> Request Renewal</button>
-                                <button class="btn btn-secondary"><i class="fas fa-info-circle"></i> Medicine Details</button>
-                                <button class="btn btn-secondary"><i class="fas fa-print"></i> Print</button>
-                            </div>
-                        </div>
-                        
-                        <div class="prescription-card">
-                            <div class="prescription-header">
-                                <div class="prescription-info">
-                                    <div class="prescription-id">RX-2023-010</div>
-                                    <div class="prescription-date">Prescribed: 2023-09-15</div>
-                                    <div class="prescription-doctor">Dr. Robert Kim</div>
-                                </div>
-                                <div class="prescription-status status-dispensed">Dispensed</div>
-                            </div>
-                            <div class="prescription-medicines">
-                                <h4>Medications:</h4>
-                                <div class="medicine-item">
-                                    <div class="medicine-details">
-                                        <span class="medicine-name">Lisinopril 10mg</span>
-                                        <span class="medicine-dosage">1 tablet daily</span>
-                                        <span class="medicine-instructions">Take in the morning.</span>
-                                    </div>
-                                    <div class="medicine-info">
-                                        <span class="medicine-quantity">Quantity: 30 tablets</span>
-                                        <span class="refill-status">Refills: 2 remaining</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="prescription-actions">
-                                <button class="btn btn-primary"><i class="fas fa-redo"></i> Request Renewal</button>
-                                <button class="btn btn-secondary"><i class="fas fa-info-circle"></i> Medicine Details</button>
-                                <button class="btn btn-secondary"><i class="fas fa-print"></i> Print</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="renewal-request">
-                        <h3>Request Prescription Renewal</h3>
-                        <div class="form-container">
-                            <div class="form-group">
-                                <label for="prescription-select">Select Prescription</label>
+                <div class="content-section compact">
+                    <h3>Request Prescription Renewal</h3>
+                    <div class="form-container">
+                        <div class="form-group">
+                            <label for="prescription-select">Select Prescription</label>
                                 <select id="prescription-select" class="form-control">
                                     <option value="">Choose a prescription...</option>
-                                    <option value="RX-2023-015">RX-2023-015 (Amoxicillin, Ibuprofen)</option>
-                                    <option value="RX-2023-010">RX-2023-010 (Lisinopril)</option>
+                                    <!-- Options populated from database -->
                                 </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="renewal-notes">Additional Notes (Optional)</label>
-                                <textarea id="renewal-notes" class="form-control" placeholder="Any additional information for your doctor..." rows="3"></textarea>
-                            </div>
-                            <div class="form-actions">
-                                <button class="btn btn-success"><i class="fas fa-paper-plane"></i> Submit Request</button>
-                                <button class="btn btn-secondary">Cancel</button>
-                            </div>
                         </div>
-                    </div>
-                </div>
-
-                <div class="tab-content" id="medical-history-tab">
-                    <div class="search-filter">
-                        <input type="text" class="search-box" placeholder="Search medical history...">
-                        <select class="filter-select">
-                            <option value="">All Records</option>
-                            <option value="prescription">Prescriptions</option>
-                            <option value="allergy">Allergies</option>
-                            <option value="condition">Medical Conditions</option>
-                            <option value="vaccination">Vaccinations</option>
-                        </select>
-                        <button class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
-                    </div>
-
-                    <div class="medical-history">
-                        <div class="history-timeline">
-                            <div class="timeline-item">
-                                <div class="timeline-date">2023-10-18</div>
-                                <div class="timeline-content">
-                                    <h4>Upper Respiratory Infection</h4>
-                                    <p><strong>Doctor:</strong> Dr. Sarah Johnson</p>
-                                    <p><strong>Diagnosis:</strong> Bacterial sinusitis</p>
-                                    <p><strong>Treatment:</strong> Amoxicillin 500mg, Ibuprofen 400mg</p>
-                                    <p><strong>Notes:</strong> Patient presented with sinus pressure and congestion. Course of antibiotics prescribed.</p>
-                                </div>
-                            </div>
-                            
-                            <div class="timeline-item">
-                                <div class="timeline-date">2023-09-15</div>
-                                <div class="timeline-content">
-                                    <h4>Annual Checkup</h4>
-                                    <p><strong>Doctor:</strong> Dr. Robert Kim</p>
-                                    <p><strong>Diagnosis:</strong> Hypertension</p>
-                                    <p><strong>Treatment:</strong> Lisinopril 10mg daily</p>
-                                    <p><strong>Notes:</strong> Blood pressure reading: 145/92. Medication prescribed and lifestyle changes recommended.</p>
-                                </div>
-                            </div>
-                            
-                            <div class="timeline-item">
-                                <div class="timeline-date">2023-06-22</div>
-                                <div class="timeline-content">
-                                    <h4>Allergy Consultation</h4>
-                                    <p><strong>Doctor:</strong> Dr. Sarah Johnson</p>
-                                    <p><strong>Diagnosis:</strong> Seasonal allergies</p>
-                                    <p><strong>Treatment:</strong> Loratadine 10mg as needed</p>
-                                    <p><strong>Notes:</strong> Patient reports seasonal allergy symptoms. Recommended OTC antihistamine.</p>
-                                </div>
-                            </div>
+                        <div class="form-group">
+                            <label for="renewal-notes">Additional Notes (Optional)</label>
+                            <textarea id="renewal-notes" class="form-control" placeholder="Any additional information for your doctor..." rows="2"></textarea>
                         </div>
-                    </div>
-
-                    <div class="content-section">
-                        <h3>Medical Summary</h3>
-                        <div class="medical-summary">
-                            <div class="summary-section">
-                                <h4>Current Conditions</h4>
-                                <ul>
-                                    <li>Hypertension (Diagnosed: September 2023)</li>
-                                    <li>Seasonal Allergies (Diagnosed: June 2023)</li>
-                                </ul>
-                            </div>
-                            <div class="summary-section">
-                                <h4>Known Allergies</h4>
-                                <ul>
-                                    <li>Penicillin (Severe reaction)</li>
-                                    <li>No known food allergies</li>
-                                </ul>
-                            </div>
-                            <div class="summary-section">
-                                <h4>Current Medications</h4>
-                                <ul>
-                                    <li>Lisinopril 10mg - Daily for hypertension</li>
-                                    <li>Loratadine 10mg - As needed for allergies</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tab-content" id="profile-tab">
-                    <div class="profile-container">
-                        <div class="profile-header">
-                            <h3>Personal Information</h3>
-                            <button class="btn btn-primary"><i class="fas fa-edit"></i> Edit Information</button>
-                        </div>
-                        
-                        <div class="profile-details">
-                            <div class="detail-section">
-                                <h4>Basic Information</h4>
-                                <div class="detail-grid">
-                                    <div class="detail-item">
-                                        <label>Full Name</label>
-                                        <div class="detail-value">Michael Thompson</div>
-                                    </div>
-                                    <div class="detail-item">
-                                        <label>Date of Birth</label>
-                                        <div class="detail-value">May 12, 1978 (45 years)</div>
-                                    </div>
-                                    <div class="detail-item">
-                                        <label>Gender</label>
-                                        <div class="detail-value">Male</div>
-                                    </div>
-                                    <div class="detail-item">
-                                        <label>Blood Type</label>
-                                        <div class="detail-value">O+</div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="detail-section">
-                                <h4>Contact Information</h4>
-                                <div class="detail-grid">
-                                    <div class="detail-item">
-                                        <label>Email Address</label>
-                                        <div class="detail-value">m.thompson@example.com</div>
-                                    </div>
-                                    <div class="detail-item">
-                                        <label>Phone Number</label>
-                                        <div class="detail-value">(555) 123-4567</div>
-                                    </div>
-                                    <div class="detail-item">
-                                        <label>Address</label>
-                                        <div class="detail-value">123 Maple Street, Springfield, IL 62704</div>
-                                    </div>
-                                    <div class="detail-item">
-                                        <label>Emergency Contact</label>
-                                        <div class="detail-value">Jennifer Thompson (555) 234-5678</div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="detail-section">
-                                <h4>Account Information</h4>
-                                <div class="detail-grid">
-                                    <div class="detail-item">
-                                        <label>Patient ID</label>
-                                        <div class="detail-value">PT001</div>
-                                    </div>
-                                    <div class="detail-item">
-                                        <label>Account Status</label>
-                                        <div class="detail-value"><span class="status-badge status-active">Active</span></div>
-                                    </div>
-                                    <div class="detail-item">
-                                        <label>Primary Pharmacy</label>
-                                        <div class="detail-value">Downtown Pharmacy</div>
-                                    </div>
-                                    <div class="detail-item">
-                                        <label>Insurance Provider</label>
-                                        <div class="detail-value">HealthCare Plus</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tab-content" id="payments-tab">
-                    <div class="payment-container">
-                        <div class="payment-methods-section">
-                            <h3>Payment Methods</h3>
-                            <div class="payment-methods">
-                                <div class="payment-method selected">
-                                    <i class="fas fa-credit-card"></i>
-                                    <div class="method-details">
-                                        <div class="method-name">Visa ending in 4321</div>
-                                        <div class="method-expiry">Expires 12/2024</div>
-                                    </div>
-                                    <div class="method-actions">
-                                        <button class="btn btn-secondary">Edit</button>
-                                    </div>
-                                </div>
-                                
-                                <div class="payment-method">
-                                    <i class="fas fa-university"></i>
-                                    <div class="method-details">
-                                        <div class="method-name">Bank Transfer</div>
-                                        <div class="method-expiry">Primary account</div>
-                                    </div>
-                                    <div class="method-actions">
-                                        <button class="btn btn-secondary">Edit</button>
-                                    </div>
-                                </div>
-                                
-                                <div class="payment-method">
-                                    <i class="fab fa-paypal"></i>
-                                    <div class="method-details">
-                                        <div class="method-name">PayPal</div>
-                                        <div class="method-expiry">m.thompson@example.com</div>
-                                    </div>
-                                    <div class="method-actions">
-                                        <button class="btn btn-secondary">Edit</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <button class="btn btn-primary"><i class="fas fa-plus"></i> Add Payment Method</button>
-                        </div>
-                        
-                        <div class="billing-history">
-                            <h3>Billing History</h3>
-                            <div class="billing-table-container">
-                                <table class="data-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Description</th>
-                                            <th>Amount</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>2023-10-18</td>
-                                            <td>Amoxicillin 500mg, Ibuprofen 400mg</td>
-                                            <td>$21.25</td>
-                                            <td><span class="status-badge status-paid">Paid</span></td>
-                                            <td><button class="btn btn-secondary">View Receipt</button></td>
-                                        </tr>
-                                        <tr>
-                                            <td>2023-09-15</td>
-                                            <td>Lisinopril 10mg</td>
-                                            <td>$15.20</td>
-                                            <td><span class="status-badge status-paid">Paid</span></td>
-                                            <td><button class="btn btn-secondary">View Receipt</button></td>
-                                        </tr>
-                                        <tr>
-                                            <td>2023-08-10</td>
-                                            <td>Annual Checkup Copay</td>
-                                            <td>$25.00</td>
-                                            <td><span class="status-badge status-paid">Paid</span></td>
-                                            <td><button class="btn btn-secondary">View Receipt</button></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="help-section">
-                    <h3>Help & Support</h3>
-                    <div class="help-options">
-                        <div class="help-card">
-                            <i class="fas fa-phone-alt"></i>
-                            <h4>Phone Support</h4>
-                            <p>Call us at <strong>1-800-PHARMACY</strong></p>
-                            <p>Available 24/7 for urgent matters</p>
-                        </div>
-                        <div class="help-card">
-                            <i class="fas fa-envelope"></i>
-                            <h4>Email Support</h4>
-                            <p>Send us an email at <strong>support@VitalSoft.com</strong></p>
-                            <p>Response within 24 hours</p>
-                        </div>
-                        <div class="help-card">
-                            <i class="fas fa-comments"></i>
-                            <h4>Live Chat</h4>
-                            <p>Chat with our support team</p>
-                            <p>Available Mon-Fri, 9AM-5PM</p>
-                            <button class="btn btn-primary">Start Chat</button>
-                        </div>
-                        <div class="help-card">
-                            <i class="fas fa-question-circle"></i>
-                            <h4>FAQ</h4>
-                            <p>Find answers to common questions</p>
-                            <button class="btn btn-secondary">View FAQ</button>
+                        <div class="form-actions">
+                            <button class="btn btn-success"><i class="fas fa-paper-plane"></i> Submit Request</button>
+                            <button class="btn btn-secondary">Cancel</button>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div class="tab-content" id="medical-history-tab">
+                <div class="search-filter">
+                    <input type="text" id="history-search" class="search-box" placeholder="Search medical history...">
+                    <select id="history-type-filter" class="filter-select">
+                        <option value="">All Records</option>
+                        <option value="prescription">Prescriptions</option>
+                        <option value="allergy">Allergies</option>
+                        <option value="condition">Medical Conditions</option>
+                        <option value="vaccination">Vaccinations</option>
+                    </select>
+                    <button class="btn btn-primary" id="history-search-btn"><i class="fas fa-search"></i> Search</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table" id="history-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Title / Diagnosis</th>
+                                <th>Doctor</th>
+                                <th>Notes</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Medical history will be populated from database -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="content-section compact">
+                    <h3>Medical Summary</h3>
+                    <div class="medical-summary compact-grid">
+                        <div class="summary-section">
+                            <h4>Current Conditions</h4>
+                            <ul>
+                                <li>Hypertension</li>
+                                <li>Seasonal Allergies</li>
+                            </ul>
+                        </div>
+                        <div class="summary-section">
+                            <h4>Known Allergies</h4>
+                            <ul>
+                                <li>Penicillin (Severe)</li>
+                            </ul>
+                        </div>
+                        <div class="summary-section">
+                            <h4>Current Medications</h4>
+                            <ul>
+                                <li>Lisinopril 10mg</li>
+                                <li>Loratadine 10mg</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="profile-tab">
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <h3>Personal Information</h3>
+                        <button class="btn btn-primary"><i class="fas fa-edit"></i> Edit Information</button>
+                    </div>
+                    
+                    <div class="profile-details">
+                        <div class="detail-section">
+                            <h4>Basic Information</h4>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <label>Full Name</label>
+                                    <div id="profile-fullname" class="detail-value">Loading...</div>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Date of Birth</label>
+                                    <div id="profile-dob" class="detail-value"></div>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Gender</label>
+                                    <div id="profile-gender" class="detail-value">N/A</div>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Blood Type</label>
+                                    <div id="profile-bloodtype" class="detail-value"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <h4>Contact Information</h4>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <label>Email Address</label>
+                                    <div id="profile-email" class="detail-value"></div>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Phone Number</label>
+                                    <div id="profile-phone" class="detail-value"></div>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Address</label>
+                                    <div id="profile-address" class="detail-value"></div>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Emergency Contact</label>
+                                    <div id="profile-emergency" class="detail-value"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <h4>Account Information</h4>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <label>Patient ID</label>
+                                    <div id="profile-patientid" class="detail-value"></div>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Account Status</label>
+                                    <div class="detail-value"><span id="profile-status" class="status-badge"></span></div>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Primary Pharmacy</label>
+                                    <div id="profile-pharmacy" class="detail-value"></div>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Insurance Provider</label>
+                                    <div id="profile-insurance" class="detail-value"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        // Define AUTH_API as global constant (fallback if common.js fails to load)
+        window.AUTH_API = window.AUTH_API || '../php/auth.php';
+        
+        document.addEventListener("DOMContentLoaded", function () {
+            const AUTH_API = window.AUTH_API;
             // Tab functionality
-            const tabBtns = document.querySelectorAll('.tab-btn');
-            const tabContents = document.querySelectorAll('.tab-content');
-            
-            tabBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const tabId = this.getAttribute('data-tab');
-                    
+            const tabBtns = document.querySelectorAll(".tab-btn");
+            const tabContents = document.querySelectorAll(".tab-content");
+
+            tabBtns.forEach((btn) => {
+                btn.addEventListener("click", function () {
+                    const tabId = this.getAttribute("data-tab");
+
                     // Remove active class from all buttons and contents
-                    tabBtns.forEach(b => b.classList.remove('active'));
-                    tabContents.forEach(c => c.classList.remove('active'));
-                    
+                    tabBtns.forEach((b) => b.classList.remove("active"));
+                    tabContents.forEach((c) => c.classList.remove("active"));
+
                     // Add active class to current button and content
-                    this.classList.add('active');
-                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                    this.classList.add("active");
+                    document.getElementById(`${tabId}-tab`).classList.add("active");
                 });
             });
-            
-            // Payment method selection
-            const paymentMethods = document.querySelectorAll('.payment-method');
-            paymentMethods.forEach(method => {
-                method.addEventListener('click', function() {
-                    paymentMethods.forEach(m => m.classList.remove('selected'));
-                    this.classList.add('selected');
+
+            // Prescription table actions (compact view)
+            const prescSearchBtn = document.getElementById('prescription-search-btn');
+            const prescSearchInput = document.getElementById('prescription-search');
+            const prescStatusFilter = document.getElementById('prescription-status-filter');
+
+            function filterPrescriptions() {
+                const q = prescSearchInput.value.toLowerCase();
+                const status = prescStatusFilter.value;
+                const rows = document.querySelectorAll('#prescriptions-table tbody tr');
+                rows.forEach(r => {
+                    const text = r.textContent.toLowerCase();
+                    const matchesQuery = !q || text.includes(q);
+                    const matchesStatus = !status || (r.querySelector('.status-badge') && r.querySelector('.status-badge').textContent.toLowerCase().includes(status));
+                    r.style.display = (matchesQuery && matchesStatus) ? '' : 'none';
                 });
+            }
+
+            if (prescSearchBtn) prescSearchBtn.addEventListener('click', filterPrescriptions);
+            if (prescSearchInput) prescSearchInput.addEventListener('keyup', function(e){ if (e.key === 'Enter') filterPrescriptions(); });
+            if (prescStatusFilter) prescStatusFilter.addEventListener('change', filterPrescriptions);
+
+            // Action buttons in prescriptions table
+            document.querySelectorAll('#prescriptions-table .btn-primary').forEach(btn => {
+                btn.addEventListener('click', () => alert('Prescription renewal request would be submitted in a real application.'));
             });
-            
-            // Renewal request functionality
-            const renewalButtons = document.querySelectorAll('.prescription-actions .btn-primary');
-            renewalButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    alert('Prescription renewal request would be submitted in a real application.');
+            document.querySelectorAll('#prescriptions-table .btn-secondary').forEach(btn => {
+                btn.addEventListener('click', () => alert('Prescription details would be shown in a real application.'));
+            });
+
+            // History table view buttons
+            document.querySelectorAll('#history-table .btn-secondary').forEach(btn => {
+                btn.addEventListener('click', () => alert('Medical record details would be shown in a real application.'));
+            });
+
+            // History search
+            const historySearchBtn = document.getElementById('history-search-btn');
+            const historySearchInput = document.getElementById('history-search');
+            const historyTypeFilter = document.getElementById('history-type-filter');
+
+            function filterHistory() {
+                const q = historySearchInput.value.toLowerCase();
+                const type = historyTypeFilter.value;
+                const rows = document.querySelectorAll('#history-table tbody tr');
+                rows.forEach(r => {
+                    const text = r.textContent.toLowerCase();
+                    const matchesQuery = !q || text.includes(q);
+                    const matchesType = !type || r.cells[1].textContent.toLowerCase().includes(type);
+                    r.style.display = (matchesQuery && matchesType) ? '' : 'none';
                 });
-            });
-            
-            // Medicine details buttons
-            const detailsButtons = document.querySelectorAll('.btn-secondary .fa-info-circle').forEach(icon => {
-                icon.closest('.btn').addEventListener('click', function() {
-                    alert('Medicine details would be displayed in a real application.');
-                });
-            });
+            }
+            if (historySearchBtn) historySearchBtn.addEventListener('click', filterHistory);
+            if (historySearchInput) historySearchInput.addEventListener('keyup', function(e){ if (e.key === 'Enter') filterHistory(); });
+            if (historyTypeFilter) historyTypeFilter.addEventListener('change', filterHistory);
+
+            // Load patient-specific data from server
+            async function loadPatientData() {
+                try {
+                    console.log('Starting to load patient data...');
+                    // Get current logged-in user
+                    const userResp = await fetch(`${AUTH_API}?action=getCurrentUser`);
+                    const userJson = await userResp.json();
+                    console.log('User response:', userJson);
+                    if (!userJson.success) {
+                        console.error('Failed to get current user - Not logged in');
+                        console.log('Redirecting to login page...');
+                        window.location.href = 'login.html';
+                        return;
+                    }
+                    const user = userJson.user;
+                    console.log('Current user:', user);
+                    // Update header info
+                    if (typeof updateUserInfo === 'function') {
+                        updateUserInfo(user);
+                    }
+
+                    // Get patients list to find patient_id for this user
+                    const patsResp = await fetch('../php/prescription.php?action=getPatients');
+                    const patsJson = await patsResp.json();
+                    console.log('Patients response:', patsJson);
+                    if (!patsJson.success) {
+                        console.error('Failed to get patients list');
+                        return;
+                    }
+
+                    const patients = patsJson.patients || [];
+                    console.log('Looking for patient with user_id:', user.user_id);
+                    const myPatient = patients.find(p => String(p.user_id) === String(user.user_id) || String(p.username) === String(user.username));
+                    if (!myPatient) {
+                        console.error('No patient record found for user', user);
+                        console.log('Available patients:', patients.map(p => ({ user_id: p.user_id, username: p.username })));
+                        alert('Patient record not found. Please contact administrator.');
+                        return;
+                    }
+                    const patientId = myPatient.patient_id;
+                    console.log('Found patient:', myPatient);
+
+                    // Show which account is logged in
+                    const patientIdentifier = document.getElementById('patient-identifier');
+                    if (patientIdentifier) {
+                        patientIdentifier.textContent = `(Patient ID: ${patientId} - ${user.username})`;
+                    }
+
+                    console.log('============================================');
+                    console.log(`🔐 LOGGED IN AS: ${user.full_name} (${user.username})`);
+                    console.log(`📋 Patient ID: ${patientId}`);
+                    console.log('============================================');
+
+                    // Populate profile fields (use DB-provided fields)
+                    const fullNameEl = document.getElementById('profile-fullname');
+                    if (fullNameEl) fullNameEl.textContent = ((myPatient.first_name || '') + ' ' + (myPatient.last_name || '')).trim();
+                    // Show DOB and age if available
+                    const dobEl = document.getElementById('profile-dob');
+                    if (dobEl && myPatient.date_of_birth) {
+                        const dob = new Date(myPatient.date_of_birth);
+                        const opts = { year: 'numeric', month: 'short', day: 'numeric' };
+                        const age = myPatient.age ? (' (' + myPatient.age + ' years)') : '';
+                        dobEl.textContent = dob.toLocaleDateString(undefined, opts) + age;
+                    } else if (dobEl && myPatient.age) {
+                        dobEl.textContent = myPatient.age + ' years';
+                    }
+                    const bloodTypeEl = document.getElementById('profile-bloodtype');
+                    if (bloodTypeEl && myPatient.blood_type) bloodTypeEl.textContent = myPatient.blood_type;
+                    const emailEl = document.getElementById('profile-email');
+                    if (emailEl && myPatient.email) emailEl.textContent = myPatient.email;
+                    const phoneEl = document.getElementById('profile-phone');
+                    if (phoneEl && myPatient.phone) phoneEl.textContent = myPatient.phone;
+                    const addressEl = document.getElementById('profile-address');
+                    if (addressEl && myPatient.address) addressEl.textContent = myPatient.address;
+                    // emergency_contact composed from two fields if present
+                    const ecName = myPatient.emergency_contact_name || '';
+                    const ecPhone = myPatient.emergency_contact_phone || '';
+                    const emergencyEl = document.getElementById('profile-emergency');
+                    if (emergencyEl && (ecName || ecPhone)) {
+                        emergencyEl.textContent = (ecName + (ecPhone ? (' ' + ecPhone) : '')).trim();
+                    }
+                    const patientIdEl = document.getElementById('profile-patientid');
+                    if (patientIdEl) patientIdEl.textContent = myPatient.patient_id || '';
+                    const pharmacyEl = document.getElementById('profile-pharmacy');
+                    if (pharmacyEl) pharmacyEl.textContent = myPatient.primary_pharmacy || myPatient.pharmacy || 'N/A';
+                    const insuranceEl = document.getElementById('profile-insurance');
+                    if (insuranceEl) insuranceEl.textContent = myPatient.insurance_provider || myPatient.insurance_number || 'N/A';
+                    const statusEl = document.getElementById('profile-status');
+                    if (statusEl) {
+                        statusEl.textContent = 'Active';
+                        statusEl.className = 'status-badge status-active';
+                    }
+
+                    // Load prescriptions for patient
+                    console.log('============================================');
+                    console.log(`Loading data for: ${user.full_name} (${user.username})`);
+                    console.log(`Patient ID: ${patientId}`);
+                    console.log('============================================');
+                    console.log('Loading prescriptions for patient_id:', patientId);
+                    const presResp = await fetch(`../php/prescription.php?action=getPrescriptions&patient_id=${encodeURIComponent(patientId)}`);
+                    const presJson = await presResp.json();
+                    console.log('Prescriptions response:', presJson);
+                    if (presJson.success && Array.isArray(presJson.prescriptions)) {
+                        const tbody = document.querySelector('#prescriptions-table tbody');
+                        const select = document.getElementById('prescription-select');
+                        tbody.innerHTML = '';
+                        if (select) select.innerHTML = '<option value="">Choose a prescription...</option>';
+
+                        let activeCount = 0;
+                        let upcomingRefills = 0;
+
+                        for (let i = 0; i < presJson.prescriptions.length; i++) {
+                            const p = presJson.prescriptions[i];
+                            // compute simple stats
+                            if ((p.status || '').toLowerCase() === 'active') activeCount++;
+                            if (p.renewal_requested || p.renewal_requested === '1' || p.renewal_requested === 1) upcomingRefills++;
+
+                            const meds = (p.diagnosis || '');
+                            const qty = '-';
+                            const refills = '-';
+
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${p.prescription_id}</td>
+                                <td>${p.prescription_date}</td>
+                                <td>${p.doctor_name || ''}</td>
+                                <td>${meds}</td>
+                                <td>${qty}</td>
+                                <td>${refills}</td>
+                                <td><span class="status-badge status-${(p.status||'').toLowerCase()}">${p.status || ''}</span></td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" data-rx="${p.prescription_id}">Renew</button>
+                                    <button class="btn btn-secondary btn-sm" data-rx="${p.prescription_id}">Details</button>
+                                </td>
+                            `;
+                            tbody.appendChild(tr);
+
+                            // add option to select
+                            if (select) {
+                                const opt = document.createElement('option');
+                                opt.value = p.prescription_id;
+                                opt.textContent = `RX-${p.prescription_id} ${p.diagnosis ? '- ' + p.diagnosis : ''}`;
+                                select.appendChild(opt);
+                            }
+                        }
+
+                        // update stats
+                        const activeEl = document.getElementById('active-prescriptions-stat');
+                        const upcomingEl = document.getElementById('upcoming-refills-stat');
+                        if (activeEl) activeEl.textContent = String(activeCount);
+                        if (upcomingEl) upcomingEl.textContent = String(upcomingRefills);
+
+                        // rebind actions
+                        document.querySelectorAll('#prescriptions-table .btn-primary').forEach(btn => {
+                            btn.addEventListener('click', async () => {
+                                alert('Prescription renewal request would be submitted in a real application.');
+                            });
+                        });
+                        document.querySelectorAll('#prescriptions-table .btn-secondary').forEach(btn => {
+                            btn.addEventListener('click', async (e) => {
+                                const rx = e.currentTarget.getAttribute('data-rx');
+                                // fetch details and show
+                                const detResp = await fetch(`../php/prescription.php?action=getPrescriptionDetails&id=${encodeURIComponent(rx)}`);
+                                const detJson = await detResp.json();
+                                if (detJson.success) {
+                                    const pres = detJson.prescription;
+                                    alert(`Prescription ${pres.prescription_id}\nDoctor: ${pres.doctor_name}\nItems: ${pres.items ? pres.items.length : 0}`);
+                                } else {
+                                    alert('Details not found');
+                                }
+                            });
+                        });
+                    }
+
+                    // Load medical history
+                    console.log('Loading medical history for patient_id:', patientId);
+                    const histResp = await fetch(`../php/prescription.php?action=getMedicalHistory&patient_id=${encodeURIComponent(patientId)}`);
+                    const histJson = await histResp.json();
+                    console.log('Medical history response:', histJson);
+                    if (histJson.success && Array.isArray(histJson.records)) {
+                        const tbody = document.querySelector('#history-table tbody');
+                        tbody.innerHTML = '';
+                        for (let i = 0; i < histJson.records.length; i++) {
+                            const r = histJson.records[i];
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${r.visit_date}</td>
+                                <td>Record</td>
+                                <td>${r.diagnosis || ''}</td>
+                                <td>${r.doctor_name || ''}</td>
+                                <td>${r.notes || ''}</td>
+                                <td><button class="btn btn-secondary btn-sm">View</button></td>
+                            `;
+                            tbody.appendChild(tr);
+                        }
+                        document.querySelectorAll('#history-table .btn-secondary').forEach(btn => {
+                            btn.addEventListener('click', () => alert('Medical record details would be shown in a real application.'));
+                        });
+
+                        // update medical records stat
+                        const medRecEl = document.getElementById('medical-records-stat');
+                        if (medRecEl) medRecEl.textContent = String(histJson.records.length || 0);
+                    }
+
+                    // Log summary of loaded data
+                    console.log('============================================');
+                    console.log('✓ Data loaded successfully for:', user.full_name);
+                    console.log('✓ Prescriptions:', presJson.prescriptions?.length || 0);
+                    console.log('✓ Medical History:', histJson.records?.length || 0);
+                    console.log('============================================');
+                } catch (err) {
+                    console.error('Failed to load patient data:', err);
+                    console.error('Error stack:', err.stack);
+                    const errorMsg = err.message || 'Unknown error occurred';
+                    alert(`Error loading patient data: ${errorMsg}\n\nPlease check the console (F12) for more details.`);
+                }
+            }
+
+            // Kick off loading patient data
+            loadPatientData();
         });
     </script>
 </body>

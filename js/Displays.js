@@ -3,89 +3,100 @@ import { prescriptObj } from "./Instances";
 
 export class Display {
 
+    // Small helper: build a patient lookup map to avoid repeated O(n) finds
+    _buildPatientMap() {
+        const patients = prescriptObj.getPatients() || [];
+        const map = new Map();
+        for (let i = 0; i < patients.length; i++) {
+            const p = patients[i];
+            map.set(p.patient_id, p);
+        }
+        return map;
+    }
+
     // render a provided patients array or all patients by default.
     // If append === true, appends to the existing list instead of replacing it.
     displayPatients(patients = null, append = false) {
         const patientsList = document.querySelector('.patients-list');
         if (!patientsList) return;
 
-        const source = patients || prescriptObj.getPatients();
+        const source = patients || prescriptObj.getPatients() || [];
 
-        let html = '';
         if (!source || source.length === 0) {
-            html = '<p>No patients found</p>';
-        } else {
-            source.forEach(patient => {
-                html += `
-                    <div class="patient-card">
-                        <div class="patient-info">
-                            <div class="patient-name">${patient.first_name} ${patient.last_name}</div>
-                            <div class="patient-details">
-                                ID: ${patient.patient_id} | Age: ${patient.age} | Gender: ${patient.gender}
-                            </div>
-                            <div class="patient-contact">
-                                Phone: ${patient.phone || 'N/A'} | Email: ${patient.email || 'N/A'}
-                            </div>
-                        </div>
-                        <div class="patient-actions">
-                            <button class="btn btn-primary js-select-patient" data-patient-id="${patient.patient_id}">
-                                <i class="fas fa-file-medical"></i> Medical History
-                            </button>
-                            <button class="btn btn-success js-new-prescription" data-patient-id="${patient.patient_id}">
-                                <i class="fas fa-prescription"></i> New Prescription
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
+            if (append) patientsList.insertAdjacentHTML('beforeend', '<p>No patients found</p>');
+            else patientsList.innerHTML = '<p>No patients found</p>';
+            return;
         }
 
-        if (append) {
-            patientsList.insertAdjacentHTML('beforeend', html);
-        } else {
-            patientsList.innerHTML = html;
+        const parts = [];
+        for (let i = 0; i < source.length; i++) {
+            const patient = source[i];
+            parts.push(
+                `<div class="patient-card">` +
+                    `<div class="patient-info">` +
+                        `<div class="patient-name">${patient.first_name} ${patient.last_name}</div>` +
+                        `<div class="patient-details">` +
+                            `ID: ${patient.patient_id} | Age: ${patient.age} | Gender: ${patient.gender}` +
+                        `</div>` +
+                        `<div class="patient-contact">` +
+                            `Phone: ${patient.phone || 'N/A'} | Email: ${patient.email || 'N/A'}` +
+                        `</div>` +
+                    `</div>` +
+                    `<div class="patient-actions">` +
+                        `<button class="btn btn-primary js-select-patient" data-patient-id="${patient.patient_id}">` +
+                            `<i class="fas fa-file-medical"></i> Medical History` +
+                        `</button>` +
+                        `<button class="btn btn-success js-new-prescription" data-patient-id="${patient.patient_id}">` +
+                            `<i class="fas fa-prescription"></i> New Prescription` +
+                        `</button>` +
+                    `</div>` +
+                `</div>`
+            );
         }
+
+        const html = parts.join('');
+        if (append) patientsList.insertAdjacentHTML('beforeend', html);
+        else patientsList.innerHTML = html;
     }
 
     displayMedicines() {
         const medicinesTableBody = document.getElementById('medicines-table-body');
         if (!medicinesTableBody) return;
 
-        console.debug('[Display] displayMedicines called, prescriptObj medicines length =', prescriptObj.getMedicines().length);
-
-        let html = '';
-        const source = arguments[0] || prescriptObj.getMedicines();
-
-        console.debug('[Display] displayMedicines source length =', source ? source.length : 0, source && source.slice(0,3));
+        const source = arguments[0] || prescriptObj.getMedicines() || [];
 
         if (source.length === 0) {
-            html = '<tr><td colspan="8">No medicines found</td></tr>';
-        } else {
-            source.forEach(medicine => {
-                // Determine expiry and stock presentation
-                const expiry = medicine.expiry_date || '';
-                const today = new Date().toISOString().split('T')[0];
-                const isExpired = expiry && expiry < today;
-                const stock = typeof medicine.stock !== 'undefined' ? medicine.stock : (medicine.quantity ?? null);
-                let stockClass = 'high';
-                if (stock === null) stockClass = '';
-                else if (stock < 20) stockClass = 'low';
-                else if (stock < 100) stockClass = 'medium';
-
-                html += `
-                    <tr class="medicine-row ${isExpired ? 'medicine-expired' : ''}">
-                        <td>${medicine.medicine_name}</td>
-                        <td>${medicine.dosage}</td>
-                        <td>${medicine.manufacturer || 'N/A'}</td>
-                        <td>${medicine.medicine_type}</td>
-                        <td>${expiry ? `<span class="expiry-date ${isExpired ? 'expired' : ''}">${expiry}</span>` : ''}</td>
-                        <td>${stock !== null ? `<span class="stock-level ${stockClass}">${stock}</span>` : 'N/A'}</td>
-                        <td>${medicine.description || 'No description'}</td>
-                    </tr>
-                `;
-            });
+            medicinesTableBody.innerHTML = '<tr><td colspan="8">No medicines found</td></tr>';
+            return;
         }
-        medicinesTableBody.innerHTML = html;
+
+        const parts = [];
+        const today = new Date().toISOString().split('T')[0];
+
+        for (let i = 0; i < source.length; i++) {
+            const medicine = source[i];
+            const expiry = medicine.expiry_date || '';
+            const isExpired = expiry && expiry < today;
+            const stock = typeof medicine.stock !== 'undefined' ? medicine.stock : (medicine.quantity ?? null);
+            let stockClass = 'high';
+            if (stock === null) stockClass = '';
+            else if (stock < 20) stockClass = 'low';
+            else if (stock < 100) stockClass = 'medium';
+
+            parts.push(
+                `<tr class="medicine-row ${isExpired ? 'medicine-expired' : ''}">` +
+                    `<td>${medicine.medicine_name}</td>` +
+                    `<td>${medicine.dosage}</td>` +
+                    `<td>${medicine.manufacturer || 'N/A'}</td>` +
+                    `<td>${medicine.medicine_type}</td>` +
+                    `<td>${expiry ? `<span class="expiry-date ${isExpired ? 'expired' : ''}">${expiry}</span>` : ''}</td>` +
+                    `<td>${stock !== null ? `<span class="stock-level ${stockClass}">${stock}</span>` : 'N/A'}</td>` +
+                    `<td>${medicine.description || 'No description'}</td>` +
+                `</tr>`
+            );
+        }
+
+        medicinesTableBody.innerHTML = parts.join('');
     }
 
     displayPrescriptions() {
@@ -93,59 +104,62 @@ export class Display {
         const prescriptionsList = document.querySelector('.prescriptions-list');
         if (!prescriptionsList) return;
 
-        const source = arguments[0] || prescriptObj.getPrescriptions();
+        const source = arguments[0] || prescriptObj.getPrescriptions() || [];
         const append = arguments[1] || false;
 
-        let html = '';
         if (!source || source.length === 0) {
-            html = '<p>No prescriptions found</p>';
-        } else {
-                source.forEach(prescription => {
-                const patient = prescriptObj.getPatients().find(p => p.patient_id === prescription.patient_id);
-                const patientName = patient ? `${patient.first_name} ${patient.last_name}` : 'Unknown Patient';
-                // Normalize display for legacy 'completed' status -> show as 'Dispensed'
-                let statusKey = (prescription.status || '').toString().toLowerCase();
-                let statusLabel = prescription.status || '';
-                if (statusKey === 'completed') {
-                    statusKey = 'dispensed';
-                    statusLabel = 'Dispensed';
-                }
-                
-                html += `
-                    <div class="prescription-card" data-prescription-id="${prescription.prescription_id}">
-                        <div class="prescription-info">
-                            <div class="prescription-header">
-                                <h4>Prescription #${prescription.prescription_id}</h4>
-                                <span class="status-badge status-${statusKey}">${statusLabel}</span>
-                            </div>
-                            <div class="prescription-details">
-                                <p><strong>Patient:</strong> ${patientName} (${prescription.patient_id})</p>
-                                <p><strong>Date:</strong> ${prescription.prescription_date}</p>
-                                <p><strong>Diagnosis:</strong> ${prescription.diagnosis || 'Not specified'}</p>
-                                <p><strong>Notes:</strong> ${prescription.notes || 'No additional notes'}</p>
-                            </div>
-                        </div>
-                        <div class="prescription-actions">
-                            <button class="btn btn-primary js-view-prescription">
-                                <i class="fas fa-eye"></i> View Details
-                            </button>
-                            <button class="btn btn-warning js-edit-prescription">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            <button class="btn btn-danger js-delete-prescription">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
+            if (append) prescriptionsList.insertAdjacentHTML('beforeend', '<p>No prescriptions found</p>');
+            else prescriptionsList.innerHTML = '<p>No prescriptions found</p>';
+            return;
         }
 
-        if (append) {
-            prescriptionsList.insertAdjacentHTML('beforeend', html);
-        } else {
-            prescriptionsList.innerHTML = html;
+        const patientMap = this._buildPatientMap();
+        const parts = [];
+
+        for (let i = 0; i < source.length; i++) {
+            const prescription = source[i];
+            const patient = patientMap.get(prescription.patient_id);
+            const patientName = patient ? `${patient.first_name} ${patient.last_name}` : 'Unknown Patient';
+
+            let statusKey = (prescription.status || '').toString().toLowerCase();
+            let statusLabel = prescription.status || '';
+            if (statusKey === 'completed') {
+                statusKey = 'dispensed';
+                statusLabel = 'Dispensed';
+            }
+
+            parts.push(
+                `<div class="prescription-card" data-prescription-id="${prescription.prescription_id}">` +
+                    `<div class="prescription-info">` +
+                        `<div class="prescription-header">` +
+                            `<h4>Prescription #${prescription.prescription_id}</h4>` +
+                            `<span class="status-badge status-${statusKey}">${statusLabel}</span>` +
+                        `</div>` +
+                        `<div class="prescription-details">` +
+                            `<p><strong>Patient:</strong> ${patientName} (${prescription.patient_id})</p>` +
+                            `<p><strong>Date:</strong> ${prescription.prescription_date}</p>` +
+                            `<p><strong>Diagnosis:</strong> ${prescription.diagnosis || 'Not specified'}</p>` +
+                            `<p><strong>Notes:</strong> ${prescription.notes || 'No additional notes'}</p>` +
+                        `</div>` +
+                    `</div>` +
+                    `<div class="prescription-actions">` +
+                        `<button class="btn btn-primary js-view-prescription">` +
+                            `<i class="fas fa-eye"></i> View Details` +
+                        `</button>` +
+                        `<button class="btn btn-warning js-edit-prescription">` +
+                            `<i class="fas fa-edit"></i> Edit` +
+                        `</button>` +
+                        `<button class="btn btn-danger js-delete-prescription">` +
+                            `<i class="fas fa-trash"></i> Delete` +
+                        `</button>` +
+                    `</div>` +
+                `</div>`
+            );
         }
+
+        const html = parts.join('');
+        if (append) prescriptionsList.insertAdjacentHTML('beforeend', html);
+        else prescriptionsList.innerHTML = html;
     }
 
     displayCurrentPrescription() {
@@ -156,115 +170,127 @@ export class Display {
             preview.id = 'prescription-preview';
             preview.className = 'prescription-preview';
             preview.innerHTML = '<h4>Current Prescription</h4>';
-            
+
             const formContainer = document.querySelector('.form-container');
-            formContainer.appendChild(preview);
+            if (formContainer) formContainer.appendChild(preview);
         }
 
-        let html = '<h4>Current Prescription</h4>';
-        if (prescriptObj.getCurrentPrescription().medicines.length === 0) {
-            html += '<p>No medicines added yet</p>';
-        } else {
-            html += '<ul>';
-            prescriptObj.getCurrentPrescription().medicines.forEach((medicine, index) => {
-                html += `
-                    <li>
-                        ${medicine.medicine_name} (${medicine.dosage}) - 
-                        Qty: ${medicine.quantity} - 
-                        ${medicine.instructions}
-                        <button type="button" data-medicine-index="${index}" class="btn btn-danger btn-sm js-remove-medicine">Remove</button>
-                    </li>
-                `;
-            });
-            html += '</ul>';
+        const cur = prescriptObj.getCurrentPrescription();
+        const items = cur && cur.medicines ? cur.medicines : [];
+
+        if (!items || items.length === 0) {
+            preview.innerHTML = '<h4>Current Prescription</h4><p>No medicines added yet</p>';
+            return;
         }
-        preview.innerHTML = html;
+
+        const parts = ['<h4>Current Prescription</h4>', '<ul>'];
+        for (let i = 0; i < items.length; i++) {
+            const medicine = items[i];
+            parts.push(
+                `<li>` +
+                    `${medicine.medicine_name} (${medicine.dosage}) - ` +
+                    `Qty: ${medicine.quantity} - ` +
+                    `${medicine.instructions}` +
+                    `<button type="button" data-medicine-index="${i}" class="btn btn-danger btn-sm js-remove-medicine">Remove</button>` +
+                `</li>`
+            );
+        }
+        parts.push('</ul>');
+
+        preview.innerHTML = parts.join('');
     }
 
     displayFilteredPatients(patients) {
         const patientsList = document.querySelector('.patients-list');
         if (!patientsList) return;
 
-        let html = '';
-        if (patients.length === 0) {
-            html = '<p>No patients found matching the criteria</p>';
-        } else {
-            patients.forEach(patient => {
-                html += `
-                    <div class="patient-card">
-                        <div class="patient-info">
-                            <div class="patient-name">${patient.first_name} ${patient.last_name}</div>
-                            <div class="patient-details">
-                                ID: ${patient.patient_id} | Age: ${patient.age} | Gender: ${patient.gender}
-                            </div>
-                            <div class="patient-contact">
-                                Phone: ${patient.phone || 'N/A'} | Email: ${patient.email || 'N/A'}
-                            </div>
-                        </div>
-                        <div class="patient-actions">
-                            <button class="btn btn-primary js-select-patient" data-patient-id="${patient.patient_id}">
-                                <i class="fas fa-file-medical"></i> Medical History
-                            </button>
-                            <button class="btn btn-success js-new-prescription" data-patient-id="${patient.patient_id}">
-                                <i class="fas fa-prescription"></i> New Prescription
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
+        if (!patients || patients.length === 0) {
+            patientsList.innerHTML = '<p>No patients found matching the criteria</p>';
+            return;
         }
-        patientsList.innerHTML = html;
+
+        const parts = [];
+        for (let i = 0; i < patients.length; i++) {
+            const patient = patients[i];
+            parts.push(
+                `<div class="patient-card">` +
+                    `<div class="patient-info">` +
+                        `<div class="patient-name">${patient.first_name} ${patient.last_name}</div>` +
+                        `<div class="patient-details">` +
+                            `ID: ${patient.patient_id} | Age: ${patient.age} | Gender: ${patient.gender}` +
+                        `</div>` +
+                        `<div class="patient-contact">` +
+                            `Phone: ${patient.phone || 'N/A'} | Email: ${patient.email || 'N/A'}` +
+                        `</div>` +
+                    `</div>` +
+                    `<div class="patient-actions">` +
+                        `<button class="btn btn-primary js-select-patient" data-patient-id="${patient.patient_id}">` +
+                            `<i class="fas fa-file-medical"></i> Medical History` +
+                        `</button>` +
+                        `<button class="btn btn-success js-new-prescription" data-patient-id="${patient.patient_id}">` +
+                            `<i class="fas fa-prescription"></i> New Prescription` +
+                        `</button>` +
+                    `</div>` +
+                `</div>`
+            );
+        }
+
+        patientsList.innerHTML = parts.join('');
     }
 
     displayFilteredPrescriptions(prescriptions) {
         const prescriptionsList = document.querySelector('.prescriptions-list');
         if (!prescriptionsList) return;
 
-        let html = '';
-        if (prescriptions.length === 0) {
-            html = '<p>No prescriptions found matching the criteria</p>';
-        } else {
-            prescriptions.forEach(prescription => {
-                // FIXED: Used prescriptObj.getPatients() instead of this.getPatients()
-                const patient = prescriptObj.getPatients().find(p => p.patient_id === prescription.patient_id);
-                const patientName = patient ? `${patient.first_name} ${patient.last_name}` : 'Unknown Patient';
-                // Normalize 'completed' -> display as 'Dispensed'
-                let statusKey = (prescription.status || '').toString().toLowerCase();
-                let statusLabel = prescription.status || '';
-                if (statusKey === 'completed') {
-                    statusKey = 'dispensed';
-                    statusLabel = 'Dispensed';
-                }
-                
-                html += `
-                    <div class="prescription-card" data-prescription-id="${prescription.prescription_id}">
-                        <div class="prescription-info">
-                            <div class="prescription-header">
-                                <h4>Prescription #${prescription.prescription_id}</h4>
-                                <span class="status-badge status-${statusKey}">${statusLabel}</span>
-                            </div>
-                            <div class="prescription-details">
-                                <p><strong>Patient:</strong> ${patientName} (${prescription.patient_id})</p>
-                                <p><strong>Date:</strong> ${prescription.prescription_date}</p>
-                                <p><strong>Diagnosis:</strong> ${prescription.diagnosis || 'Not specified'}</p>
-                                <p><strong>Notes:</strong> ${prescription.notes || 'No additional notes'}</p>
-                            </div>
-                        </div>
-                        <div class="prescription-actions">
-                            <button class="btn btn-primary js-view-prescription">
-                                <i class="fas fa-eye"></i> View Details
-                            </button>
-                            <button class="btn btn-warning js-edit-prescription">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            <button class="btn btn-danger js-delete-prescription">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
+        if (!prescriptions || prescriptions.length === 0) {
+            prescriptionsList.innerHTML = '<p>No prescriptions found matching the criteria</p>';
+            return;
         }
-        prescriptionsList.innerHTML = html;
+
+        const patientMap = this._buildPatientMap();
+        const parts = [];
+
+        for (let i = 0; i < prescriptions.length; i++) {
+            const prescription = prescriptions[i];
+            const patient = patientMap.get(prescription.patient_id);
+            const patientName = patient ? `${patient.first_name} ${patient.last_name}` : 'Unknown Patient';
+
+            let statusKey = (prescription.status || '').toString().toLowerCase();
+            let statusLabel = prescription.status || '';
+            if (statusKey === 'completed') {
+                statusKey = 'dispensed';
+                statusLabel = 'Dispensed';
+            }
+
+            parts.push(
+                `<div class="prescription-card" data-prescription-id="${prescription.prescription_id}">` +
+                    `<div class="prescription-info">` +
+                        `<div class="prescription-header">` +
+                            `<h4>Prescription #${prescription.prescription_id}</h4>` +
+                            `<span class="status-badge status-${statusKey}">${statusLabel}</span>` +
+                        `</div>` +
+                        `<div class="prescription-details">` +
+                            `<p><strong>Patient:</strong> ${patientName} (${prescription.patient_id})</p>` +
+                            `<p><strong>Date:</strong> ${prescription.prescription_date}</p>` +
+                            `<p><strong>Diagnosis:</strong> ${prescription.diagnosis || 'Not specified'}</p>` +
+                            `<p><strong>Notes:</strong> ${prescription.notes || 'No additional notes'}</p>` +
+                        `</div>` +
+                    `</div>` +
+                    `<div class="prescription-actions">` +
+                        `<button class="btn btn-primary js-view-prescription">` +
+                            `<i class="fas fa-eye"></i> View Details` +
+                        `</button>` +
+                        `<button class="btn btn-warning js-edit-prescription">` +
+                            `<i class="fas fa-edit"></i> Edit` +
+                        `</button>` +
+                        `<button class="btn btn-danger js-delete-prescription">` +
+                            `<i class="fas fa-trash"></i> Delete` +
+                        `</button>` +
+                    `</div>` +
+                `</div>`
+            );
+        }
+
+        prescriptionsList.innerHTML = parts.join('');
     }
 }

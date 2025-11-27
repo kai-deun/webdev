@@ -27,21 +27,27 @@ define('SESSION_TIMEOUT', 3600);    // Session timeout in seconds (1 hour)
  * Get a new database connection
  * @return mysqli|false Database connection or false on error
  */
-function getDBConnection() {
+function getDbConnection() {
+    // Create a new mysqli connection using constants
     $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-    
+
+    // Check for connection errors
     if ($mysqli->connect_error) {
-        error_log("Database Connection Error: " . $mysqli->connect_error);
+        // Set a 500 Internal Server Error response code
         http_response_code(500);
+        // Return a JSON error message
         echo json_encode([
             'success' => false,
             'message' => 'Database connection failed: ' . $mysqli->connect_error
         ]);
+        // Terminate script execution
         exit;
     }
-    
-    // Set charset to UTF-8
+
+    // Set the character set to utf8mb4 for proper encoding
     $mysqli->set_charset("utf8mb4");
+
+    // Return the connection object
     return $mysqli;
 }
 
@@ -58,8 +64,8 @@ function isLoggedIn() {
     return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
 }
 
-// Helper function to get current user
-function getCurrentUser() {
+// Helper function to get current user session data
+function getSessionUser() {
     if (!isLoggedIn()) {
         return null;
     }
