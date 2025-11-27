@@ -78,6 +78,9 @@ switch ($action) {
     case 'deletePrescription':
         deletePrescription($mysqli);
         break;
+    case 'requestRenewal':
+        requestPrescriptionRenewal($mysqli);
+        break;
     default:
         http_response_code(400);
         echo json_encode([
@@ -820,5 +823,98 @@ function validateDate($date, $format = 'Y-m-d') {
 // Utility function to sanitize input
 function sanitizeInput($input) {
     return htmlspecialchars(strip_tags(trim($input)));
+}
+
+// Request prescription renewal
+function requestPrescriptionRenewal($mysqli) {
+    // Get parameters from POST
+    $prescriptionId = $_POST['prescription_id'] ?? ($_GET['prescription_id'] ?? '');
+    $notes = $_POST['notes'] ?? ($_GET['notes'] ?? '');
+    
+    if (empty($prescriptionId)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'prescription_id is required']);
+        return;
+    }
+    
+    // Check if user is logged in
+    if (!isset($_SESSION['user_id'])) {
+        http_response_code(401);
+        echo json_encode(['success' => false, 'message' => 'Not logged in']);
+        return;
+    }
+    
+    $userId = $_SESSION['user_id'];
+    
+    try {
+        // Verify prescription exists and belongs to this patient
+        $checkQuery = "
+            SELECT p.prescription_id, p.patient_id, p.status, pat.user_id
+            FROM prescriptions p
+            JOIN patients pat ON p.patient_id = pat.patient_id
+            WHERE p.prescription_id = ? AND pat.user_id = ?
+        ";
+        
+        $stmt = $mysqli->prepare($checkQuery);
+        if (!$stmt) throw new Exception('Prepare failed: ' . $mysqli->error);
+        
+        $stmt->bind_param('ii', $prescriptionId, $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows === 0) {
+            $stmt->close();
+            http_response_code(404);
+            echo json_encode(['success' => false, 'message' => 'Prescription not found or does not belong to this patient']);
+            return;
+        }
+        
+        $prescription = $result->fetch_assoc();
+        $stmt->close();
+        
+        // Check if prescription is expired or cancelled
+        if ($prescription['status'] === 'cancelled') {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Cannot renew a cancelled prescription']);
+            return;
+        }
+        
+        // Insert renewal request
+        $insertQuery = "
+            INSERT INTO prescription_renewals 
+            (prescription_id, requested_by, request_date, status, notes)
+            VALUES (?, ?, NOW(), 'pending', ?)
+        ";
+        
+        $stmt = $mysqli->prepare($insertQuery);
+        if (!$stmt) throw new Exception('Prepare failed: ' . $mysqli->error);
+        
+        $stmt->bind_param('iis', $prescriptionId, $userId, $notes);
+        
+        if (!$stmt->execute()) {
+            throw new Exception('Execute failed: ' . $stmt->error);
+        }
+        
+        $renewalId = $mysqli->insert_id;
+        $stmt->close();
+        
+        // Update prescription renewal_requested flag
+        $updateQuery = "UPDATE prescriptions SET renewal_requested = TRUE WHERE prescription_id = ?";
+        $stmt = $mysqli->prepare($updateQuery);
+        $stmt->bind_param('i', $prescriptionId);
+        $stmt->execute();
+        $stmt->close();
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'Renewal request submitted successfully',
+            'renewal_id' => $renewalId,
+            'prescription_id' => $prescriptionId
+        ]);
+        
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'Error submitting renewal request: ' . $e->getMessage()]);
+    }
 }
 ?>

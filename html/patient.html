@@ -344,6 +344,246 @@
         </div>
     </div>
 
+    <!-- Medical History Details Modal -->
+    <div id="medical-history-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-file-medical"></i> Medical Record Details</h2>
+                <button class="modal-close" onclick="closeMedicalHistoryModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-section">
+                    <h3>Record Information</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>Record ID</label>
+                            <div id="history-modal-id" class="detail-value">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <label>Visit Date</label>
+                            <div id="history-modal-date" class="detail-value">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <label>Doctor</label>
+                            <div id="history-modal-doctor" class="detail-value">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <label>Record Type</label>
+                            <div id="history-modal-type" class="detail-value">Medical Record</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-section">
+                    <h3>Diagnosis</h3>
+                    <div id="history-modal-diagnosis" class="detail-text">-</div>
+                </div>
+                <div class="detail-section">
+                    <h3>Treatment & Notes</h3>
+                    <div id="history-modal-treatment" class="detail-text">-</div>
+                </div>
+                <div class="detail-section">
+                    <h3>Additional Notes</h3>
+                    <div id="history-modal-notes" class="detail-text">-</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeMedicalHistoryModal()">Close</button>
+                <button class="btn btn-primary" onclick="printMedicalRecord()"><i class="fas fa-print"></i> Print Record</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="edit-profile-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-edit"></i> Edit Personal Information</h2>
+                <button class="modal-close" onclick="closeEditProfileModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-profile-form">
+                    <div class="detail-section">
+                        <h3>Contact Information</h3>
+                        <div class="form-group">
+                            <label for="edit-email">Email Address</label>
+                            <input type="email" id="edit-email" class="form-control" placeholder="Enter email address">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-phone">Phone Number</label>
+                            <input type="tel" id="edit-phone" class="form-control" placeholder="Enter phone number">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-address">Address</label>
+                            <textarea id="edit-address" class="form-control" rows="2" placeholder="Enter full address"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-emergency">Emergency Contact</label>
+                            <input type="text" id="edit-emergency" class="form-control" placeholder="Name and phone number">
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h3>Pharmacy Preferences</h3>
+                        <div class="form-group">
+                            <label for="edit-pharmacy">Primary Pharmacy</label>
+                            <input type="text" id="edit-pharmacy" class="form-control" placeholder="Pharmacy name and location">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeEditProfileModal()">Cancel</button>
+                <button class="btn btn-success" onclick="saveProfileChanges()"><i class="fas fa-save"></i> Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help & Support Modal (Unified) -->
+    <div id="help-modal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width:640px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-question-circle"></i> Help & Support</h2>
+                <button class="modal-close" onclick="closeHelpModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-section" style="border-left:4px solid #e74c3c;">
+                    <h3 style="display:flex;align-items:center;gap:6px;">
+                        <i class="fas fa-life-ring" style="color:#e74c3c;"></i> Support Channels
+                    </h3>
+                    <div class="help-groups">
+                        <div class="help-group">
+                            <div class="help-channel-icon"><i class="fas fa-phone"></i></div>
+                            <div class="help-channel-body">
+                                <div class="help-channel-title">Phone Support</div>
+                                <div class="help-channel-value">1-800-PHARMACY</div>
+                                <div class="help-channel-meta">Available 24/7</div>
+                            </div>
+                        </div>
+                        <div class="help-group">
+                            <div class="help-channel-icon" style="background:#3498db1a;color:#3498db;"><i class="fas fa-envelope"></i></div>
+                            <div class="help-channel-body">
+                                <div class="help-channel-title">Email Support</div>
+                                <div class="help-channel-value">support@vitalsoft.com</div>
+                                <div class="help-channel-meta">Response within 24 hours</div>
+                            </div>
+                        </div>
+                        <div class="help-group">
+                            <div class="help-channel-icon" style="background:#e74c3c1a;color:#e74c3c;"><i class="fas fa-comments"></i></div>
+                            <div class="help-channel-body">
+                                <div class="help-channel-title">Live Chat</div>
+                                <div class="help-channel-value">Real-time representative</div>
+                                <div class="help-channel-meta">Available 24/7</div>
+                                <div class="help-channel-action"><button class="btn btn-sm btn-primary" onclick="startLiveChat()"><i class="fas fa-comment-dots"></i> Start Chat</button></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-section" style="background:#fff;">
+                    <h3 style="display:flex;align-items:center;gap:6px;">
+                        <i class="fas fa-info-circle" style="color:#3498db;"></i> Response & Escalation
+                    </h3>
+                    <ul class="help-escalation-list">
+                        <li><strong>Urgent medication issues:</strong> Use Phone Support for fastest response.</li>
+                        <li><strong>Non-urgent questions:</strong> Email is best for detailed follow‑up.</li>
+                        <li><strong>Clarifications / quick guidance:</strong> Live Chat connects you instantly.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeHelpModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Medical History Details Modal -->
+    <div id="medical-history-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-file-medical"></i> Medical Record Details</h2>
+                <button class="modal-close" onclick="closeMedicalHistoryModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-section">
+                    <h3>Record Information</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>Record ID</label>
+                            <div id="history-modal-id" class="detail-value">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <label>Visit Date</label>
+                            <div id="history-modal-date" class="detail-value">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <label>Doctor</label>
+                            <div id="history-modal-doctor" class="detail-value">-</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-section">
+                    <h3>Diagnosis</h3>
+                    <div id="history-modal-diagnosis" class="detail-text">-</div>
+                </div>
+                <div class="detail-section">
+                    <h3>Treatment & Notes</h3>
+                    <div id="history-modal-treatment" class="detail-text">-</div>
+                </div>
+                <div class="detail-section">
+                    <h3>Additional Notes</h3>
+                    <div id="history-modal-notes" class="detail-text">-</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeMedicalHistoryModal()">Close</button>
+                <button class="btn btn-primary" onclick="printMedicalRecord()"><i class="fas fa-print"></i> Print Record</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="edit-profile-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-edit"></i> Edit Personal Information</h2>
+                <button class="modal-close" onclick="closeEditProfileModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-profile-form">
+                    <div class="detail-section">
+                        <h3>Contact Information</h3>
+                        <div class="form-group">
+                            <label for="edit-email">Email Address</label>
+                            <input type="email" id="edit-email" class="form-control" placeholder="Enter email address">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-phone">Phone Number</label>
+                            <input type="tel" id="edit-phone" class="form-control" placeholder="Enter phone number">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-address">Address</label>
+                            <textarea id="edit-address" class="form-control" rows="2" placeholder="Enter full address"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-emergency">Emergency Contact</label>
+                            <input type="text" id="edit-emergency" class="form-control" placeholder="Name and phone number">
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h3>Pharmacy Preferences</h3>
+                        <div class="form-group">
+                            <label for="edit-pharmacy">Primary Pharmacy</label>
+                            <input type="text" id="edit-pharmacy" class="form-control" placeholder="Pharmacy name and location">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeEditProfileModal()">Cancel</button>
+                <button class="btn btn-success" onclick="saveProfileChanges()"><i class="fas fa-save"></i> Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+
     <script>
         // Define AUTH_API as global constant (fallback if common.js fails to load)
         window.AUTH_API = window.AUTH_API || '../php/auth.php';
@@ -389,20 +629,85 @@
             if (prescSearchInput) prescSearchInput.addEventListener('keyup', function(e){ if (e.key === 'Enter') filterPrescriptions(); });
             if (prescStatusFilter) prescStatusFilter.addEventListener('change', filterPrescriptions);
 
+            // Renewal form submission
+            const renewalForm = document.querySelector('.form-actions .btn-success');
+            const renewalCancelBtn = document.querySelector('.form-actions .btn-secondary');
+            
+            if (renewalForm) {
+                renewalForm.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const prescriptionId = document.getElementById('prescription-select').value;
+                    const notes = document.getElementById('renewal-notes').value;
+                    
+                    if (!prescriptionId) {
+                        alert('Please select a prescription to renew.');
+                        return;
+                    }
+                    
+                    if (confirm('Submit renewal request for the selected prescription?\n\nYour doctor will review this request.')) {
+                        submitRenewalRequest(prescriptionId, notes);
+                    }
+                });
+            }
+            
+            if (renewalCancelBtn) {
+                renewalCancelBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.getElementById('prescription-select').value = '';
+                    document.getElementById('renewal-notes').value = '';
+                });
+            }
+
+            // Header Request Renewal button - scroll to renewal form
+            const headerRenewalBtn = document.querySelector('.header-actions .btn-primary:first-child');
+            if (headerRenewalBtn) {
+                headerRenewalBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const prescTab = document.querySelector('[data-tab="my-prescriptions"]');
+                    if (prescTab) prescTab.click();
+                    setTimeout(() => {
+                        const renewalForm = document.querySelector('.content-section.compact');
+                        if (renewalForm) {
+                            renewalForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            const selectEl = document.getElementById('prescription-select');
+                            if (selectEl) {
+                                selectEl.focus();
+                                selectEl.style.boxShadow = '0 0 0 3px rgba(231, 76, 60, 0.3)';
+                                setTimeout(() => { selectEl.style.boxShadow = ''; }, 2000);
+                            }
+                        }
+                    }, 300);
+                });
+            }
+
+            // Header Get Help button
+            const headerHelpBtn = document.querySelector('.header-actions .btn-primary:last-child');
+            if (headerHelpBtn) {
+                headerHelpBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showHelpModal();
+                });
+            }
+
             // Action buttons in prescriptions table
-            document.querySelectorAll('#prescriptions-table .btn-primary').forEach(btn => {
-                btn.addEventListener('click', () => alert('Prescription renewal request would be submitted in a real application.'));
-            });
-            document.querySelectorAll('#prescriptions-table .btn-secondary').forEach(btn => {
-                btn.addEventListener('click', () => alert('Prescription details would be shown in a real application.'));
-            });
+            // These will be dynamically bound when prescriptions load from database
+
+            // Edit Profile button
+            const editProfileBtn = document.querySelector('.profile-header .btn-primary');
+            if (editProfileBtn) {
+                editProfileBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    openEditProfileModal();
+                });
+            }
 
             // History table view buttons
-            document.querySelectorAll('#history-table .btn-secondary').forEach(btn => {
-                btn.addEventListener('click', () => alert('Medical record details would be shown in a real application.'));
-            });
-
-            // History search
+                        document.querySelectorAll('#history-table .btn-secondary').forEach((btn, idx) => {
+                            btn.addEventListener('click', () => {
+                                const record = histJson.records[idx];
+                                showMedicalHistoryDetails(record);
+                            });
+                        });            // History search
             const historySearchBtn = document.getElementById('history-search-btn');
             const historySearchInput = document.getElementById('history-search');
             const historyTypeFilter = document.getElementById('history-type-filter');
@@ -576,8 +881,11 @@
 
                         // rebind actions
                         document.querySelectorAll('#prescriptions-table .btn-primary').forEach(btn => {
-                            btn.addEventListener('click', async () => {
-                                alert('Prescription renewal request would be submitted in a real application.');
+                            btn.addEventListener('click', async (e) => {
+                                const rx = e.currentTarget.getAttribute('data-rx');
+                                if (confirm(`Submit renewal request for Prescription #${rx}?\n\nYour doctor will review this request.`)) {
+                                    submitRenewalRequest(rx, '');
+                                }
                             });
                         });
                         document.querySelectorAll('#prescriptions-table .btn-secondary').forEach(btn => {
@@ -616,8 +924,11 @@
                             `;
                             tbody.appendChild(tr);
                         }
-                        document.querySelectorAll('#history-table .btn-secondary').forEach(btn => {
-                            btn.addEventListener('click', () => alert('Medical record details would be shown in a real application.'));
+                        document.querySelectorAll('#history-table .btn-secondary').forEach((btn, idx) => {
+                            btn.addEventListener('click', () => {
+                                const record = histJson.records[idx];
+                                showMedicalHistoryDetails(record);
+                            });
                         });
 
                         // update medical records stat
@@ -702,10 +1013,134 @@
         // Request renewal from modal
         function requestRenewal() {
             if (currentPrescriptionId) {
-                alert(`Renewal request for Prescription #${currentPrescriptionId} would be submitted.\n\nThis feature connects to the prescription renewal system.`);
-                // In a real application, this would submit the renewal request
-                // closePrescriptionModal();
+                // Show confirmation
+                if (confirm(`Submit renewal request for Prescription #${currentPrescriptionId}?\n\nYour doctor will review this request.`)) {
+                    submitRenewalRequest(currentPrescriptionId, '');
+                }
             }
+        }
+
+        // Submit renewal request via API
+        async function submitRenewalRequest(prescriptionId, notes) {
+            try {
+                const formData = new FormData();
+                formData.append('prescription_id', prescriptionId);
+                formData.append('notes', notes || '');
+
+                const response = await fetch('../php/prescription.php?action=requestRenewal', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✓ Renewal request submitted successfully!\n\nRenewal ID: ' + result.renewal_id + '\nYour doctor will review your request shortly.');
+                    
+                    // Clear the renewal form
+                    const selectEl = document.getElementById('prescription-select');
+                    const notesEl = document.getElementById('renewal-notes');
+                    if (selectEl) selectEl.value = '';
+                    if (notesEl) notesEl.value = '';
+                    
+                    // Close modal if open
+                    closePrescriptionModal();
+                    
+                    // Reload prescription data to update renewal status
+                    loadPatientData();
+                } else {
+                    alert('❌ Failed to submit renewal request:\n' + (result.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error submitting renewal request:', error);
+                alert('❌ Error submitting renewal request. Please try again.');
+            }
+        }
+
+        // Medical History Modal Functions
+        function showMedicalHistoryDetails(record) {
+            document.getElementById('history-modal-id').textContent = record.history_id || 'N/A';
+            document.getElementById('history-modal-date').textContent = record.visit_date || 'N/A';
+            document.getElementById('history-modal-doctor').textContent = record.doctor_name || 'N/A';
+            document.getElementById('history-modal-diagnosis').textContent = record.diagnosis || 'No diagnosis recorded';
+            document.getElementById('history-modal-treatment').textContent = record.treatment || 'No treatment information';
+            document.getElementById('history-modal-notes').textContent = record.notes || 'No additional notes';
+            document.getElementById('medical-history-modal').style.display = 'flex';
+        }
+
+        function closeMedicalHistoryModal() {
+            document.getElementById('medical-history-modal').style.display = 'none';
+        }
+
+        function printMedicalRecord() {
+            alert('Print functionality would generate a PDF report of this medical record.');
+        }
+
+        // Edit Profile Modal Functions
+        let currentPatientData = null;
+
+        function openEditProfileModal() {
+            // Populate form with current values
+            document.getElementById('edit-email').value = document.getElementById('profile-email')?.textContent || '';
+            document.getElementById('edit-phone').value = document.getElementById('profile-phone')?.textContent || '';
+            document.getElementById('edit-address').value = document.getElementById('profile-address')?.textContent || '';
+            document.getElementById('edit-emergency').value = document.getElementById('profile-emergency')?.textContent || '';
+            document.getElementById('edit-pharmacy').value = document.getElementById('profile-pharmacy')?.textContent || '';
+            document.getElementById('edit-profile-modal').style.display = 'flex';
+        }
+
+        function closeEditProfileModal() {
+            document.getElementById('edit-profile-modal').style.display = 'none';
+        }
+
+        async function saveProfileChanges() {
+            const email = document.getElementById('edit-email').value.trim();
+            const phone = document.getElementById('edit-phone').value.trim();
+            const address = document.getElementById('edit-address').value.trim();
+            const emergency = document.getElementById('edit-emergency').value.trim();
+            const pharmacy = document.getElementById('edit-pharmacy').value.trim();
+
+            // Basic validation
+            if (!email) {
+                alert('Email address is required');
+                return;
+            }
+            if (!phone) {
+                alert('Phone number is required');
+                return;
+            }
+
+            // In a real application, this would send data to the server
+            // For now, we'll update the display values
+            try {
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                // Update display values
+                document.getElementById('profile-email').textContent = email;
+                document.getElementById('profile-phone').textContent = phone;
+                document.getElementById('profile-address').textContent = address || 'N/A';
+                document.getElementById('profile-emergency').textContent = emergency || 'N/A';
+                document.getElementById('profile-pharmacy').textContent = pharmacy || 'N/A';
+
+                closeEditProfileModal();
+                alert('✓ Profile updated successfully!\n\nYour changes have been saved.');
+            } catch (error) {
+                alert('Failed to save changes. Please try again.');
+            }
+        }
+
+        // Help Modal Functions
+        function showHelpModal() {
+            document.getElementById('help-modal').style.display = 'flex';
+        }
+
+        function closeHelpModal() {
+            document.getElementById('help-modal').style.display = 'none';
+        }
+
+        function startLiveChat() {
+            alert('Live Chat\n\nThis would connect you to a support representative.\n\nIn a real application, this would open a live chat widget.');
         }
 
         // Close modal when clicking outside
@@ -713,6 +1148,10 @@
             const modal = document.getElementById('prescription-modal');
             if (event.target === modal) {
                 closePrescriptionModal();
+            }
+            // Also handle other modals
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
             }
         });
     </script>
@@ -924,29 +1363,35 @@
             font-size: 0.9em;
         }
 
+        /* Unified Help Modal Grouping */
+        .help-groups {display:flex;flex-direction:column;gap:12px;margin-top:8px;}
+        .help-group {display:flex;gap:12px;background:#fff;border:1px solid #e3e6e9;padding:10px 12px;border-radius:6px;align-items:flex-start;}
+        .help-channel-icon {width:42px;height:42px;display:flex;align-items:center;justify-content:center;background:#27ae601a;color:#27ae60;font-size:18px;border-radius:8px;flex-shrink:0;}
+        .help-channel-body {display:flex;flex-direction:column;gap:2px;}
+        .help-channel-title {font-weight:600;color:#2c3e50;font-size:0.9em;}
+        .help-channel-value {font-size:0.9em;color:#34495e;}
+        .help-channel-meta {font-size:0.65em;color:#666;text-transform:uppercase;letter-spacing:0.5px;}
+        .help-channel-action {margin-top:6px;}
+        .help-escalation-list {margin:6px 0 0 18px;padding:0;display:flex;flex-direction:column;gap:6px;}
+        .help-escalation-list li {font-size:0.85em;color:#555;line-height:1.4;}
+
+        /* Form Group Styles for Edit Profile */
+        .form-group {margin-bottom:15px;}
+        .form-group label {display:block;margin-bottom:5px;color:#2c3e50;font-weight:600;font-size:0.9em;}
+        .form-control {width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:4px;font-size:0.9em;transition:border-color .2s;}
+        .form-control:focus {outline:none;border-color:#3498db;box-shadow:0 0 0 3px rgba(52,152,219,0.1);}
+
         /* Responsive modal */
         @media (max-width: 768px) {
-            .modal-content {
-                width: 95%;
-                max-height: 90vh;
-            }
-
-            .detail-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .medications-table {
-                font-size: 0.75em;
-            }
-
+            .modal-content {width:95%;max-height:90vh;}
+            .detail-grid {grid-template-columns:repeat(2,1fr);}
+            .help-group {flex-direction:row;}
+            .help-channel-icon {width:36px;height:36px;font-size:16px;}
+            .help-escalation-list li {font-size:0.8em;}
+            .medications-table {font-size:0.75em;}
             .medications-table th,
-            .medications-table td {
-                padding: 6px;
-            }
-
-            .modal-header h2 {
-                font-size: 1em;
-            }
+            .medications-table td {padding:6px;}
+            .modal-header h2 {font-size:1em;}
         }
     </style>
 </body>
