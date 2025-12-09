@@ -1,1 +1,36 @@
-//TODO: Project dependencies and scripts
+{
+  "name": "vitalsoft-prescription",
+  "version": "1.0.0",
+  "description": "Final Project for CS312",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [
+    "sample",
+    "npm",
+    "package.json",
+    "example"
+  ],
+  "author": "VitalSoft",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+github.com"
+  },
+  "homepage": "github.com",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^4.18.2",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.11"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=10.0.0"
+  }
+}
