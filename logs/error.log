@@ -1897,3 +1897,81 @@ Stack trace:
     [login_time] => 1765369541
 )
 
+[10-Dec-2025 13:05:57 UTC] getCurrentUser called. Session ID: 1u3420escrt81ftmalkvbkeg8u
+[10-Dec-2025 13:05:57 UTC] Session cookie: 1u3420escrt81ftmalkvbkeg8u
+[10-Dec-2025 13:05:57 UTC] Session cookie path: /
+[10-Dec-2025 13:05:57 UTC] Session data: Array
+(
+)
+
+[10-Dec-2025 13:05:57 UTC] All cookies: Array
+(
+    [PHPSESSID] => 1u3420escrt81ftmalkvbkeg8u
+)
+
+[10-Dec-2025 13:05:57 UTC] No user_id in session
+[10-Dec-2025 13:07:16 UTC] getCurrentUser called. Session ID: 1u3420escrt81ftmalkvbkeg8u
+[10-Dec-2025 13:07:16 UTC] Session cookie: 1u3420escrt81ftmalkvbkeg8u
+[10-Dec-2025 13:07:16 UTC] Session cookie path: /
+[10-Dec-2025 13:07:16 UTC] Session data: Array
+(
+)
+
+[10-Dec-2025 13:07:16 UTC] All cookies: Array
+(
+    [PHPSESSID] => 1u3420escrt81ftmalkvbkeg8u
+)
+
+[10-Dec-2025 13:07:16 UTC] No user_id in session
+[10-Dec-2025 13:07:27 UTC] Login successful for user: manager, role: Pharmacy Manager
+[10-Dec-2025 13:07:27 UTC] Session ID: 1u3420escrt81ftmalkvbkeg8u
+[10-Dec-2025 13:07:27 UTC] Session cookie path: /
+[10-Dec-2025 13:07:27 UTC] Session cookie name: PHPSESSID
+[10-Dec-2025 13:07:27 UTC] Session set: Array
+(
+    [user_id] => 5
+    [username] => manager
+    [email] => manager1@pharmacy.com
+    [role] => Pharmacy Manager
+    [full_name] => Emily Davis
+    [login_time] => 1765372047
+)
+
+[10-Dec-2025 13:07:28 UTC] getCurrentUser called. Session ID: 1u3420escrt81ftmalkvbkeg8u
+[10-Dec-2025 13:07:28 UTC] Session cookie: 1u3420escrt81ftmalkvbkeg8u
+[10-Dec-2025 13:07:28 UTC] Session cookie path: /
+[10-Dec-2025 13:07:28 UTC] Session data: Array
+(
+    [user_id] => 5
+    [username] => manager
+    [email] => manager1@pharmacy.com
+    [role] => Pharmacy Manager
+    [full_name] => Emily Davis
+    [login_time] => 1765372047
+)
+
+[10-Dec-2025 13:07:28 UTC] All cookies: Array
+(
+    [PHPSESSID] => 1u3420escrt81ftmalkvbkeg8u
+)
+
+[10-Dec-2025 13:07:28 UTC] User found in session: manager
+[10-Dec-2025 13:09:37 UTC] getCurrentUser called. Session ID: 1u3420escrt81ftmalkvbkeg8u
+[10-Dec-2025 13:09:37 UTC] Session cookie: 1u3420escrt81ftmalkvbkeg8u
+[10-Dec-2025 13:09:37 UTC] Session cookie path: /
+[10-Dec-2025 13:09:37 UTC] Session data: Array
+(
+    [user_id] => 5
+    [username] => manager
+    [email] => manager1@pharmacy.com
+    [role] => Pharmacy Manager
+    [full_name] => Emily Davis
+    [login_time] => 1765372047
+)
+
+[10-Dec-2025 13:09:37 UTC] All cookies: Array
+(
+    [PHPSESSID] => 1u3420escrt81ftmalkvbkeg8u
+)
+
+[10-Dec-2025 13:09:37 UTC] User found in session: manager
