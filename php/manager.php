@@ -4,17 +4,34 @@
  * Handles manager-specific operations
  */
 
+// Configure session before starting
+ini_set('session.cookie_httponly', 1);
+ini_set('session.use_only_cookies', 1);
+ini_set('session.cookie_path', '/');
+ini_set('session.cookie_domain', '');
+ini_set('session.cookie_lifetime', 0);
+ini_set('session.cache_limiter', '');
+
+// Start session first before any output
+session_start();
+
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
-header('Access-Control-Allow-Headers: Content-Type');
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
+
+// Debug logging
+error_log("manager.php - Session ID: " . session_id());
+error_log("manager.php - Session data: " . print_r($_SESSION, true));
+error_log("manager.php - Action: " . ($_GET['action'] ?? ($_POST['action'] ?? 'none')));
+
+header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
     exit;
 }
 
-session_start();
 require_once 'config.php';
 $mysqli = getDbConnection();
 
@@ -84,7 +101,11 @@ function getBranches($mysqli) {
         $query = "
             SELECT pb.branch_id, pb.branch_name, pb.branch_code, pb.address,
                    pb.city, pb.state, pb.phone_number, pb.email, pb.status,
-                   CONCAT(u.first_name, ' ', u.last_name) AS manager_name
+                   CONCAT(u.first_name, ' ', u.last_name) AS manager_name,
+                   (SELECT COUNT(*) FROM branch_staff bs 
+                    WHERE bs.branch_id = pb.branch_id AND bs.status = 'active') AS staff_count,
+                   (SELECT COUNT(DISTINCT bi.medicine_id) FROM branch_inventory bi 
+                    WHERE bi.branch_id = pb.branch_id) AS product_count
             FROM pharmacy_branches pb
             LEFT JOIN users u ON pb.manager_id = u.user_id
             ORDER BY pb.branch_name
@@ -231,7 +252,7 @@ function getInventory($mysqli) {
 
         $query = "
             SELECT bi.inventory_id, bi.branch_id, bi.quantity, bi.reorder_level, bi.status,
-                   m.medicine_name, m.unit_price, m.dosage_form,
+                   m.medicine_id, m.medicine_name, m.generic_name, m.unit_price, m.dosage_form, m.strength,
                    pb.branch_name
             FROM branch_inventory bi
             JOIN medicines m ON bi.medicine_id = m.medicine_id
@@ -242,7 +263,7 @@ function getInventory($mysqli) {
             $query .= " WHERE bi.branch_id = $branchId";
         }
 
-        $query .= " ORDER BY m.medicine_name";
+        $query .= " ORDER BY m.medicine_name, pb.branch_name";
 
         $result = $mysqli->query($query);
         $inventory = [];

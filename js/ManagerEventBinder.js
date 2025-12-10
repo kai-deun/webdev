@@ -15,50 +15,72 @@ export class ManagerEventBinder {
         const tabBtns = document.querySelectorAll('.tab-btn');
         tabBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const tabName = e.target.dataset.tab;
+                const tabName = e.target.closest('.tab-btn').dataset.tab;
                 managerUtils.switchTab(tabName);
             });
         });
 
-        // Search boxes
-        const searchBoxes = document.querySelectorAll('.search-box');
-        searchBoxes.forEach(box => {
-            box.addEventListener('input', (e) => {
-                const tabId = e.target.closest('.tab-content').id;
-                const searchTerm = e.target.value;
-
-                if (tabId === 'inventory-tab') {
-                    managerUtils.filterInventory(searchTerm);
-                } else if (tabId === 'staff-tab') {
-                    managerUtils.filterStaff(searchTerm);
-                }
+        // Branch search
+        const branchSearchBtn = document.getElementById('branch-search-btn');
+        if (branchSearchBtn) {
+            branchSearchBtn.addEventListener('click', () => {
+                const searchTerm = document.getElementById('branch-search').value;
+                this.handleBranchSearch(searchTerm);
             });
-        });
+        }
 
-        // Branch filter dropdown
-        const branchFilters = document.querySelectorAll('.filter-select');
-        branchFilters.forEach(select => {
-            select.addEventListener('change', (e) => {
-                const branchId = e.target.value;
-                const tabId = e.target.closest('.tab-content').id;
-
-                if (tabId === 'inventory-tab') {
-                    managerUtils.loadInventory(branchId || null);
-                } else if (tabId === 'staff-tab') {
-                    managerUtils.loadStaff(branchId || null);
-                }
+        // Staff search
+        const staffSearchBtn = document.getElementById('staff-search-btn');
+        if (staffSearchBtn) {
+            staffSearchBtn.addEventListener('click', () => {
+                const searchTerm = document.getElementById('staff-search').value;
+                const branchFilter = document.getElementById('staff-branch-filter').value;
+                const roleFilter = document.getElementById('staff-role-filter').value;
+                this.handleStaffSearch(searchTerm, branchFilter, roleFilter);
             });
-        });
+        }
 
-        // Add staff form submission
-        const addStaffForm = document.querySelector('#add-staff-form');
-        if (addStaffForm) {
-            addStaffForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const formData = new FormData(addStaffForm);
-                const staffData = Object.fromEntries(formData);
-                managerUtils.createStaff(staffData);
-                addStaffForm.reset();
+        // Inventory search
+        const inventorySearchBtn = document.getElementById('inventory-search-btn');
+        if (inventorySearchBtn) {
+            inventorySearchBtn.addEventListener('click', () => {
+                const searchTerm = document.getElementById('inventory-search').value;
+                const branchFilter = document.getElementById('inventory-branch-filter').value;
+                const statusFilter = document.getElementById('inventory-status-filter').value;
+                this.handleInventorySearch(searchTerm, branchFilter, statusFilter);
+            });
+        }
+
+        // Add branch button
+        const addBranchBtn = document.getElementById('add-branch-btn');
+        if (addBranchBtn) {
+            addBranchBtn.addEventListener('click', () => {
+                alert('Add branch form would open here (to be implemented)');
+            });
+        }
+
+        // Add staff button
+        const addStaffBtn = document.getElementById('add-staff-btn');
+        if (addStaffBtn) {
+            addStaffBtn.addEventListener('click', () => {
+                alert('Add staff form would open here (to be implemented)');
+            });
+        }
+
+        // Add medicine button
+        const addMedicineBtn = document.getElementById('add-medicine-btn');
+        if (addMedicineBtn) {
+            addMedicineBtn.addEventListener('click', () => {
+                alert('Add medicine form would open here (to be implemented)');
+            });
+        }
+
+        // Branch status filter
+        const branchStatusFilter = document.getElementById('branch-status-filter');
+        if (branchStatusFilter) {
+            branchStatusFilter.addEventListener('change', (e) => {
+                const status = e.target.value;
+                this.handleBranchFilter(status);
             });
         }
     }
@@ -135,5 +157,67 @@ export class ManagerEventBinder {
         if (quantity && !isNaN(quantity)) {
             alert(`Order placed for ${quantity} units (This would integrate with ordering system)`);
         }
+    }
+
+    handleBranchSearch(searchTerm) {
+        const branches = managerUtils.getBranches();
+        const filtered = branches.filter(branch => 
+            branch.branch_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            branch.address.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        managerUtils.displayBranches(filtered);
+    }
+
+    handleBranchFilter(status) {
+        const branches = managerUtils.getBranches();
+        if (status) {
+            const filtered = branches.filter(branch => branch.status === status);
+            managerUtils.displayBranches(filtered);
+        } else {
+            managerUtils.displayBranches(branches);
+        }
+    }
+
+    handleStaffSearch(searchTerm, branchFilter, roleFilter) {
+        let staff = managerUtils.getStaff();
+        
+        if (searchTerm) {
+            staff = staff.filter(s => 
+                s.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                s.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                s.email.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+        
+        if (branchFilter) {
+            staff = staff.filter(s => s.branch_id == branchFilter);
+        }
+        
+        if (roleFilter) {
+            staff = staff.filter(s => s.role_name === roleFilter);
+        }
+        
+        managerUtils.displayStaff(staff);
+    }
+
+    handleInventorySearch(searchTerm, branchFilter, statusFilter) {
+        let inventory = managerUtils.getInventory();
+        
+        if (searchTerm) {
+            inventory = inventory.filter(item => 
+                item.medicine_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (item.generic_name && item.generic_name.toLowerCase().includes(searchTerm.toLowerCase()))
+            );
+        }
+        
+        if (branchFilter) {
+            inventory = inventory.filter(item => item.branch_id == branchFilter);
+        }
+        
+        if (statusFilter) {
+            inventory = inventory.filter(item => item.status === statusFilter);
+        }
+        
+        managerUtils.displayInventory(inventory);
     }
 }

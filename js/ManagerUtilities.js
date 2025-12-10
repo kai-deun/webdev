@@ -11,7 +11,9 @@ export class ManagerUtilities {
     // USER STORY 1 & 2: Load branches
     async loadBranches() {
         try {
-            const response = await fetch(`${this.API_BASE}?action=getBranches`);
+            const response = await fetch(`${this.API_BASE}?action=getBranches`, {
+                credentials: 'same-origin'
+            });
             const data = await response.json();
 
             if (data.success) {
@@ -32,7 +34,8 @@ export class ManagerUtilities {
             const response = await fetch(`${this.API_BASE}?action=updateBranchStatus`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ branch_id: branchId, status: status })
+                body: JSON.stringify({ branch_id: branchId, status: status }),
+                credentials: 'same-origin'
             });
 
             const data = await response.json();
@@ -56,7 +59,9 @@ export class ManagerUtilities {
                 ? `${this.API_BASE}?action=getStaff&branch_id=${branchId}`
                 : `${this.API_BASE}?action=getStaff`;
 
-            const response = await fetch(url);
+            const response = await fetch(url, {
+                credentials: 'same-origin'
+            });
             const data = await response.json();
 
             if (data.success) {
@@ -76,7 +81,8 @@ export class ManagerUtilities {
             const response = await fetch(`${this.API_BASE}?action=createStaff`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(staffData)
+                body: JSON.stringify(staffData),
+                credentials: 'same-origin'
             });
 
             const data = await response.json();
@@ -103,7 +109,8 @@ export class ManagerUtilities {
             const response = await fetch(`${this.API_BASE}?action=deleteStaff`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user_id: staffId })
+                body: JSON.stringify({ user_id: staffId }),
+                credentials: 'same-origin'
             });
 
             const data = await response.json();
@@ -127,7 +134,9 @@ export class ManagerUtilities {
                 ? `${this.API_BASE}?action=getInventory&branch_id=${branchId}`
                 : `${this.API_BASE}?action=getInventory`;
 
-            const response = await fetch(url);
+            const response = await fetch(url, {
+                credentials: 'same-origin'
+            });
             const data = await response.json();
 
             if (data.success) {
@@ -150,7 +159,8 @@ export class ManagerUtilities {
                 body: JSON.stringify({
                     inventory_id: inventoryId,
                     quantity: quantity
-                })
+                }),
+                credentials: 'same-origin'
             });
 
             const data = await response.json();
@@ -177,7 +187,8 @@ export class ManagerUtilities {
             const response = await fetch(`${this.API_BASE}?action=deleteInventory`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ inventory_id: inventoryId })
+                body: JSON.stringify({ inventory_id: inventoryId }),
+                credentials: 'same-origin'
             });
 
             const data = await response.json();
@@ -197,7 +208,9 @@ export class ManagerUtilities {
     // USER STORY 5: Load pending requests
     async loadPendingRequests() {
         try {
-            const response = await fetch(`${this.API_BASE}?action=getPendingRequests`);
+            const response = await fetch(`${this.API_BASE}?action=getPendingRequests`, {
+                credentials: 'same-origin'
+            });
             const data = await response.json();
 
             if (data.success) {
@@ -218,7 +231,8 @@ export class ManagerUtilities {
             const response = await fetch(`${this.API_BASE}?action=approveRequest`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ request_id: requestId })
+                body: JSON.stringify({ request_id: requestId }),
+                credentials: 'same-origin'
             });
 
             const data = await response.json();
@@ -245,7 +259,8 @@ export class ManagerUtilities {
                 body: JSON.stringify({
                     request_id: requestId,
                     reason: reason
-                })
+                }),
+                credentials: 'same-origin'
             });
 
             const data = await response.json();
@@ -336,22 +351,33 @@ export class ManagerUtilities {
 
     // Helper: Update branch filter dropdown
     updateBranchSelect() {
-        const selects = document.querySelectorAll('.filter-select');
-        selects.forEach(select => {
-            if (select.querySelector('option[value="downtown"]')) {
-                // Clear and repopulate
-                while (select.options.length > 1) {
-                    select.remove(1);
-                }
+        const staffBranchFilter = document.getElementById('staff-branch-filter');
+        const inventoryBranchFilter = document.getElementById('inventory-branch-filter');
+        
+        const branches = managerObj.getBranches();
+        
+        // Populate staff branch filter
+        if (staffBranchFilter) {
+            // Keep first option (All Branches)
+            staffBranchFilter.innerHTML = '<option value="">All Branches</option>';
+            branches.forEach(branch => {
+                const option = document.createElement('option');
+                option.value = branch.branch_id;
+                option.textContent = branch.branch_name;
+                staffBranchFilter.appendChild(option);
+            });
+        }
 
-                managerObj.getBranches().forEach(branch => {
-                    const option = document.createElement('option');
-                    option.value = branch.branch_id;
-                    option.textContent = branch.branch_name;
-                    select.appendChild(option);
-                });
-            }
-        });
+        // Populate inventory branch filter
+        if (inventoryBranchFilter) {
+            inventoryBranchFilter.innerHTML = '<option value="">All Branches</option>';
+            branches.forEach(branch => {
+                const option = document.createElement('option');
+                option.value = branch.branch_id;
+                option.textContent = branch.branch_name;
+                inventoryBranchFilter.appendChild(option);
+            });
+        }
     }
 
     // Helper: Update requests badge count
@@ -399,5 +425,31 @@ export class ManagerUtilities {
                 this.loadPendingRequests();
                 break;
         }
+    }
+
+    // Expose getters for filtering
+    getBranches() {
+        return managerObj.getBranches();
+    }
+
+    getStaff() {
+        return managerObj.getStaff();
+    }
+
+    getInventory() {
+        return managerObj.getInventory();
+    }
+
+    // Expose display methods for filtering
+    displayBranches(branches) {
+        managerDisplay.displayBranches(branches);
+    }
+
+    displayStaff(staff) {
+        managerDisplay.displayStaff(staff);
+    }
+
+    displayInventory(inventory) {
+        managerDisplay.displayInventory(inventory);
     }
 }

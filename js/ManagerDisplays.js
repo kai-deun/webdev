@@ -5,100 +5,167 @@ import { managerObj } from "./ManagerInstances.js";
 
 export class ManagerDisplay {
 
+    // Update statistics on dashboard
+    updateStatistics() {
+        const branches = managerObj.getBranches();
+        const staff = managerObj.getStaff();
+        const inventory = managerObj.getInventory();
+
+        // Count statistics
+        const branchCount = branches ? branches.length : 0;
+        const staffCount = staff ? staff.length : 0;
+        
+        // Count unique products across all branches
+        const uniqueProducts = inventory ? new Set(inventory.map(i => i.medicine_id)).size : 0;
+        
+        // Count low stock items
+        const lowStockCount = inventory ? 
+            inventory.filter(i => i.status === 'low_stock' || i.quantity <= i.reorder_level).length : 0;
+
+        // Update DOM
+        const managedBranchesStat = document.getElementById('managed-branches-stat');
+        const totalStaffStat = document.getElementById('total-staff-stat');
+        const totalProductsStat = document.getElementById('total-products-stat');
+        const lowStockStat = document.getElementById('low-stock-stat');
+
+        if (managedBranchesStat) managedBranchesStat.textContent = branchCount;
+        if (totalStaffStat) totalStaffStat.textContent = staffCount;
+        if (totalProductsStat) totalProductsStat.textContent = uniqueProducts;
+        if (lowStockStat) lowStockStat.textContent = lowStockCount;
+    }
+
     // USER STORY 2: Display branches
     displayBranches(branches = null) {
-        const container = document.querySelector('.branches-grid');
+        const container = document.getElementById('branches-grid');
+        const loading = document.getElementById('branches-loading');
+        
         if (!container) return;
+
+        if (loading) loading.style.display = 'block';
 
         const source = branches || managerObj.getBranches();
 
+        if (loading) loading.style.display = 'none';
+
         if (!source || source.length === 0) {
-            container.innerHTML = '<p>No branches found</p>';
+            container.innerHTML = '<p style="text-align:center; padding:20px; color:#666;">No branches found</p>';
             return;
         }
 
-        container.innerHTML = source.map(branch => `
-            <div class="branch-card">
-                <div class="branch-header">
-                    <h3>${branch.branch_name}</h3>
-                    <span class="branch-status status-${branch.status}">${branch.status}</span>
+        container.innerHTML = source.map(branch => {
+            const statusClass = branch.status === 'active' ? 'status-active' : 'status-inactive';
+            const statusText = branch.status.replace('_', ' ').toUpperCase();
+            
+            return `
+                <div class="branch-card">
+                    <div class="branch-header">
+                        <h3>${branch.branch_name}</h3>
+                        <span class="branch-status ${statusClass}">${statusText}</span>
+                    </div>
+                    <div class="branch-details">
+                        <p><i class="fas fa-map-marker-alt"></i> ${branch.address || 'N/A'}</p>
+                        <p><i class="fas fa-phone"></i> ${branch.phone_number || 'N/A'}</p>
+                        <p><i class="fas fa-user"></i> Manager: ${branch.manager_name || 'Not Assigned'}</p>
+                        <p><i class="fas fa-users"></i> Staff: ${branch.staff_count || 0} employees</p>
+                        <p><i class="fas fa-pills"></i> Products: ${branch.product_count || 0} items</p>
+                    </div>
+                    <div class="branch-actions">
+                        <button class="btn btn-primary js-edit-branch" data-branch-id="${branch.branch_id}">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-warning js-change-status" data-branch-id="${branch.branch_id}" data-current-status="${branch.status}">
+                            <i class="fas fa-toggle-on"></i> Change Status
+                        </button>
+                        <button class="btn btn-danger js-delete-branch" data-branch-id="${branch.branch_id}">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
                 </div>
-                <div class="branch-details">
-                    <p><i class="fas fa-map-marker-alt"></i> ${branch.address || 'N/A'}</p>
-                    <p><i class="fas fa-phone"></i> ${branch.phone_number || 'N/A'}</p>
-                    <p><i class="fas fa-user"></i> Manager: ${branch.manager_name || 'Not Assigned'}</p>
-                </div>
-                <div class="branch-actions">
-                    <button class="btn btn-primary js-edit-branch" data-branch-id="${branch.branch_id}">
-                        <i class="fas fa-edit"></i> Edit
-                    </button>
-                    <button class="btn btn-warning js-change-status" data-branch-id="${branch.branch_id}" data-current-status="${branch.status}">
-                        <i class="fas fa-cog"></i> Change Status
-                    </button>
-                </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
+
+        this.updateStatistics();
     }
 
     // USER STORY 3: Display staff
     displayStaff(staff = null) {
-        const tbody = document.querySelector('#staff-tab .data-table tbody');
+        const tbody = document.querySelector('#staff-table tbody');
+        const loading = document.getElementById('staff-loading');
+        
         if (!tbody) return;
+
+        if (loading) loading.style.display = 'block';
 
         const source = staff || managerObj.getStaff();
 
+        if (loading) loading.style.display = 'none';
+
         if (!source || source.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7">No staff members found</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:#666;">No staff members found</td></tr>';
             return;
         }
 
-        tbody.innerHTML = source.map(member => `
-            <tr>
-                <td>${member.user_id}</td>
-                <td>${member.first_name} ${member.last_name}</td>
-                <td>${member.email}</td>
-                <td>${member.role_name || 'N/A'}</td>
-                <td>${member.branch_name || 'Not Assigned'}</td>
-                <td><span class="status-badge status-${member.status}">${member.status}</span></td>
-                <td class="action-buttons">
-                    <button class="action-btn edit js-edit-staff" data-staff-id="${member.user_id}">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="action-btn delete js-delete-staff" data-staff-id="${member.user_id}">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            </tr>
-        `).join('');
+        tbody.innerHTML = source.map(member => {
+            const statusClass = member.status === 'active' ? 'status-active' : 'status-inactive';
+            return `
+                <tr>
+                    <td>EMP${String(member.user_id).padStart(3, '0')}</td>
+                    <td>${member.first_name} ${member.last_name}</td>
+                    <td>${member.email}</td>
+                    <td>${member.role_name || 'N/A'}</td>
+                    <td>${member.branch_name || 'Not Assigned'}</td>
+                    <td><span class="status-badge ${statusClass}">${member.status.toUpperCase()}</span></td>
+                    <td class="action-buttons">
+                        <button class="action-btn edit js-edit-staff" data-staff-id="${member.user_id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn delete js-delete-staff" data-staff-id="${member.user_id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        this.updateStatistics();
     }
 
     // USER STORY 1: Display inventory
     displayInventory(inventory = null) {
-        const tbody = document.querySelector('#inventory-tab .data-table tbody');
+        const tbody = document.querySelector('#inventory-table tbody');
+        const loading = document.getElementById('inventory-loading');
+        
         if (!tbody) return;
+
+        if (loading) loading.style.display = 'block';
 
         const source = inventory || managerObj.getInventory();
 
+        if (loading) loading.style.display = 'none';
+
         if (!source || source.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8">No inventory items found</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px; color:#666;">No inventory items found</td></tr>';
             return;
         }
 
         tbody.innerHTML = source.map(item => {
             let stockClass = 'high';
             if (item.quantity <= 0) stockClass = 'low';
-            else if (item.quantity < item.reorder_level) stockClass = 'low';
+            else if (item.quantity <= item.reorder_level) stockClass = 'low';
             else if (item.quantity < item.reorder_level * 2) stockClass = 'medium';
+
+            const statusClass = item.status === 'available' ? 'status-active' : 
+                               item.status === 'low_stock' ? 'status-badge' : 'status-inactive';
 
             return `
                 <tr>
                     <td>${item.medicine_name}</td>
-                    <td>${item.category || 'N/A'}</td>
+                    <td>${item.generic_name || 'N/A'}</td>
                     <td>${item.branch_name}</td>
                     <td><span class="stock-level ${stockClass}">${item.quantity}</span></td>
                     <td>${item.reorder_level}</td>
-                    <td>${formatCurrency(item.unit_price)}</td>
-                    <td><span class="status-badge status-${item.status}">${item.status}</span></td>
+                    <td>$${parseFloat(item.unit_price).toFixed(2)}</td>
+                    <td><span class="status-badge ${statusClass}">${item.status.replace('_', ' ').toUpperCase()}</span></td>
                     <td class="action-buttons">
                         <button class="action-btn edit js-edit-inventory" data-inventory-id="${item.inventory_id}">
                             <i class="fas fa-edit"></i>
@@ -110,17 +177,25 @@ export class ManagerDisplay {
                 </tr>
             `;
         }).join('');
+
+        this.updateStatistics();
     }
 
     // USER STORY 5: Display pending requests
     displayPendingRequests(requests = null) {
-        const container = document.querySelector('.request-list');
+        const container = document.getElementById('pending-requests-list');
+        const loading = document.getElementById('approvals-loading');
+        
         if (!container) return;
+
+        if (loading) loading.style.display = 'block';
 
         const source = requests || managerObj.getPendingRequests();
 
+        if (loading) loading.style.display = 'none';
+
         if (!source || source.length === 0) {
-            container.innerHTML = '<p class="no-data">No pending requests</p>';
+            container.innerHTML = '<p style="text-align:center; padding:40px; color:#666;">No pending requests</p>';
             return;
         }
 
@@ -128,16 +203,14 @@ export class ManagerDisplay {
             <div class="request-card">
                 <div class="request-header">
                     <div class="request-info">
-                        <span class="request-type">${request.request_type}</span>
-                        <span class="request-branch">${request.branch_name}</span>
-                        <span class="request-date">${formatDate(request.created_at)}</span>
+                        <span class="request-type">${request.request_type.toUpperCase()}</span>
+                        <span class="request-date">${new Date(request.created_at).toLocaleDateString()}</span>
                     </div>
                     <div class="request-status pending">Pending</div>
                 </div>
                 <div class="request-details">
-                    <p><strong>Requested by:</strong> ${request.requested_by_name}</p>
-                    <p><strong>Medicine:</strong> ${request.medicine_name || 'N/A'}</p>
-                    <p><strong>Change:</strong> ${request.reason || 'No reason provided'}</p>
+                    <p><strong>Requested by:</strong> ${request.requested_by_name || 'N/A'}</p>
+                    <p><strong>Reason:</strong> ${request.reason || 'No reason provided'}</p>
                     <p><strong>Old Quantity:</strong> ${request.old_quantity || 'N/A'}</p>
                     <p><strong>New Quantity:</strong> ${request.new_quantity || 'N/A'}</p>
                 </div>
@@ -151,6 +224,39 @@ export class ManagerDisplay {
                 </div>
             </div>
         `).join('');
+    }
+
+    // Display approval history
+    displayApprovalHistory(history = null) {
+        const tbody = document.querySelector('#approval-history-table tbody');
+        const loading = document.getElementById('history-loading');
+        
+        if (!tbody) return;
+
+        if (loading) loading.style.display = 'block';
+
+        const source = history || [];
+
+        if (loading) loading.style.display = 'none';
+
+        if (!source || source.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:#666;">No approval history</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = source.map(item => {
+            const statusClass = item.status === 'approved' ? 'status-approved' : 'status-rejected';
+            return `
+                <tr>
+                    <td>${new Date(item.approval_date || item.created_at).toLocaleDateString()}</td>
+                    <td>${item.request_type.toUpperCase()}</td>
+                    <td>${item.requested_by_name || 'N/A'}</td>
+                    <td>${item.reason || 'N/A'}</td>
+                    <td><span class="status-badge ${statusClass}">${item.status.toUpperCase()}</span></td>
+                    <td>${item.approved_by_name || 'N/A'}</td>
+                </tr>
+            `;
+        }).join('');
     }
 
     // USER STORY 6: Display low-stock alerts

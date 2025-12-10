@@ -39,7 +39,8 @@ function setupLoginForm() {
             
             const response = await fetch(AUTH_API, {
                 method: 'POST',
-                body: formData
+                body: formData,
+                credentials: 'same-origin'
             });
             
             const data = await response.json();
