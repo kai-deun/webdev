@@ -2,11 +2,13 @@
 
 session_start();
 
-function loggedIn(){
+function loggedIn()
+{
     return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
 }
 
-function requireLogin(){
+function requireLogin()
+{
     if (!loggedIn()) {
         $_SESSION['error'] = 'Need to Login';
         header('Location: index.php?page=login');
@@ -14,7 +16,8 @@ function requireLogin(){
     }
 }
 
-function checkSessionTimeout(){
+function checkSessionTimeout()
+{
     if (isset($_SESSION['last_active'])) {
         if (time() - $_SESSION['last_active'] > SESSION_TIMEOUT) {
             session_destroy();

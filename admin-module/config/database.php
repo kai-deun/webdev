@@ -7,13 +7,14 @@ define('DB_NAME', 'vitalsoft_db');
 
 $connection = new mysqli(HOST, USER, PASS, DB_NAME);
 
-if($connection->connect_error){
+if ($connection->connect_error) {
     die("Failed to connect: " . $connection->connect_error);
 }
 
 $connection->set_charset("utf8");
 
-function getConn(){
+function getConn()
+{
     global $connection;
     return $connection;
 }
