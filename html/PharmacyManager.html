@@ -1,144 +1,590 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pharmacy Employee Dashboard - VitalSoft</title>
-    <link rel="stylesheet" href="../css/pharmacy-employee.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VitalSoft - Pharmacy Manager Portal</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../css/pharmacy-manager.css">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <i class="fas fa-pills"></i>
-                    <h1>VitalSoft Pharmacy</h1>
-                </div>
-                <div class="user-info">
-                    <div class="user-avatar">PH</div>
-                    <div>
-                        <div class="user-name">Pharmacist</div>
-                        <div class="user-role">Pharmacy Employee</div>
+<header>
+<div class="container">
+<div class="header-content">
+<div class="logo">
+<i class="fas fa-user-tie"></i>
+<h1>VitalSoft - Manager Portal</h1>
+</div>
+<div class="user-info">
+<div class="user-avatar">--</div>
+<div>
+<div class="user-name">Loading...</div>
+<div class="user-role">Pharmacy Manager</div>
+</div>
+<button class="btn btn-logout" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+</div>
+</div>
+</div>
+</header>
+
+<div class="container">
+<div class="dashboard">
+
+<div class="main-content">
+<div class="content-header">
+<h2>Pharmacy Manager Dashboard</h2>
+<div class="header-actions">
+<button class="btn btn-primary" id="header-add-branch-btn"><i class="fas fa-plus"></i> Add Branch</button>
+<button class="btn btn-primary" id="header-add-staff-btn"><i class="fas fa-user-plus"></i> Add Staff</button>
+</div>
+</div>
+
+<div class="stats-cards">
+<div class="stat-card">
+<i class="fas fa-clinic-medical"></i>
+<h3>Managed Branches</h3>
+<div class="value" id="managed-branches-stat">0</div>
+</div>
+<div class="stat-card">
+<i class="fas fa-users"></i>
+<h3>Total Staff</h3>
+<div class="value" id="total-staff-stat">0</div>
+</div>
+<div class="stat-card">
+<i class="fas fa-pills"></i>
+<h3>Total Products</h3>
+<div class="value" id="total-products-stat">0</div>
+</div>
+<div class="stat-card">
+<i class="fas fa-exclamation-triangle"></i>
+<h3>Low Stock Items</h3>
+<div class="value" id="low-stock-stat">0</div>
+</div>
+</div>
+
+<div class="content-tabs">
+<button class="tab-btn active" data-tab="branches">Branch Management</button>
+<button class="tab-btn" data-tab="staff">Staff Management</button>
+<button class="tab-btn" data-tab="inventory">Inventory Control</button>
+<button class="tab-btn" data-tab="approvals">Approval Requests</button>
+</div>
+
+<div class="tab-content active" id="branches-tab">
+<div class="search-filter">
+<input type="text" id="branch-search" class="search-box" placeholder="Search branches...">
+<select id="branch-status-filter" class="filter-select">
+<option value="">All Statuses</option>
+<option value="active">Active</option>
+<option value="inactive">Inactive</option>
+<option value="under_maintenance">Under Maintenance</option>
+</select>
+<button class="btn btn-primary" id="branch-search-btn"><i class="fas fa-search"></i> Search</button>
+</div>
+
+<div class="branches-container">
+<div class="branches-grid" id="branches-grid">
+<!-- Branches will be populated from database -->
+</div>
+<div class="loading" id="branches-loading" style="display:none;">Loading branches...</div>
+</div>
+</div>
+
+<div class="tab-content" id="staff-tab">
+<div class="search-filter">
+<input type="text" id="staff-search" class="search-box" placeholder="Search staff...">
+<select id="staff-branch-filter" class="filter-select">
+<option value="">All Branches</option>
+<!-- Populated dynamically -->
+</select>
+<select id="staff-role-filter" class="filter-select">
+<option value="">All Roles</option>
+<option value="Pharmacist">Pharmacist</option>
+<option value="Pharmacy Manager">Pharmacy Manager</option>
+</select>
+<button class="btn btn-primary" id="staff-search-btn"><i class="fas fa-search"></i> Search</button>
+</div>
+
+<div class="table-container">
+<table class="data-table" id="staff-table">
+<thead>
+<tr>
+<th>Staff ID</th>
+<th>Name</th>
+<th>Email</th>
+<th>Role</th>
+<th>Branch</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+<!-- Staff will be populated from database -->
+</tbody>
+</table>
+<div class="loading" id="staff-loading" style="display:none;">Loading staff...</div>
+</div>
+</div>
+
+<div class="tab-content" id="inventory-tab">
+<div class="search-filter">
+<input type="text" id="inventory-search" class="search-box" placeholder="Search medicine inventory...">
+<select id="inventory-branch-filter" class="filter-select">
+<option value="">All Branches</option>
+<!-- Populated dynamically -->
+</select>
+<select id="inventory-status-filter" class="filter-select">
+<option value="">All Status</option>
+<option value="available">Available</option>
+<option value="low_stock">Low Stock</option>
+<option value="out_of_stock">Out of Stock</option>
+</select>
+<button class="btn btn-primary" id="inventory-search-btn"><i class="fas fa-search"></i> Search</button>
+<button class="btn btn-success" id="add-medicine-btn"><i class="fas fa-plus"></i> Add Medicine</button>
+</div>
+
+<div class="table-container">
+<table class="data-table" id="inventory-table">
+<thead>
+<tr>
+<th>Medicine Name</th>
+<th>Generic Name</th>
+<th>Branch</th>
+<th>Current Stock</th>
+<th>Reorder Level</th>
+<th>Price</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+<!-- Inventory will be populated from database -->
+</tbody>
+</table>
+<div class="loading" id="inventory-loading" style="display:none;">Loading inventory...</div>
+</div>
+</div>
+
+<div class="tab-content" id="approvals-tab">
+<div class="approval-requests">
+<h3>Pending Approval Requests</h3>
+<div class="requests-container">
+<div class="request-list" id="pending-requests-list">
+<!-- Pending requests will be populated from database -->
+</div>
+<div class="loading" id="approvals-loading" style="display:none;">Loading approval requests...</div>
+</div>
+</div>
+
+                    <div class="content-section">
+                        <h3>Approval History</h3>
+                        <div class="table-container">
+                            <table class="data-table" id="approval-history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Requested By</th>
+                                        <th>Details</th>
+                                        <th>Status</th>
+                                        <th>Reviewed By</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Approval history will be populated from database -->
+                                </tbody>
+                            </table>
+                            <div class="loading" id="history-loading" style="display:none;">Loading history...</div>
+                        </div>
                     </div>
-                    <button class="btn-logout" onclick="handleLogout()">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </button>
-                </div>
-            </div>
-        </div>
-    </header>
+</div>
+</div>
+</div>
+</div>
 
-    <div class="container">
-        <main class="main-content">
-            <!-- Stats Cards -->
-            <div class="stats-cards">
-                <div class="stat-card">
-                    <i class="fas fa-prescription"></i>
-                    <h3>Pending Prescriptions</h3>
-                    <div class="value" id="pharm-stat-pending">0</div>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-check-circle"></i>
-                    <h3>Ready for Pickup</h3>
-                    <div class="value" id="pharm-stat-ready">0</div>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-clipboard-check"></i>
-                    <h3>Dispensed Today</h3>
-                    <div class="value" id="pharm-stat-dispensed">0</div>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <h3>Low Stock Items</h3>
-                    <div class="value" id="pharm-stat-lowstock">0</div>
-                </div>
-            </div>
+<!-- Add Branch Modal -->
+<div id="add-branch-modal" class="modal" style="display: none;">
+<div class="modal-content" style="max-width: 600px;">
+<div class="modal-header">
+<h2><i class="fas fa-plus"></i> Add New Branch</h2>
+<button class="modal-close" onclick="closeAddBranchModal()">&times;</button>
+</div>
+<div class="modal-body">
+<form id="add-branch-form">
+<div class="form-group">
+<label for="branch-name">Branch Name <span class="required">*</span></label>
+<input type="text" id="branch-name" class="form-control" required>
+</div>
+<div class="form-group">
+<label for="branch-address">Address <span class="required">*</span></label>
+<textarea id="branch-address" class="form-control" rows="3" required></textarea>
+</div>
+<div class="form-group">
+<label for="branch-phone">Phone Number <span class="required">*</span></label>
+<input type="tel" id="branch-phone" class="form-control" required>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" onclick="closeAddBranchModal()">Cancel</button>
+<button class="btn btn-success" onclick="submitAddBranch()"><i class="fas fa-check"></i> Add Branch</button>
+</div>
+</div>
+</div>
 
-            <!-- Content Header -->
-            <div class="content-header">
-                <h2>Pharmacy Dashboard</h2>
-                <div class="header-actions">
-                    <button class="btn btn-primary" id="pharm-refresh-btn">
-                        <i class="fas fa-sync-alt"></i> Refresh Data
-                    </button>
-                </div>
-            </div>
+<!-- Add Staff Modal -->
+<div id="add-staff-modal" class="modal" style="display: none;">
+<div class="modal-content" style="max-width: 600px;">
+<div class="modal-header">
+<h2><i class="fas fa-user-plus"></i> Add New Staff</h2>
+<button class="modal-close" onclick="closeAddStaffModal()">&times;</button>
+</div>
+<div class="modal-body">
+<form id="add-staff-form">
+<div class="form-row">
+<div class="form-group">
+<label for="staff-first-name">First Name <span class="required">*</span></label>
+<input type="text" id="staff-first-name" class="form-control" required>
+</div>
+<div class="form-group">
+<label for="staff-last-name">Last Name <span class="required">*</span></label>
+<input type="text" id="staff-last-name" class="form-control" required>
+</div>
+</div>
+<div class="form-group">
+<label for="staff-email">Email <span class="required">*</span></label>
+<input type="email" id="staff-email" class="form-control" required>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label for="staff-username">Username <span class="required">*</span></label>
+<input type="text" id="staff-username" class="form-control" required>
+</div>
+<div class="form-group">
+<label for="staff-password">Password <span class="required">*</span></label>
+<input type="password" id="staff-password" class="form-control" required>
+</div>
+</div>
+<div class="form-group">
+<label for="staff-phone">Phone Number</label>
+<input type="tel" id="staff-phone" class="form-control">
+</div>
+<div class="form-row">
+<div class="form-group">
+<label for="staff-branch">Branch <span class="required">*</span></label>
+<select id="staff-branch" class="form-control" required>
+<option value="">Select Branch</option>
+</select>
+</div>
+<div class="form-group">
+<label for="staff-role">Role <span class="required">*</span></label>
+<select id="staff-role" class="form-control" required>
+<option value="">Select Role</option>
+<option value="Pharmacist">Pharmacist</option>
+<option value="Pharmacy Manager">Pharmacy Manager</option>
+</select>
+</div>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" onclick="closeAddStaffModal()">Cancel</button>
+<button class="btn btn-success" onclick="submitAddStaff()"><i class="fas fa-check"></i> Add Staff</button>
+</div>
+</div>
+</div>
 
-            <!-- Tabs -->
-            <div class="content-tabs">
-                <button class="tab-btn active" data-tab="pending">Prescriptions</button>
-                <button class="tab-btn" data-tab="inventory">Inventory</button>
-                <button class="tab-btn" data-tab="dispensed">Dispensed History</button>
-            </div>
+<!-- Edit Branch Modal -->
+<div id="edit-branch-modal" class="modal" style="display: none;">
+<div class="modal-content" style="max-width: 600px;">
+<div class="modal-header">
+<h2><i class="fas fa-edit"></i> Edit Branch</h2>
+<button class="modal-close" onclick="closeEditBranchModal()">&times;</button>
+</div>
+<div class="modal-body">
+<form id="edit-branch-form">
+<div class="form-group">
+<label for="edit-branch-name">Branch Name <span class="required">*</span></label>
+<input type="text" id="edit-branch-name" class="form-control" required>
+</div>
+<div class="form-group">
+<label for="edit-branch-address">Address <span class="required">*</span></label>
+<textarea id="edit-branch-address" class="form-control" rows="3" required></textarea>
+</div>
+<div class="form-group">
+<label for="edit-branch-phone">Phone Number <span class="required">*</span></label>
+<input type="tel" id="edit-branch-phone" class="form-control" required>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" onclick="closeEditBranchModal()">Cancel</button>
+<button class="btn btn-success" onclick="submitEditBranch()"><i class="fas fa-check"></i> Save Changes</button>
+</div>
+</div>
+</div>
 
-            <!-- Pending Prescriptions Tab -->
-            <section id="pending-tab" class="tab-content active">
-                <div class="search-filter">
-                    <input type="text" class="search-box pharm-search" data-target="pending" 
-                           placeholder="Search by patient, doctor, or prescription ID...">
-                </div>
-                <div class="prescriptions-list pharm-pending-list">
-                    <!-- Filled by JS -->
-                </div>
-            </section>
+<!-- Change Status Modal -->
+<div id="change-status-modal" class="modal" style="display: none;">
+<div class="modal-content" style="max-width: 500px;">
+<div class="modal-header">
+<h2><i class="fas fa-sync"></i> Change Branch Status</h2>
+<button class="modal-close" onclick="closeChangeStatusModal()">&times;</button>
+</div>
+<div class="modal-body">
+<form id="change-status-form">
+<div class="form-group">
+<label for="status-current">Current Status</label>
+<input type="text" id="status-current" class="form-control" disabled style="background: #f5f5f5;">
+</div>
+<div class="form-group">
+<label for="status-new">New Status <span class="required">*</span></label>
+<select id="status-new" class="form-control" required>
+<option value="">Select Status</option>
+<option value="active">Active</option>
+<option value="inactive">Inactive</option>
+<option value="under_maintenance">Under Maintenance</option>
+</select>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" onclick="closeChangeStatusModal()">Cancel</button>
+<button class="btn btn-warning" onclick="submitChangeStatus()"><i class="fas fa-check"></i> Change Status</button>
+</div>
+</div>
+</div>
 
-            <!-- Inventory Tab -->
-            <section id="inventory-tab" class="tab-content">
-                <div class="search-filter">
-                    <input type="text" class="search-box pharm-search" data-target="inventory" 
-                           placeholder="Search medicines...">
-                </div>
-                <div class="inventory-table-container">
-                    <table class="data-table" id="inventory-table">
-                        <thead>
-                            <tr>
-                                <th>Medicine</th>
-                                <th>Category</th>
-                                <th>Strength</th>
-                                <th>Branch</th>
-                                <th>Quantity</th>
-                                <th>Reorder Level</th>
-                                <th>Expiry Date</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Filled by JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+<!-- Delete Branch Modal -->
+<div id="delete-branch-modal" class="modal" style="display: none;">
+<div class="modal-content" style="max-width: 500px;">
+<div class="modal-header">
+<h2><i class="fas fa-trash"></i> Delete Branch</h2>
+<button class="modal-close" onclick="closeDeleteBranchModal()">&times;</button>
+</div>
+<div class="modal-body">
+<div class="delete-warning">
+<p><strong>Are you sure you want to delete this branch?</strong></p>
+<p id="branch-to-delete-name"></p>
+<p style="color: #e74c3c; margin-top: 15px;">
+<i class="fas fa-exclamation-triangle"></i> This action cannot be undone.
+</p>
+<div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; padding: 12px; margin-top: 15px;">
+<p style="margin: 0; font-size: 0.9em;"><strong>Note:</strong> This branch cannot be deleted if it has staff members or inventory items assigned.</p>
+</div>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" onclick="closeDeleteBranchModal()">Cancel</button>
+<button class="btn btn-danger" onclick="submitDeleteBranch()"><i class="fas fa-trash"></i> Delete Branch</button>
+</div>
+</div>
+</div>
 
-            <!-- Dispensed History Tab -->
-            <section id="dispensed-tab" class="tab-content">
-                <div class="search-filter">
-                    <input type="text" class="search-box pharm-search" data-target="dispensed" 
-                           placeholder="Search dispensed prescriptions...">
-                </div>
-                <div class="inventory-table-container">
-                    <table class="data-table" id="dispensed-table">
-                        <thead>
-                            <tr>
-                                <th>Rx ID</th>
-                                <th>Patient</th>
-                                <th>Doctor</th>
-                                <th>Pharmacist</th>
-                                <th>Dispensed At</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Filled by JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
-    </div>
+<!-- Edit Staff Modal -->
+<div id="edit-staff-modal" class="modal" style="display: none;">
+<div class="modal-content" style="max-width: 600px;">
+<div class="modal-header">
+<h2><i class="fas fa-edit"></i> Edit Staff Member</h2>
+<button class="modal-close" onclick="closeEditStaffModal()">&times;</button>
+</div>
+<div class="modal-body">
+<form id="edit-staff-form">
+<div class="form-row">
+<div class="form-group">
+<label for="edit-staff-first-name">First Name <span class="required">*</span></label>
+<input type="text" id="edit-staff-first-name" class="form-control" required>
+</div>
+<div class="form-group">
+<label for="edit-staff-last-name">Last Name <span class="required">*</span></label>
+<input type="text" id="edit-staff-last-name" class="form-control" required>
+</div>
+</div>
+<div class="form-group">
+<label for="edit-staff-email">Email <span class="required">*</span></label>
+<input type="email" id="edit-staff-email" class="form-control" required>
+</div>
+<div class="form-group">
+<label for="edit-staff-phone">Phone Number</label>
+<input type="tel" id="edit-staff-phone" class="form-control">
+</div>
+<div class="form-row">
+<div class="form-group">
+<label for="edit-staff-branch">Branch <span class="required">*</span></label>
+<select id="edit-staff-branch" class="form-control" required>
+<option value="">Select Branch</option>
+</select>
+</div>
+<div class="form-group">
+<label for="edit-staff-role">Role <span class="required">*</span></label>
+<select id="edit-staff-role" class="form-control" required>
+<option value="">Select Role</option>
+<option value="Pharmacist">Pharmacist</option>
+<option value="Pharmacy Manager">Pharmacy Manager</option>
+</select>
+</div>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" onclick="closeEditStaffModal()">Cancel</button>
+<button class="btn btn-success" onclick="submitEditStaff()"><i class="fas fa-check"></i> Save Changes</button>
+</div>
+</div>
+</div>
 
-    <!-- Loading Overlay -->
-    <div class="pharm-loading">Loading pharmacy data...</div>
+<!-- Delete Staff Modal -->
+<div id="delete-staff-modal" class="modal" style="display: none;">
+<div class="modal-content" style="max-width: 500px;">
+<div class="modal-header">
+<h2><i class="fas fa-trash"></i> Delete Staff Member</h2>
+<button class="modal-close" onclick="closeDeleteStaffModal()">&times;</button>
+</div>
+<div class="modal-body">
+<div class="delete-warning">
+<p><strong>Are you sure you want to delete this staff member?</strong></p>
+<p id="staff-to-delete-name"></p>
+<p style="color: #e74c3c; margin-top: 15px;">
+<i class="fas fa-exclamation-triangle"></i> This action cannot be undone.
+</p>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" onclick="closeDeleteStaffModal()">Cancel</button>
+<button class="btn btn-danger" onclick="submitDeleteStaff()"><i class="fas fa-trash"></i> Delete Staff</button>
+</div>
+</div>
+</div>
 
-    <script src="../js/PharmacyEmployee.js"></script>
+<!-- Edit Inventory Modal -->
+<div id="edit-inventory-modal" class="modal" style="display: none;">
+<div class="modal-content" style="max-width: 600px;">
+<div class="modal-header">
+<h2><i class="fas fa-edit"></i> Edit Inventory Item</h2>
+<button class="modal-close" onclick="closeEditInventoryModal()">&times;</button>
+</div>
+<div class="modal-body">
+<form id="edit-inventory-form">
+<div class="form-group">
+<label for="edit-medicine-name">Medicine Name <span class="required">*</span></label>
+<input type="text" id="edit-medicine-name" class="form-control" required disabled style="background: #f5f5f5;">
+</div>
+<div class="form-group">
+<label for="edit-generic-name">Generic Name</label>
+<input type="text" id="edit-generic-name" class="form-control" disabled style="background: #f5f5f5;">
+</div>
+<div class="form-row">
+<div class="form-group">
+<label for="edit-current-quantity">Current Quantity</label>
+<input type="number" id="edit-current-quantity" class="form-control" disabled style="background: #f5f5f5;">
+</div>
+<div class="form-group">
+<label for="edit-new-quantity">New Quantity <span class="required">*</span></label>
+<input type="number" id="edit-new-quantity" class="form-control" min="0" required>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label for="edit-reorder-level">Reorder Level <span class="required">*</span></label>
+<input type="number" id="edit-reorder-level" class="form-control" min="0" required>
+</div>
+<div class="form-group">
+<label for="edit-unit-price">Unit Price <span class="required">*</span></label>
+<input type="number" id="edit-unit-price" class="form-control" min="0" step="0.01" required>
+</div>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" onclick="closeEditInventoryModal()">Cancel</button>
+<button class="btn btn-success" onclick="submitEditInventory()"><i class="fas fa-check"></i> Save Changes</button>
+</div>
+</div>
+</div>
+
+<!-- Transfer Inventory Modal -->
+<div id="transfer-inventory-modal" class="modal" style="display: none;">
+<div class="modal-content" style="max-width: 600px;">
+<div class="modal-header">
+<h2><i class="fas fa-exchange-alt"></i> Transfer Inventory</h2>
+<button class="modal-close" onclick="closeTransferInventoryModal()">&times;</button>
+</div>
+<div class="modal-body">
+<form id="transfer-inventory-form">
+<div class="form-group">
+<label for="transfer-medicine-name">Medicine Name</label>
+<input type="text" id="transfer-medicine-name" class="form-control" disabled style="background: #f5f5f5;">
+</div>
+<div class="form-row">
+<div class="form-group">
+<label for="transfer-from-branch">From Branch</label>
+<input type="text" id="transfer-from-branch" class="form-control" disabled style="background: #f5f5f5;">
+</div>
+<div class="form-group">
+<label for="transfer-available-qty">Available Quantity</label>
+<input type="number" id="transfer-available-qty" class="form-control" disabled style="background: #f5f5f5;">
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label for="transfer-to-branch">To Branch <span class="required">*</span></label>
+<select id="transfer-to-branch" class="form-control" required>
+<option value="">Select Branch</option>
+</select>
+</div>
+<div class="form-group">
+<label for="transfer-quantity">Quantity to Transfer <span class="required">*</span></label>
+<input type="number" id="transfer-quantity" class="form-control" min="1" required>
+</div>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" onclick="closeTransferInventoryModal()">Cancel</button>
+<button class="btn btn-success" onclick="submitTransferInventory()"><i class="fas fa-check"></i> Transfer</button>
+</div>
+</div>
+</div>
+
+<!-- Approve Request Modal -->
+<div id="approve-request-modal" class="modal" style="display: none;">
+<div class="modal-content" style="max-width: 500px;">
+<div class="modal-header">
+<h2><i class="fas fa-check-circle"></i> Approve Request</h2>
+<button class="modal-close" onclick="closeApproveRequestModal()">&times;</button>
+</div>
+<div class="modal-body">
+<p style="font-size: 14px; margin: 20px 0;">Are you sure you want to approve this request?</p>
+<div id="approve-request-details" style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin: 15px 0; font-size: 13px;"></div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" onclick="closeApproveRequestModal()">Cancel</button>
+<button class="btn btn-success" onclick="submitApproveRequest()"><i class="fas fa-check"></i> Approve</button>
+</div>
+</div>
+</div>
+
+<!-- Reject Request Modal -->
+<div id="reject-request-modal" class="modal" style="display: none;">
+<div class="modal-content" style="max-width: 500px;">
+<div class="modal-header">
+<h2><i class="fas fa-times-circle"></i> Reject Request</h2>
+<button class="modal-close" onclick="closeRejectRequestModal()">&times;</button>
+</div>
+<div class="modal-body">
+<form id="reject-request-form">
+<div class="form-group">
+<label for="reject-reason">Rejection Reason <span class="required">*</span></label>
+<textarea id="reject-reason" class="form-control" rows="4" placeholder="Enter reason for rejection..." required></textarea>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" onclick="closeRejectRequestModal()">Cancel</button>
+<button class="btn btn-danger" onclick="submitRejectRequest()"><i class="fas fa-times"></i> Reject</button>
+</div>
+</div>
+</div>
+
+<script src="../js/common.js"></script>
+<script type="module" src="../js/ManagerMain.js"></script>
 </body>
-</html>
