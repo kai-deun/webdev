@@ -52,6 +52,81 @@ export class ManagerUtilities {
         }
     }
 
+    // Update branch details
+    async updateBranch(branchId, branchData) {
+        try {
+            const response = await fetch(`${this.API_BASE}?action=updateBranch`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    branch_id: branchId, 
+                    ...branchData 
+                }),
+                credentials: 'same-origin'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('Branch updated successfully');
+                this.loadBranches();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error updating branch:', error);
+            alert('Error updating branch');
+        }
+    }
+
+    // Delete branch
+    async deleteBranch(branchId) {
+        try {
+            const response = await fetch(`${this.API_BASE}?action=deleteBranch`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ branch_id: branchId }),
+                credentials: 'same-origin'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('Branch deleted successfully');
+                this.loadBranches();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error deleting branch:', error);
+            alert('Error deleting branch');
+        }
+    }
+
+    // Add new branch
+    async addBranch(branchData) {
+        try {
+            const response = await fetch(`${this.API_BASE}?action=addBranch`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(branchData),
+                credentials: 'same-origin'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('Branch added successfully');
+                this.loadBranches();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error adding branch:', error);
+            alert('Error adding branch');
+        }
+    }
+
     // USER STORY 3: Load staff
     async loadStaff(branchId = null) {
         try {
@@ -99,12 +174,64 @@ export class ManagerUtilities {
         }
     }
 
+    // Add new staff
+    async addStaff(staffData) {
+        try {
+            const response = await fetch(`${this.API_BASE}?action=addStaff`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(staffData),
+                credentials: 'same-origin'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('Staff added successfully');
+                this.loadStaff();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error adding staff:', error);
+            alert('Error adding staff');
+        }
+    }
+
+    // USER STORY 3: Update staff
+    async updateStaff(staffId, staffData) {
+        try {
+            const response = await fetch(`${this.API_BASE}?action=updateStaff`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: staffId,
+                    first_name: staffData.first_name,
+                    last_name: staffData.last_name,
+                    email: staffData.email,
+                    phone_number: staffData.phone_number,
+                    branch_id: staffData.branch_id,
+                    role_name: staffData.role_name
+                }),
+                credentials: 'same-origin'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showSuccess('Staff member updated successfully');
+                this.loadStaff();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error updating staff:', error);
+            alert('Error updating staff member');
+        }
+    }
+
     // USER STORY 3: Delete staff
     async deleteStaff(staffId) {
-        if (!confirm('Are you sure you want to delete this staff member?')) {
-            return;
-        }
-
         try {
             const response = await fetch(`${this.API_BASE}?action=deleteStaff`, {
                 method: 'POST',
@@ -150,7 +277,64 @@ export class ManagerUtilities {
         }
     }
 
-    // USER STORY 1: Update inventory
+    // USER STORY 1: Update inventory (comprehensive)
+    async updateInventory(inventoryId, inventoryData) {
+        try {
+            const response = await fetch(`${this.API_BASE}?action=updateInventory`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    inventory_id: inventoryId,
+                    quantity: inventoryData.quantity,
+                    reorder_level: inventoryData.reorder_level,
+                    unit_price: inventoryData.unit_price
+                }),
+                credentials: 'same-origin'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showSuccess('Inventory updated successfully');
+                this.loadInventory();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error updating inventory:', error);
+            alert('Error updating inventory');
+        }
+    }
+
+    // USER STORY 1: Transfer inventory between branches
+    async transferInventory(inventoryId, transferData) {
+        try {
+            const response = await fetch(`${this.API_BASE}?action=transferInventory`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    inventory_id: inventoryId,
+                    to_branch_id: transferData.to_branch_id,
+                    quantity: transferData.quantity
+                }),
+                credentials: 'same-origin'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showSuccess('Inventory transferred successfully');
+                this.loadInventory();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error transferring inventory:', error);
+            alert('Error transferring inventory');
+        }
+    }
+
+    // USER STORY 1: Update inventory item (legacy method)
     async updateInventoryItem(inventoryId, quantity) {
         try {
             const response = await fetch(`${this.API_BASE}?action=updateInventory`, {
@@ -225,6 +409,25 @@ export class ManagerUtilities {
         }
     }
 
+    // Load approval history (approved and rejected requests)
+    async loadApprovalHistory() {
+        try {
+            const response = await fetch(`${this.API_BASE}?action=getApprovalHistory`, {
+                credentials: 'same-origin'
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                managerObj.setApprovalHistory(data.history || []);
+                managerDisplay.displayApprovalHistory(data.history || []);
+            } else {
+                console.error('Error loading approval history:', data.message);
+            }
+        } catch (error) {
+            console.error('Error loading approval history:', error);
+        }
+    }
+
     // USER STORY 5: Approve request
     async approveRequest(requestId) {
         try {
@@ -240,6 +443,7 @@ export class ManagerUtilities {
             if (data.success) {
                 showSuccess('Request approved');
                 this.loadPendingRequests();
+                this.loadApprovalHistory();
                 this.loadInventory(); // Refresh inventory
             } else {
                 alert('Error: ' + data.message);
@@ -268,6 +472,7 @@ export class ManagerUtilities {
             if (data.success) {
                 showSuccess('Request rejected');
                 this.loadPendingRequests();
+                this.loadApprovalHistory();
             } else {
                 alert('Error: ' + data.message);
             }

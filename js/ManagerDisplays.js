@@ -54,7 +54,7 @@ export class ManagerDisplay {
 
         container.innerHTML = source.map(branch => {
             const statusClass = branch.status === 'active' ? 'status-active' : 'status-inactive';
-            const statusText = branch.status.replace('_', ' ').toUpperCase();
+            const statusText = branch.status.charAt(0).toUpperCase() + branch.status.slice(1).replace('_', ' ');
             
             return `
                 <div class="branch-card">
@@ -65,20 +65,12 @@ export class ManagerDisplay {
                     <div class="branch-details">
                         <p><i class="fas fa-map-marker-alt"></i> ${branch.address || 'N/A'}</p>
                         <p><i class="fas fa-phone"></i> ${branch.phone_number || 'N/A'}</p>
-                        <p><i class="fas fa-user"></i> Manager: ${branch.manager_name || 'Not Assigned'}</p>
-                        <p><i class="fas fa-users"></i> Staff: ${branch.staff_count || 0} employees</p>
-                        <p><i class="fas fa-pills"></i> Products: ${branch.product_count || 0} items</p>
+                        <p><i class="fas fa-users"></i> ${branch.staff_count || 0} staff | <i class="fas fa-pills"></i> ${branch.product_count || 0} products</p>
                     </div>
                     <div class="branch-actions">
-                        <button class="btn btn-primary js-edit-branch" data-branch-id="${branch.branch_id}">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="btn btn-warning js-change-status" data-branch-id="${branch.branch_id}" data-current-status="${branch.status}">
-                            <i class="fas fa-toggle-on"></i> Change Status
-                        </button>
-                        <button class="btn btn-danger js-delete-branch" data-branch-id="${branch.branch_id}">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
+                        <button class="btn btn-sm btn-primary js-edit-branch" data-branch-id="${branch.branch_id}"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn btn-sm btn-warning js-change-status" data-branch-id="${branch.branch_id}" data-current-status="${branch.status}"><i class="fas fa-sync"></i> Status</button>
+                        <button class="btn btn-sm btn-danger js-delete-branch" data-branch-id="${branch.branch_id}"><i class="fas fa-trash"></i> Delete</button>
                     </div>
                 </div>
             `;
@@ -215,15 +207,35 @@ export class ManagerDisplay {
                     <p><strong>New Quantity:</strong> ${request.new_quantity || 'N/A'}</p>
                 </div>
                 <div class="request-actions">
-                    <button class="btn btn-success js-approve-request" data-request-id="${request.request_id}">
+                    <button class="btn btn-success js-approve-request"
+                        data-request-id="${request.request_id}"
+                        type="button"
+                        onclick="window.openApproveRequestModal('${request.request_id}')">
                         <i class="fas fa-check"></i> Approve
                     </button>
-                    <button class="btn btn-danger js-reject-request" data-request-id="${request.request_id}">
+                    <button class="btn btn-danger js-reject-request"
+                        data-request-id="${request.request_id}"
+                        type="button"
+                        onclick="window.openRejectRequestModal('${request.request_id}')">
                         <i class="fas fa-times"></i> Reject
                     </button>
                 </div>
             </div>
         `).join('');
+
+        // Ensure buttons are clickable even if event delegation fails
+        container.querySelectorAll('.js-approve-request').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.dataset.requestId;
+                window.openApproveRequestModal(id);
+            });
+        });
+        container.querySelectorAll('.js-reject-request').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.dataset.requestId;
+                window.openRejectRequestModal(id);
+            });
+        });
     }
 
     // Display approval history
@@ -246,12 +258,15 @@ export class ManagerDisplay {
 
         tbody.innerHTML = source.map(item => {
             const statusClass = item.status === 'approved' ? 'status-approved' : 'status-rejected';
+            const details = item.status === 'rejected' && item.rejection_reason 
+                ? `Rejected: ${item.rejection_reason}` 
+                : (item.reason || 'N/A');
             return `
                 <tr>
                     <td>${new Date(item.approval_date || item.created_at).toLocaleDateString()}</td>
                     <td>${item.request_type.toUpperCase()}</td>
                     <td>${item.requested_by_name || 'N/A'}</td>
-                    <td>${item.reason || 'N/A'}</td>
+                    <td>${details}</td>
                     <td><span class="status-badge ${statusClass}">${item.status.toUpperCase()}</span></td>
                     <td>${item.approved_by_name || 'N/A'}</td>
                 </tr>

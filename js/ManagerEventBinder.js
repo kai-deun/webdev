@@ -45,44 +45,48 @@ export class ManagerEventBinder {
             });
         }
 
-        // Staff search - real-time as you type
+        // Staff search and filters
         const staffSearchInput = document.getElementById('staff-search');
+        const staffBranchFilter = document.getElementById('staff-branch-filter');
+        const staffRoleFilter = document.getElementById('staff-role-filter');
+        const staffSearchBtn = document.getElementById('staff-search-btn');
+        
+        // Staff search - real-time as you type
         if (staffSearchInput) {
             staffSearchInput.addEventListener('input', () => {
                 const searchTerm = staffSearchInput.value;
-                const branchFilter = document.getElementById('staff-branch-filter').value;
-                const roleFilter = document.getElementById('staff-role-filter').value;
+                const branchFilter = staffBranchFilter?.value || '';
+                const roleFilter = staffRoleFilter?.value || '';
                 this.handleStaffSearch(searchTerm, branchFilter, roleFilter);
             });
         }
         
-        // Staff filter dropdowns
-        const staffBranchFilter = document.getElementById('staff-branch-filter');
-        const staffRoleFilter = document.getElementById('staff-role-filter');
+        // Staff branch filter dropdown
         if (staffBranchFilter) {
             staffBranchFilter.addEventListener('change', () => {
-                const searchTerm = staffSearchInput.value;
+                const searchTerm = staffSearchInput?.value || '';
                 const branchFilter = staffBranchFilter.value;
-                const roleFilter = staffRoleFilter.value;
+                const roleFilter = staffRoleFilter?.value || '';
                 this.handleStaffSearch(searchTerm, branchFilter, roleFilter);
             });
         }
+        
+        // Staff role filter dropdown
         if (staffRoleFilter) {
             staffRoleFilter.addEventListener('change', () => {
-                const searchTerm = staffSearchInput.value;
-                const branchFilter = staffBranchFilter.value;
+                const searchTerm = staffSearchInput?.value || '';
+                const branchFilter = staffBranchFilter?.value || '';
                 const roleFilter = staffRoleFilter.value;
                 this.handleStaffSearch(searchTerm, branchFilter, roleFilter);
             });
         }
         
-        // Staff search button (still functional)
-        const staffSearchBtn = document.getElementById('staff-search-btn');
+        // Staff search button
         if (staffSearchBtn) {
             staffSearchBtn.addEventListener('click', () => {
-                const searchTerm = staffSearchInput.value;
-                const branchFilter = staffBranchFilter.value;
-                const roleFilter = staffRoleFilter.value;
+                const searchTerm = staffSearchInput?.value || '';
+                const branchFilter = staffBranchFilter?.value || '';
+                const roleFilter = staffRoleFilter?.value || '';
                 this.handleStaffSearch(searchTerm, branchFilter, roleFilter);
             });
         }
@@ -129,19 +133,19 @@ export class ManagerEventBinder {
             });
         }
 
-        // Add branch button
-        const addBranchBtn = document.getElementById('add-branch-btn');
-        if (addBranchBtn) {
-            addBranchBtn.addEventListener('click', () => {
-                alert('Add branch form would open here (to be implemented)');
+        // Header add branch button
+        const headerAddBranchBtn = document.getElementById('header-add-branch-btn');
+        if (headerAddBranchBtn) {
+            headerAddBranchBtn.addEventListener('click', () => {
+                this.handleAddBranch();
             });
         }
 
-        // Add staff button
-        const addStaffBtn = document.getElementById('add-staff-btn');
-        if (addStaffBtn) {
-            addStaffBtn.addEventListener('click', () => {
-                alert('Add staff form would open here (to be implemented)');
+        // Header add staff button
+        const headerAddStaffBtn = document.getElementById('header-add-staff-btn');
+        if (headerAddStaffBtn) {
+            headerAddStaffBtn.addEventListener('click', () => {
+                this.handleAddStaff();
             });
         }
 
@@ -170,36 +174,53 @@ export class ManagerEventBinder {
             if (!button) return;
 
             // Branch actions
+            if (button.classList.contains('js-edit-branch')) {
+                const branchId = button.dataset.branchId;
+                this.handleEditBranch(branchId);
+            }
+            
             if (button.classList.contains('js-change-status')) {
                 const branchId = button.dataset.branchId;
                 const currentStatus = button.dataset.currentStatus;
                 this.handleChangeStatus(branchId, currentStatus);
             }
+            
+            if (button.classList.contains('js-delete-branch')) {
+                const branchId = button.dataset.branchId;
+                this.handleDeleteBranch(branchId);
+            }
 
             // Staff actions
+            if (button.classList.contains('js-edit-staff')) {
+                const staffId = button.dataset.staffId;
+                window.openEditStaffModal(staffId);
+            }
+
             if (button.classList.contains('js-delete-staff')) {
                 const staffId = button.dataset.staffId;
-                managerUtils.deleteStaff(staffId);
+                window.openDeleteStaffModal(staffId);
             }
 
             // Inventory actions
             if (button.classList.contains('js-edit-inventory')) {
                 const inventoryId = button.dataset.inventoryId;
-                this.handleEditInventory(inventoryId);
+                window.openEditInventoryModal(inventoryId);
+            }
+
+            if (button.classList.contains('js-transfer-inventory')) {
+                const inventoryId = button.dataset.inventoryId;
+                window.openTransferInventoryModal(inventoryId);
             }
 
             // Request actions
             if (button.classList.contains('js-approve-request')) {
                 const requestId = button.dataset.requestId;
-                if (confirm('Are you sure you want to approve this request?')) {
-                    managerUtils.approveRequest(requestId);
-                }
+                window.openApproveRequestModal(requestId);
             }
 
             if (button.classList.contains('js-reject-request')) {
                 const requestId = button.dataset.requestId;
-                const reason = prompt('Enter rejection reason (optional):');
-                managerUtils.rejectRequest(requestId, reason || '');
+                window.openRejectRequestModal(requestId);
             }
 
             // Low-stock actions
@@ -210,24 +231,29 @@ export class ManagerEventBinder {
         });
     }
 
-    handleChangeStatus(branchId, currentStatus) {
-        const options = ['active', 'inactive', 'under_maintenance'];
-        const newStatus = prompt(
-            `Current status: ${currentStatus}\nEnter new status (${options.join(', ')}):`
-        );
-
-        if (newStatus && options.includes(newStatus.toLowerCase())) {
-            managerUtils.updateBranchStatus(branchId, newStatus.toLowerCase());
-        } else if (newStatus) {
-            alert('Invalid status. Use: active, inactive, or under_maintenance');
-        }
+    handleEditBranch(branchId) {
+        // Open the edit branch modal
+        window.openEditBranchModal(branchId);
     }
 
-    handleEditInventory(inventoryId) {
-        const newQuantity = prompt('Enter new quantity:');
-        if (newQuantity && !isNaN(newQuantity)) {
-            managerUtils.updateInventoryItem(inventoryId, parseInt(newQuantity));
-        }
+    handleChangeStatus(branchId, currentStatus) {
+        // Open the change status modal
+        window.openChangeStatusModal(branchId, currentStatus);
+    }
+    
+    handleDeleteBranch(branchId) {
+        // Open the delete branch modal
+        window.openDeleteBranchModal(branchId);
+    }
+
+    handleAddBranch() {
+        // Open the add branch modal
+        window.openAddBranchModal();
+    }
+
+    handleAddStaff() {
+        // Open the add staff modal and populate branch dropdown
+        window.openAddStaffModal();
     }
 
     handleOrderStock(inventoryId) {

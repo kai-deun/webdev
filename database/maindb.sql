@@ -162,6 +162,29 @@ CREATE TABLE inventory_update_requests (
     FOREIGN KEY (approved_by) REFERENCES users(user_id)
 );
 
+-- Track an immutable history of approvals/rejections
+CREATE TABLE approval_history (
+    history_id INT PRIMARY KEY AUTO_INCREMENT,
+    request_id INT NOT NULL,
+    inventory_id INT NOT NULL,
+    branch_id INT NOT NULL,
+    request_type ENUM('add', 'update', 'delete') NOT NULL,
+    old_quantity INT,
+    new_quantity INT,
+    status ENUM('approved', 'rejected') NOT NULL,
+    requested_by INT NOT NULL,
+    approved_by INT NOT NULL,
+    reason TEXT,
+    rejection_reason TEXT,
+    approval_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (request_id) REFERENCES inventory_update_requests(request_id) ON DELETE CASCADE,
+    FOREIGN KEY (inventory_id) REFERENCES branch_inventory(inventory_id) ON DELETE CASCADE,
+    FOREIGN KEY (branch_id) REFERENCES pharmacy_branches(branch_id) ON DELETE CASCADE,
+    FOREIGN KEY (requested_by) REFERENCES users(user_id),
+    FOREIGN KEY (approved_by) REFERENCES users(user_id)
+);
+
 -- =============================================
 -- PRESCRIPTIONS
 -- =============================================

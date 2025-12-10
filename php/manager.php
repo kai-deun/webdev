@@ -50,8 +50,20 @@ switch ($action) {
     case 'updateBranchStatus':
         updateBranchStatus($mysqli, $data);
         break;
+    case 'updateBranch':
+        updateBranch($mysqli, $data);
+        break;
+    case 'deleteBranch':
+        deleteBranch($mysqli, $data);
+        break;
+    case 'addBranch':
+        addBranch($mysqli, $data);
+        break;
     case 'getStaff':
         getStaff($mysqli);
+        break;
+    case 'addStaff':
+        addStaff($mysqli, $data);
         break;
     case 'createStaff':
         createStaff($mysqli, $data);
@@ -76,6 +88,9 @@ switch ($action) {
         break;
     case 'rejectRequest':
         rejectRequest($mysqli, $data);
+        break;
+    case 'getApprovalHistory':
+        getApprovalHistory($mysqli);
         break;
     case 'getLowStockAlerts':
         getLowStockAlerts($mysqli);
@@ -142,6 +157,77 @@ function updateBranchStatus($mysqli, $data) {
     }
 }
 
+// Update branch details
+function updateBranch($mysqli, $data) {
+    try {
+        $stmt = $mysqli->prepare("UPDATE pharmacy_branches SET branch_name = ?, address = ?, phone_number = ? WHERE branch_id = ?");
+        $stmt->bind_param('sssi', $data['branch_name'], $data['address'], $data['phone_number'], $data['branch_id']);
+        $stmt->execute();
+        $stmt->close();
+
+        echo json_encode(['success' => true, 'message' => 'Branch updated successfully']);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    }
+}
+
+// Delete branch
+function deleteBranch($mysqli, $data) {
+    try {
+        // First check if branch has staff or inventory
+        $stmt = $mysqli->prepare("SELECT COUNT(*) as staff_count FROM branch_staff WHERE branch_id = ?");
+        $stmt->bind_param('i', $data['branch_id']);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        
+        if ($row['staff_count'] > 0) {
+            echo json_encode(['success' => false, 'message' => 'Cannot delete branch with assigned staff']);
+            return;
+        }
+        
+        $stmt = $mysqli->prepare("SELECT COUNT(*) as inventory_count FROM branch_inventory WHERE branch_id = ?");
+        $stmt->bind_param('i', $data['branch_id']);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        
+        if ($row['inventory_count'] > 0) {
+            echo json_encode(['success' => false, 'message' => 'Cannot delete branch with inventory']);
+            return;
+        }
+
+        // Delete the branch
+        $stmt = $mysqli->prepare("DELETE FROM pharmacy_branches WHERE branch_id = ?");
+        $stmt->bind_param('i', $data['branch_id']);
+        $stmt->execute();
+        $stmt->close();
+
+        echo json_encode(['success' => true, 'message' => 'Branch deleted successfully']);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    }
+}
+
+// Add new branch
+function addBranch($mysqli, $data) {
+    try {
+        $stmt = $mysqli->prepare("INSERT INTO pharmacy_branches (branch_name, address, phone_number, status) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param('ssss', $data['branch_name'], $data['address'], $data['phone_number'], $data['status']);
+        $stmt->execute();
+        $stmt->close();
+
+        echo json_encode(['success' => true, 'message' => 'Branch added successfully']);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    }
+}
+
 // Get staff members
 function getStaff($mysqli) {
     try {
@@ -173,6 +259,52 @@ function getStaff($mysqli) {
 
         echo json_encode(['success' => true, 'staff' => $staff]);
     } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    }
+}
+
+// Add new staff member
+function addStaff($mysqli, $data) {
+    try {
+        $mysqli->begin_transaction();
+
+        // Get role_id
+        $roleStmt = $mysqli->prepare("SELECT role_id FROM roles WHERE role_name = ?");
+        $roleStmt->bind_param('s', $data['role_name']);
+        $roleStmt->execute();
+        $roleResult = $roleStmt->get_result();
+        $role = $roleResult->fetch_assoc();
+        $roleStmt->close();
+
+        if (!$role) {
+            throw new Exception('Invalid role');
+        }
+
+        // Create user with provided password
+        $passwordHash = password_hash($data['password'], PASSWORD_DEFAULT);
+        $stmt = $mysqli->prepare("
+            INSERT INTO users (username, email, password_hash, role_id, first_name, last_name, phone_number, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 'active')
+        ");
+        $stmt->bind_param('sssssss',
+            $data['username'], $data['email'], $passwordHash,
+            $role['role_id'], $data['first_name'], $data['last_name'], $data['phone_number']
+        );
+        $stmt->execute();
+        $userId = $stmt->insert_id;
+        $stmt->close();
+
+        // Assign to branch
+        $branchStmt = $mysqli->prepare("INSERT INTO branch_staff (branch_id, user_id) VALUES (?, ?)");
+        $branchStmt->bind_param('ii', $data['branch_id'], $userId);
+        $branchStmt->execute();
+        $branchStmt->close();
+
+        $mysqli->commit();
+        echo json_encode(['success' => true, 'message' => 'Staff added successfully']);
+    } catch (Exception $e) {
+        $mysqli->rollback();
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => $e->getMessage()]);
     }
@@ -384,6 +516,9 @@ function approveRequest($mysqli, $data) {
         $stmt->execute();
         $stmt->close();
 
+        // Log approval history entry
+        logApprovalHistory($mysqli, $data['request_id'], 'approved', $userId, null);
+
         $mysqli->commit();
 
         echo json_encode(['success' => true, 'message' => 'Request approved']);
@@ -397,20 +532,98 @@ function approveRequest($mysqli, $data) {
 // Reject request
 function rejectRequest($mysqli, $data) {
     try {
+        $reason = $data['reason'] ?? '';
         $stmt = $mysqli->prepare("
             UPDATE inventory_update_requests
-            SET status = 'rejected', approved_by = ?, approval_date = NOW()
+            SET status = 'rejected', approved_by = ?, approval_date = NOW(), rejection_reason = ?
             WHERE request_id = ?
         ");
         $userId = $_SESSION['user_id'] ?? 1;
-        $stmt->bind_param('ii', $userId, $data['request_id']);
+        $stmt->bind_param('isi', $userId, $reason, $data['request_id']);
         $stmt->execute();
         $stmt->close();
+
+        // Log rejection history entry
+        logApprovalHistory($mysqli, $data['request_id'], 'rejected', $userId, $reason);
 
         echo json_encode(['success' => true, 'message' => 'Request rejected']);
     } catch (Exception $e) {
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    }
+}
+
+// Get approval history
+function getApprovalHistory($mysqli) {
+    try {
+        $query = "
+            SELECT ah.history_id,
+                   ah.request_id,
+                   ah.status,
+                   ah.approval_date,
+                   ah.reason,
+                   ah.rejection_reason,
+                   ah.old_quantity,
+                   ah.new_quantity,
+                   ah.request_type,
+                   m.medicine_name,
+                   m.generic_name,
+                   pb.branch_name,
+                   CONCAT(u1.first_name, ' ', u1.last_name) AS requested_by_name,
+                   CONCAT(u2.first_name, ' ', u2.last_name) AS approved_by_name
+            FROM approval_history ah
+            JOIN inventory_update_requests iur ON ah.request_id = iur.request_id
+            JOIN branch_inventory bi ON iur.inventory_id = bi.inventory_id
+            JOIN medicines m ON bi.medicine_id = m.medicine_id
+            JOIN pharmacy_branches pb ON bi.branch_id = pb.branch_id
+            JOIN users u1 ON ah.requested_by = u1.user_id
+            LEFT JOIN users u2 ON ah.approved_by = u2.user_id
+            ORDER BY ah.approval_date DESC
+        ";
+
+        $result = $mysqli->query($query);
+        $history = [];
+        while ($row = $result->fetch_assoc()) {
+            $history[] = $row;
+        }
+
+        echo json_encode(['success' => true, 'history' => $history]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    }
+}
+
+// Helper to log approval/rejection actions to dedicated history table
+function logApprovalHistory($mysqli, $requestId, $status, $approvedBy, $rejectionReason = null) {
+    try {
+        $stmt = $mysqli->prepare("
+            INSERT INTO approval_history
+                (request_id, inventory_id, branch_id, request_type, old_quantity, new_quantity, status,
+                 requested_by, approved_by, reason, rejection_reason, approval_date)
+            SELECT iur.request_id,
+                   iur.inventory_id,
+                   bi.branch_id,
+                   iur.request_type,
+                   iur.old_quantity,
+                   iur.new_quantity,
+                   ?,
+                   iur.requested_by,
+                   ?,
+                   iur.reason,
+                   ?,
+                   NOW()
+            FROM inventory_update_requests iur
+            JOIN branch_inventory bi ON iur.inventory_id = bi.inventory_id
+            WHERE iur.request_id = ?
+        ");
+
+        $stmt->bind_param('sisi', $status, $approvedBy, $rejectionReason, $requestId);
+        $stmt->execute();
+        $stmt->close();
+    } catch (Exception $e) {
+        // Do not block main flow on history logging failures
+        error_log('Approval history log failed: ' . $e->getMessage());
     }
 }
 

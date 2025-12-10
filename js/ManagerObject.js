@@ -7,6 +7,7 @@ export class ManagerObject {
     #staff;
     #inventory;
     #pendingRequests;
+    #approvalHistory;
     #lowStockAlerts;
     #brands;
     #performanceMetrics;
@@ -17,6 +18,7 @@ export class ManagerObject {
         this.#staff = [];
         this.#inventory = [];
         this.#pendingRequests = [];
+        this.#approvalHistory = [];
         this.#lowStockAlerts = [];
         this.#brands = [];
         this.#performanceMetrics = [];
@@ -38,6 +40,10 @@ export class ManagerObject {
 
     setPendingRequests(requests) {
         this.#pendingRequests = requests;
+    }
+
+    setApprovalHistory(history) {
+        this.#approvalHistory = history;
     }
 
     setLowStockAlerts(alerts) {
@@ -71,6 +77,10 @@ export class ManagerObject {
 
     getPendingRequests() {
         return this.#pendingRequests;
+    }
+
+    getApprovalHistory() {
+        return this.#approvalHistory;
     }
 
     getLowStockAlerts() {

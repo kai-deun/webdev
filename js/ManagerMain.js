@@ -1,6 +1,7 @@
 // Loads initial data and sets up the page
 
 import { managerUtils, eventBinder } from "./ManagerInstances.js";
+import "./ManagerModals.js"; // Import modal functions to attach to window object
 
 class ManagerDashboard {
     constructor() {
@@ -24,6 +25,7 @@ class ManagerDashboard {
             await managerUtils.loadStaff();
             await managerUtils.loadInventory();
             await managerUtils.loadPendingRequests();
+            await managerUtils.loadApprovalHistory();
 
             // Initialize event bindings
             eventBinder;
