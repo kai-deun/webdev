@@ -7,7 +7,12 @@ export class ManagerEventBinder {
 
     constructor() {
         this.bindDynamicContent();
-        document.addEventListener('DOMContentLoaded', this.bindStaticContent.bind(this));
+        // Bind immediately if DOM is ready, otherwise wait for DOMContentLoaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', this.bindStaticContent.bind(this));
+        } else {
+            this.bindStaticContent();
+        }
     }
 
     bindStaticContent() {
@@ -20,33 +25,106 @@ export class ManagerEventBinder {
             });
         });
 
-        // Branch search
+        // Branch search - real-time as you type
+        const branchSearchInput = document.getElementById('branch-search');
+        if (branchSearchInput) {
+            branchSearchInput.addEventListener('input', () => {
+                const searchTerm = branchSearchInput.value;
+                const statusFilter = document.getElementById('branch-status-filter').value;
+                this.handleBranchSearch(searchTerm, statusFilter);
+            });
+        }
+        
+        // Branch search button (still functional)
         const branchSearchBtn = document.getElementById('branch-search-btn');
         if (branchSearchBtn) {
             branchSearchBtn.addEventListener('click', () => {
-                const searchTerm = document.getElementById('branch-search').value;
-                this.handleBranchSearch(searchTerm);
+                const searchTerm = branchSearchInput.value;
+                const statusFilter = document.getElementById('branch-status-filter').value;
+                this.handleBranchSearch(searchTerm, statusFilter);
             });
         }
 
-        // Staff search
-        const staffSearchBtn = document.getElementById('staff-search-btn');
-        if (staffSearchBtn) {
-            staffSearchBtn.addEventListener('click', () => {
-                const searchTerm = document.getElementById('staff-search').value;
+        // Staff search - real-time as you type
+        const staffSearchInput = document.getElementById('staff-search');
+        if (staffSearchInput) {
+            staffSearchInput.addEventListener('input', () => {
+                const searchTerm = staffSearchInput.value;
                 const branchFilter = document.getElementById('staff-branch-filter').value;
                 const roleFilter = document.getElementById('staff-role-filter').value;
                 this.handleStaffSearch(searchTerm, branchFilter, roleFilter);
             });
         }
+        
+        // Staff filter dropdowns
+        const staffBranchFilter = document.getElementById('staff-branch-filter');
+        const staffRoleFilter = document.getElementById('staff-role-filter');
+        if (staffBranchFilter) {
+            staffBranchFilter.addEventListener('change', () => {
+                const searchTerm = staffSearchInput.value;
+                const branchFilter = staffBranchFilter.value;
+                const roleFilter = staffRoleFilter.value;
+                this.handleStaffSearch(searchTerm, branchFilter, roleFilter);
+            });
+        }
+        if (staffRoleFilter) {
+            staffRoleFilter.addEventListener('change', () => {
+                const searchTerm = staffSearchInput.value;
+                const branchFilter = staffBranchFilter.value;
+                const roleFilter = staffRoleFilter.value;
+                this.handleStaffSearch(searchTerm, branchFilter, roleFilter);
+            });
+        }
+        
+        // Staff search button (still functional)
+        const staffSearchBtn = document.getElementById('staff-search-btn');
+        if (staffSearchBtn) {
+            staffSearchBtn.addEventListener('click', () => {
+                const searchTerm = staffSearchInput.value;
+                const branchFilter = staffBranchFilter.value;
+                const roleFilter = staffRoleFilter.value;
+                this.handleStaffSearch(searchTerm, branchFilter, roleFilter);
+            });
+        }
 
-        // Inventory search
+        // Inventory search - real-time as you type
+        const inventorySearchInput = document.getElementById('inventory-search');
+        if (inventorySearchInput) {
+            inventorySearchInput.addEventListener('input', () => {
+                const searchTerm = inventorySearchInput.value;
+                const branchFilter = document.getElementById('inventory-branch-filter').value;
+                const statusFilter = document.getElementById('inventory-status-filter').value;
+                this.handleInventorySearch(searchTerm, branchFilter, statusFilter);
+            });
+        }
+        
+        // Inventory filter dropdowns
+        const inventoryBranchFilter = document.getElementById('inventory-branch-filter');
+        const inventoryStatusFilter = document.getElementById('inventory-status-filter');
+        if (inventoryBranchFilter) {
+            inventoryBranchFilter.addEventListener('change', () => {
+                const searchTerm = inventorySearchInput.value;
+                const branchFilter = inventoryBranchFilter.value;
+                const statusFilter = inventoryStatusFilter.value;
+                this.handleInventorySearch(searchTerm, branchFilter, statusFilter);
+            });
+        }
+        if (inventoryStatusFilter) {
+            inventoryStatusFilter.addEventListener('change', () => {
+                const searchTerm = inventorySearchInput.value;
+                const branchFilter = inventoryBranchFilter.value;
+                const statusFilter = inventoryStatusFilter.value;
+                this.handleInventorySearch(searchTerm, branchFilter, statusFilter);
+            });
+        }
+        
+        // Inventory search button (still functional)
         const inventorySearchBtn = document.getElementById('inventory-search-btn');
         if (inventorySearchBtn) {
             inventorySearchBtn.addEventListener('click', () => {
-                const searchTerm = document.getElementById('inventory-search').value;
-                const branchFilter = document.getElementById('inventory-branch-filter').value;
-                const statusFilter = document.getElementById('inventory-status-filter').value;
+                const searchTerm = inventorySearchInput.value;
+                const branchFilter = inventoryBranchFilter.value;
+                const statusFilter = inventoryStatusFilter.value;
                 this.handleInventorySearch(searchTerm, branchFilter, statusFilter);
             });
         }
@@ -159,23 +237,29 @@ export class ManagerEventBinder {
         }
     }
 
-    handleBranchSearch(searchTerm) {
-        const branches = managerUtils.getBranches();
-        const filtered = branches.filter(branch => 
-            branch.branch_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            branch.address.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        managerUtils.displayBranches(filtered);
+    handleBranchSearch(searchTerm, statusFilter) {
+        let branches = managerUtils.getBranches();
+        
+        // Apply search term filter
+        if (searchTerm && searchTerm.trim() !== '') {
+            branches = branches.filter(branch => 
+                branch.branch_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (branch.address && branch.address.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                (branch.manager_name && branch.manager_name.toLowerCase().includes(searchTerm.toLowerCase()))
+            );
+        }
+        
+        // Apply status filter
+        if (statusFilter && statusFilter !== '') {
+            branches = branches.filter(branch => branch.status === statusFilter);
+        }
+        
+        managerUtils.displayBranches(branches);
     }
 
     handleBranchFilter(status) {
-        const branches = managerUtils.getBranches();
-        if (status) {
-            const filtered = branches.filter(branch => branch.status === status);
-            managerUtils.displayBranches(filtered);
-        } else {
-            managerUtils.displayBranches(branches);
-        }
+        const searchTerm = document.getElementById('branch-search').value;
+        this.handleBranchSearch(searchTerm, status);
     }
 
     handleStaffSearch(searchTerm, branchFilter, roleFilter) {

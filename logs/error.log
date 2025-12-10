@@ -836,3 +836,150 @@ Stack trace:
 )
 
 [10-Dec-2025 10:40:31 UTC] User found in session: patient
+[10-Dec-2025 10:41:20 UTC] Login successful for user: manager, role: Pharmacy Manager
+[10-Dec-2025 10:41:20 UTC] Session ID: 7g4ae7ldiqocq7kpn6a1qlkdfn
+[10-Dec-2025 10:41:20 UTC] Session cookie path: /
+[10-Dec-2025 10:41:20 UTC] Session cookie name: PHPSESSID
+[10-Dec-2025 10:41:20 UTC] Session set: Array
+(
+    [user_id] => 5
+    [username] => manager
+    [email] => manager1@pharmacy.com
+    [role] => Pharmacy Manager
+    [full_name] => Emily Davis
+    [login_time] => 1765363280
+)
+
+[10-Dec-2025 10:41:22 UTC] getCurrentUser called. Session ID: 7g4ae7ldiqocq7kpn6a1qlkdfn
+[10-Dec-2025 10:41:22 UTC] Session cookie: 7g4ae7ldiqocq7kpn6a1qlkdfn
+[10-Dec-2025 10:41:22 UTC] Session cookie path: /
+[10-Dec-2025 10:41:22 UTC] Session data: Array
+(
+    [user_id] => 5
+    [username] => manager
+    [email] => manager1@pharmacy.com
+    [role] => Pharmacy Manager
+    [full_name] => Emily Davis
+    [login_time] => 1765363280
+)
+
+[10-Dec-2025 10:41:22 UTC] All cookies: Array
+(
+    [PHPSESSID] => 7g4ae7ldiqocq7kpn6a1qlkdfn
+)
+
+[10-Dec-2025 10:41:22 UTC] User found in session: manager
+[10-Dec-2025 10:46:08 UTC] getCurrentUser called. Session ID: 7g4ae7ldiqocq7kpn6a1qlkdfn
+[10-Dec-2025 10:46:08 UTC] Session cookie: 7g4ae7ldiqocq7kpn6a1qlkdfn
+[10-Dec-2025 10:46:08 UTC] Session cookie path: /
+[10-Dec-2025 10:46:08 UTC] Session data: Array
+(
+    [user_id] => 5
+    [username] => manager
+    [email] => manager1@pharmacy.com
+    [role] => Pharmacy Manager
+    [full_name] => Emily Davis
+    [login_time] => 1765363280
+)
+
+[10-Dec-2025 10:46:08 UTC] All cookies: Array
+(
+    [PHPSESSID] => 7g4ae7ldiqocq7kpn6a1qlkdfn
+)
+
+[10-Dec-2025 10:46:08 UTC] User found in session: manager
+[10-Dec-2025 10:46:19 UTC] getCurrentUser called. Session ID: 7g4ae7ldiqocq7kpn6a1qlkdfn
+[10-Dec-2025 10:46:19 UTC] Session cookie: 7g4ae7ldiqocq7kpn6a1qlkdfn
+[10-Dec-2025 10:46:19 UTC] Session cookie path: /
+[10-Dec-2025 10:46:19 UTC] Session data: Array
+(
+    [user_id] => 5
+    [username] => manager
+    [email] => manager1@pharmacy.com
+    [role] => Pharmacy Manager
+    [full_name] => Emily Davis
+    [login_time] => 1765363280
+)
+
+[10-Dec-2025 10:46:19 UTC] All cookies: Array
+(
+    [PHPSESSID] => 7g4ae7ldiqocq7kpn6a1qlkdfn
+)
+
+[10-Dec-2025 10:46:19 UTC] User found in session: manager
+[10-Dec-2025 10:46:19 UTC] getCurrentUser called. Session ID: 7g4ae7ldiqocq7kpn6a1qlkdfn
+[10-Dec-2025 10:46:19 UTC] Session cookie: 7g4ae7ldiqocq7kpn6a1qlkdfn
+[10-Dec-2025 10:46:19 UTC] Session cookie path: /
+[10-Dec-2025 10:46:19 UTC] Session data: Array
+(
+    [user_id] => 5
+    [username] => manager
+    [email] => manager1@pharmacy.com
+    [role] => Pharmacy Manager
+    [full_name] => Emily Davis
+    [login_time] => 1765363280
+)
+
+[10-Dec-2025 10:46:19 UTC] All cookies: Array
+(
+    [PHPSESSID] => 7g4ae7ldiqocq7kpn6a1qlkdfn
+)
+
+[10-Dec-2025 10:46:19 UTC] User found in session: manager
+[10-Dec-2025 10:46:20 UTC] getCurrentUser called. Session ID: 7g4ae7ldiqocq7kpn6a1qlkdfn
+[10-Dec-2025 10:46:20 UTC] Session cookie: 7g4ae7ldiqocq7kpn6a1qlkdfn
+[10-Dec-2025 10:46:20 UTC] Session cookie path: /
+[10-Dec-2025 10:46:20 UTC] Session data: Array
+(
+    [user_id] => 5
+    [username] => manager
+    [email] => manager1@pharmacy.com
+    [role] => Pharmacy Manager
+    [full_name] => Emily Davis
+    [login_time] => 1765363280
+)
+
+[10-Dec-2025 10:46:20 UTC] All cookies: Array
+(
+    [PHPSESSID] => 7g4ae7ldiqocq7kpn6a1qlkdfn
+)
+
+[10-Dec-2025 10:46:20 UTC] User found in session: manager
+[10-Dec-2025 10:46:20 UTC] getCurrentUser called. Session ID: 7g4ae7ldiqocq7kpn6a1qlkdfn
+[10-Dec-2025 10:46:20 UTC] Session cookie: 7g4ae7ldiqocq7kpn6a1qlkdfn
+[10-Dec-2025 10:46:20 UTC] Session cookie path: /
+[10-Dec-2025 10:46:20 UTC] Session data: Array
+(
+    [user_id] => 5
+    [username] => manager
+    [email] => manager1@pharmacy.com
+    [role] => Pharmacy Manager
+    [full_name] => Emily Davis
+    [login_time] => 1765363280
+)
+
+[10-Dec-2025 10:46:20 UTC] All cookies: Array
+(
+    [PHPSESSID] => 7g4ae7ldiqocq7kpn6a1qlkdfn
+)
+
+[10-Dec-2025 10:46:20 UTC] User found in session: manager
+[10-Dec-2025 10:49:35 UTC] getCurrentUser called. Session ID: 7g4ae7ldiqocq7kpn6a1qlkdfn
+[10-Dec-2025 10:49:35 UTC] Session cookie: 7g4ae7ldiqocq7kpn6a1qlkdfn
+[10-Dec-2025 10:49:35 UTC] Session cookie path: /
+[10-Dec-2025 10:49:35 UTC] Session data: Array
+(
+    [user_id] => 5
+    [username] => manager
+    [email] => manager1@pharmacy.com
+    [role] => Pharmacy Manager
+    [full_name] => Emily Davis
+    [login_time] => 1765363280
+)
+
+[10-Dec-2025 10:49:35 UTC] All cookies: Array
+(
+    [PHPSESSID] => 7g4ae7ldiqocq7kpn6a1qlkdfn
+)
+
+[10-Dec-2025 10:49:35 UTC] User found in session: manager
