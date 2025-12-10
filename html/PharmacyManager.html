@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmacy Employee Dashboard - VitalSoft</title>
+    <link rel="stylesheet" href="../css/pharmacy-employee.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-pills"></i>
+                    <h1>VitalSoft Pharmacy</h1>
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar">PH</div>
+                    <div>
+                        <div class="user-name">Pharmacist</div>
+                        <div class="user-role">Pharmacy Employee</div>
+                    </div>
+                    <button class="btn-logout" onclick="handleLogout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <main class="main-content">
+            <!-- Stats Cards -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <i class="fas fa-prescription"></i>
+                    <h3>Pending Prescriptions</h3>
+                    <div class="value" id="pharm-stat-pending">0</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>Ready for Pickup</h3>
+                    <div class="value" id="pharm-stat-ready">0</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-clipboard-check"></i>
+                    <h3>Dispensed Today</h3>
+                    <div class="value" id="pharm-stat-dispensed">0</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Low Stock Items</h3>
+                    <div class="value" id="pharm-stat-lowstock">0</div>
+                </div>
+            </div>
+
+            <!-- Content Header -->
+            <div class="content-header">
+                <h2>Pharmacy Dashboard</h2>
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="pharm-refresh-btn">
+                        <i class="fas fa-sync-alt"></i> Refresh Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="content-tabs">
+                <button class="tab-btn active" data-tab="pending">Prescriptions</button>
+                <button class="tab-btn" data-tab="inventory">Inventory</button>
+                <button class="tab-btn" data-tab="dispensed">Dispensed History</button>
+            </div>
+
+            <!-- Pending Prescriptions Tab -->
+            <section id="pending-tab" class="tab-content active">
+                <div class="search-filter">
+                    <input type="text" class="search-box pharm-search" data-target="pending" 
+                           placeholder="Search by patient, doctor, or prescription ID...">
+                </div>
+                <div class="prescriptions-list pharm-pending-list">
+                    <!-- Filled by JS -->
+                </div>
+            </section>
+
+            <!-- Inventory Tab -->
+            <section id="inventory-tab" class="tab-content">
+                <div class="search-filter">
+                    <input type="text" class="search-box pharm-search" data-target="inventory" 
+                           placeholder="Search medicines...">
+                </div>
+                <div class="inventory-table-container">
+                    <table class="data-table" id="inventory-table">
+                        <thead>
+                            <tr>
+                                <th>Medicine</th>
+                                <th>Category</th>
+                                <th>Strength</th>
+                                <th>Branch</th>
+                                <th>Quantity</th>
+                                <th>Reorder Level</th>
+                                <th>Expiry Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Filled by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Dispensed History Tab -->
+            <section id="dispensed-tab" class="tab-content">
+                <div class="search-filter">
+                    <input type="text" class="search-box pharm-search" data-target="dispensed" 
+                           placeholder="Search dispensed prescriptions...">
+                </div>
+                <div class="inventory-table-container">
+                    <table class="data-table" id="dispensed-table">
+                        <thead>
+                            <tr>
+                                <th>Rx ID</th>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Pharmacist</th>
+                                <th>Dispensed At</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Filled by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="pharm-loading">Loading pharmacy data...</div>
+
+    <script src="../js/PharmacyEmployee.js"></script>
+</body>
+</html>
