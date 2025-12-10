@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VitalSoft - Patient Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/patient.css">
+</head>
+<body>
+    <script src="../js/common.js"></script>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-heartbeat"></i>
+                    <h1>VitalSoft - Patient Portal</h1>
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar">--</div>
+                    <div>
+                        <div class="user-name">Loading...</div>
+                        <div class="user-role">Patient</div>
+                    </div>
+                    <button class="btn btn-logout" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="dashboard">
+            <div class="main-content">
+                <div class="content-header">
+                    <h2>Patient Dashboard <span id="patient-identifier" style="font-size: 0.65em; color: #666; font-weight: normal;"></span></h2>
+                    <div class="header-actions">
+                        <button class="btn btn-primary"><i class="fas fa-file-medical"></i> Request Renewal</button>
+                        <button class="btn btn-primary"><i class="fas fa-question"></i> Get Help</button>
+                    </div>
+                </div>
+
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <i class="fas fa-prescription-bottle"></i>
+                        <h3>Active Prescriptions</h3>
+                        <div class="value" id="active-prescriptions-stat">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-calendar-check"></i>
+                        <h3>Upcoming Refills</h3>
+                        <div class="value" id="upcoming-refills-stat">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-file-medical"></i>
+                        <h3>Medical Records</h3>
+                        <div class="value" id="medical-records-stat">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-clock"></i>
+                        <h3>Pending Requests</h3>
+                        <div class="value" id="pending-requests-stat">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-tabs">
+                <button class="tab-btn active" data-tab="prescriptions">My Prescriptions</button>
+                <button class="tab-btn" data-tab="medical-history">Medical History</button>
+                <button class="tab-btn" data-tab="profile">Personal Information</button>
+            </div>
+
+            <div class="tab-content active" id="prescriptions-tab">
+                <div class="search-filter">
+                    <input type="text" id="prescription-search" class="search-box" placeholder="Search prescriptions...">
+                    <select id="prescription-status-filter" class="filter-select">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="dispensed">Dispensed</option>
+                        <option value="expired">Expired</option>
+                    </select>
+                    <button class="btn btn-primary" id="prescription-search-btn"><i class="fas fa-search"></i> Search</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table" id="prescriptions-table">
+                        <thead>
+                            <tr>
+                                <th>Prescription ID</th>
+                                <th>Date</th>
+                                <th>Doctor</th>
+                                <th>Medications</th>
+                                <th>Qty</th>
+                                <th>Refills</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Prescriptions will be populated from database -->
+                        </tbody>
+                    </table>
+                    <div class="loading" id="prescriptions-loading" style="display:none;">Loading...</div>
+                </div>
+
+                <div class="content-section compact">
+                    <h3>Request Prescription Renewal</h3>
+                    <div class="form-container">
+                        <div class="form-group">
+                            <label for="prescription-select">Select Prescription</label>
+                                <select id="prescription-select" class="form-control">
+                                    <option value="">Choose a prescription...</option>
+                                    <!-- Options populated from database -->
+                                </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="renewal-notes">Additional Notes (Optional)</label>
+                            <textarea id="renewal-notes" class="form-control" placeholder="Any additional information for your doctor..." rows="2"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-success"><i class="fas fa-paper-plane"></i> Submit Request</button>
+                            <button class="btn btn-secondary">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="medical-history-tab">
+                <div class="search-filter">
+                    <input type="text" id="history-search" class="search-box" placeholder="Search medical history...">
+                    <select id="history-type-filter" class="filter-select">
+                        <option value="">All Records</option>
+                        <option value="prescription">Prescriptions</option>
+                        <option value="allergy">Allergies</option>
+                        <option value="condition">Medical Conditions</option>
+                        <option value="vaccination">Vaccinations</option>
+                    </select>
+                    <button class="btn btn-primary" id="history-search-btn"><i class="fas fa-search"></i> Search</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table" id="history-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Title / Diagnosis</th>
+                                <th>Doctor</th>
+                                <th>Notes</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Medical history will be populated from database -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="content-section compact">
+                    <h3>Medical Summary</h3>
+                    <div class="medical-summary compact-grid">
+                        <div class="summary-section">
+                            <h4>Current Conditions</h4>
+                            <ul>
+                                <li>Hypertension</li>
+                                <li>Seasonal Allergies</li>
+                            </ul>
+                        </div>
+                        <div class="summary-section">
+                            <h4>Known Allergies</h4>
+                            <ul>
+                                <li>Penicillin (Severe)</li>
+                            </ul>
+                        </div>
+                        <div class="summary-section">
+                            <h4>Current Medications</h4>
+                            <ul>
+                                <li>Lisinopril 10mg</li>
+                                <li>Loratadine 10mg</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="profile-tab">
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <h3>Personal Information</h3>
+                        <button class="btn btn-primary"><i class="fas fa-edit"></i> Edit Information</button>
+                    </div>
+                    
+                    <div class="profile-details">
+                        <div class="detail-section">
+                            <h4>Basic Information</h4>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <label>Full Name</label>
+                                    <div id="profile-fullname" class="detail-value">Loading...</div>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Date of Birth</label>
+                                    <div id="profile-dob" class="detail-value"></div>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Gender</label>
+                                    <div id="profile-gender" class="detail-value">N/A</div>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Blood Type</label>
+                                    <div id="profile-bloodtype" class="detail-value"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <h4>Contact Information</h4>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <label>Email Address</label>
+                                    <div id="profile-email" class="detail-value"></div>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Phone Number</label>
+                                    <div id="profile-phone" class="detail-value"></div>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Address</label>
+                                    <div id="profile-address" class="detail-value"></div>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Emergency Contact</label>
+                                    <div id="profile-emergency" class="detail-value"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <h4>Account Information</h4>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <label>Patient ID</label>
+                                    <div id="profile-patientid" class="detail-value"></div>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Account Status</label>
+                                    <div class="detail-value"><span id="profile-status" class="status-badge"></span></div>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Primary Pharmacy</label>
+                                    <div id="profile-pharmacy" class="detail-value"></div>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Insurance Provider</label>
+                                    <div id="profile-insurance" class="detail-value"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Prescription Details Modal -->
+    <div id="prescription-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-prescription"></i> Prescription Details</h2>
+                <button class="modal-close" onclick="closePrescriptionModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="prescription-details-container">
+                    <!-- Header Info -->
+                    <div class="detail-section">
+                        <h3>Prescription Information</h3>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <label>Prescription ID</label>
+                                <div id="modal-prescription-id" class="detail-value">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <label>Date Issued</label>
+                                <div id="modal-prescription-date" class="detail-value">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <label>Expiry Date</label>
+                                <div id="modal-expiry-date" class="detail-value">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <label>Status</label>
+                                <div id="modal-status" class="detail-value">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <label>Doctor</label>
+                                <div id="modal-doctor" class="detail-value">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <label>Patient</label>
+                                <div id="modal-patient" class="detail-value">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Diagnosis -->
+                    <div class="detail-section">
+                        <h3>Diagnosis</h3>
+                        <div id="modal-diagnosis" class="detail-text">-</div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="detail-section">
+                        <h3>Instructions</h3>
+                        <div id="modal-notes" class="detail-text">-</div>
+                    </div>
+
+                    <!-- Medications -->
+                    <div class="detail-section">
+                        <h3>Prescribed Medications</h3>
+                        <div class="medications-table-container">
+                            <table class="medications-table">
+                                <thead>
+                                    <tr>
+                                        <th>Medicine</th>
+                                        <th>Dosage</th>
+                                        <th>Quantity</th>
+                                        <th>Frequency</th>
+                                        <th>Duration</th>
+                                        <th>Instructions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="modal-medications-tbody">
+                                    <tr><td colspan="6" class="text-center">No medications</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closePrescriptionModal()">Close</button>
+                <button class="btn btn-primary" onclick="requestRenewal()"><i class="fas fa-redo"></i> Request Renewal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Medical History Details Modal -->
+    <div id="medical-history-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-file-medical"></i> Medical Record Details</h2>
+                <button class="modal-close" onclick="closeMedicalHistoryModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-section">
+                    <h3>Record Information</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>Record ID</label>
+                            <div id="history-modal-id" class="detail-value">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <label>Visit Date</label>
+                            <div id="history-modal-date" class="detail-value">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <label>Doctor</label>
+                            <div id="history-modal-doctor" class="detail-value">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <label>Record Type</label>
+                            <div id="history-modal-type" class="detail-value">Medical Record</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-section">
+                    <h3>Diagnosis</h3>
+                    <div id="history-modal-diagnosis" class="detail-text">-</div>
+                </div>
+                <div class="detail-section">
+                    <h3>Treatment & Notes</h3>
+                    <div id="history-modal-treatment" class="detail-text">-</div>
+                </div>
+                <div class="detail-section">
+                    <h3>Additional Notes</h3>
+                    <div id="history-modal-notes" class="detail-text">-</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeMedicalHistoryModal()">Close</button>
+                <button class="btn btn-primary" onclick="printMedicalRecord()"><i class="fas fa-print"></i> Print Record</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="edit-profile-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-edit"></i> Edit Personal Information</h2>
+                <button class="modal-close" onclick="closeEditProfileModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-profile-form">
+                    <div class="detail-section">
+                        <h3>Contact Information</h3>
+                        <div class="form-group">
+                            <label for="edit-email">Email Address</label>
+                            <input type="email" id="edit-email" class="form-control" placeholder="Enter email address">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-phone">Phone Number</label>
+                            <input type="tel" id="edit-phone" class="form-control" placeholder="Enter phone number">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-address">Address</label>
+                            <textarea id="edit-address" class="form-control" rows="2" placeholder="Enter full address"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-emergency">Emergency Contact</label>
+                            <input type="text" id="edit-emergency" class="form-control" placeholder="Name and phone number">
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h3>Pharmacy Preferences</h3>
+                        <div class="form-group">
+                            <label for="edit-pharmacy">Primary Pharmacy</label>
+                            <input type="text" id="edit-pharmacy" class="form-control" placeholder="Pharmacy name and location">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeEditProfileModal()">Cancel</button>
+                <button class="btn btn-success" onclick="saveProfileChanges()"><i class="fas fa-save"></i> Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help & Support Modal (Unified) -->
+    <div id="help-modal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width:640px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-question-circle"></i> Help & Support</h2>
+                <button class="modal-close" onclick="closeHelpModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-section" style="border-left:4px solid #e74c3c;">
+                    <h3 style="display:flex;align-items:center;gap:6px;">
+                        <i class="fas fa-life-ring" style="color:#e74c3c;"></i> Support Channels
+                    </h3>
+                    <div class="help-groups">
+                        <div class="help-group">
+                            <div class="help-channel-icon"><i class="fas fa-phone"></i></div>
+                            <div class="help-channel-body">
+                                <div class="help-channel-title">Phone Support</div>
+                                <div class="help-channel-value">1-800-PHARMACY</div>
+                                <div class="help-channel-meta">Available 24/7</div>
+                            </div>
+                        </div>
+                        <div class="help-group">
+                            <div class="help-channel-icon" style="background:#3498db1a;color:#3498db;"><i class="fas fa-envelope"></i></div>
+                            <div class="help-channel-body">
+                                <div class="help-channel-title">Email Support</div>
+                                <div class="help-channel-value">support@vitalsoft.com</div>
+                                <div class="help-channel-meta">Response within 24 hours</div>
+                            </div>
+                        </div>
+                        <div class="help-group">
+                            <div class="help-channel-icon" style="background:#e74c3c1a;color:#e74c3c;"><i class="fas fa-comments"></i></div>
+                            <div class="help-channel-body">
+                                <div class="help-channel-title">Live Chat</div>
+                                <div class="help-channel-value">Real-time representative</div>
+                                <div class="help-channel-meta">Available 24/7</div>
+                                <div class="help-channel-action"><button class="btn btn-sm btn-primary" onclick="startLiveChat()"><i class="fas fa-comment-dots"></i> Start Chat</button></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-section" style="background:#fff;">
+                    <h3 style="display:flex;align-items:center;gap:6px;">
+                        <i class="fas fa-info-circle" style="color:#3498db;"></i> Response & Escalation
+                    </h3>
+                    <ul class="help-escalation-list">
+                        <li><strong>Urgent medication issues:</strong> Use Phone Support for fastest response.</li>
+                        <li><strong>Non-urgent questions:</strong> Email is best for detailed follow‑up.</li>
+                        <li><strong>Clarifications / quick guidance:</strong> Live Chat connects you instantly.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeHelpModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Medical History Details Modal -->
+    <div id="medical-history-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-file-medical"></i> Medical Record Details</h2>
+                <button class="modal-close" onclick="closeMedicalHistoryModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-section">
+                    <h3>Record Information</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>Record ID</label>
+                            <div id="history-modal-id" class="detail-value">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <label>Visit Date</label>
+                            <div id="history-modal-date" class="detail-value">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <label>Doctor</label>
+                            <div id="history-modal-doctor" class="detail-value">-</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-section">
+                    <h3>Diagnosis</h3>
+                    <div id="history-modal-diagnosis" class="detail-text">-</div>
+                </div>
+                <div class="detail-section">
+                    <h3>Treatment & Notes</h3>
+                    <div id="history-modal-treatment" class="detail-text">-</div>
+                </div>
+                <div class="detail-section">
+                    <h3>Additional Notes</h3>
+                    <div id="history-modal-notes" class="detail-text">-</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeMedicalHistoryModal()">Close</button>
+                <button class="btn btn-primary" onclick="printMedicalRecord()"><i class="fas fa-print"></i> Print Record</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="edit-profile-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-edit"></i> Edit Personal Information</h2>
+                <button class="modal-close" onclick="closeEditProfileModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-profile-form">
+                    <div class="detail-section">
+                        <h3>Contact Information</h3>
+                        <div class="form-group">
+                            <label for="edit-email">Email Address</label>
+                            <input type="email" id="edit-email" class="form-control" placeholder="Enter email address">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-phone">Phone Number</label>
+                            <input type="tel" id="edit-phone" class="form-control" placeholder="Enter phone number">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-address">Address</label>
+                            <textarea id="edit-address" class="form-control" rows="2" placeholder="Enter full address"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-emergency">Emergency Contact</label>
+                            <input type="text" id="edit-emergency" class="form-control" placeholder="Name and phone number">
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h3>Pharmacy Preferences</h3>
+                        <div class="form-group">
+                            <label for="edit-pharmacy">Primary Pharmacy</label>
+                            <input type="text" id="edit-pharmacy" class="form-control" placeholder="Pharmacy name and location">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeEditProfileModal()">Cancel</button>
+                <button class="btn btn-success" onclick="saveProfileChanges()"><i class="fas fa-save"></i> Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Define AUTH_API as global constant (fallback if common.js fails to load)
+        window.AUTH_API = window.AUTH_API || '../php/auth.php';
+        
+        document.addEventListener("DOMContentLoaded", function () {
+            const AUTH_API = window.AUTH_API;
+            // Tab functionality
+            const tabBtns = document.querySelectorAll(".tab-btn");
+            const tabContents = document.querySelectorAll(".tab-content");
+
+            tabBtns.forEach((btn) => {
+                btn.addEventListener("click", function () {
+                    const tabId = this.getAttribute("data-tab");
+
+                    // Remove active class from all buttons and contents
+                    tabBtns.forEach((b) => b.classList.remove("active"));
+                    tabContents.forEach((c) => c.classList.remove("active"));
+
+                    // Add active class to current button and content
+                    this.classList.add("active");
+                    document.getElementById(`${tabId}-tab`).classList.add("active");
+                });
+            });
+
+            // Prescription table actions (compact view)
+            const prescSearchBtn = document.getElementById('prescription-search-btn');
+            const prescSearchInput = document.getElementById('prescription-search');
+            const prescStatusFilter = document.getElementById('prescription-status-filter');
+
+            function filterPrescriptions() {
+                const q = prescSearchInput.value.toLowerCase();
+                const status = prescStatusFilter.value;
+                const rows = document.querySelectorAll('#prescriptions-table tbody tr');
+                rows.forEach(r => {
+                    const text = r.textContent.toLowerCase();
+                    const matchesQuery = !q || text.includes(q);
+                    const matchesStatus = !status || (r.querySelector('.status-badge') && r.querySelector('.status-badge').textContent.toLowerCase().includes(status));
+                    r.style.display = (matchesQuery && matchesStatus) ? '' : 'none';
+                });
+            }
+
+            if (prescSearchBtn) prescSearchBtn.addEventListener('click', filterPrescriptions);
+            if (prescSearchInput) prescSearchInput.addEventListener('keyup', function(e){ if (e.key === 'Enter') filterPrescriptions(); });
+            if (prescStatusFilter) prescStatusFilter.addEventListener('change', filterPrescriptions);
+
+            // Renewal form submission
+            const renewalForm = document.querySelector('.form-actions .btn-success');
+            const renewalCancelBtn = document.querySelector('.form-actions .btn-secondary');
+            
+            if (renewalForm) {
+                renewalForm.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const prescriptionId = document.getElementById('prescription-select').value;
+                    const notes = document.getElementById('renewal-notes').value;
+                    
+                    if (!prescriptionId) {
+                        alert('Please select a prescription to renew.');
+                        return;
+                    }
+                    
+                    if (confirm('Submit renewal request for the selected prescription?\n\nYour doctor will review this request.')) {
+                        submitRenewalRequest(prescriptionId, notes);
+                    }
+                });
+            }
+            
+            if (renewalCancelBtn) {
+                renewalCancelBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.getElementById('prescription-select').value = '';
+                    document.getElementById('renewal-notes').value = '';
+                });
+            }
+
+            // Header Request Renewal button - scroll to renewal form
+            const headerRenewalBtn = document.querySelector('.header-actions .btn-primary:first-child');
+            if (headerRenewalBtn) {
+                headerRenewalBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const prescTab = document.querySelector('[data-tab="my-prescriptions"]');
+                    if (prescTab) prescTab.click();
+                    setTimeout(() => {
+                        const renewalForm = document.querySelector('.content-section.compact');
+                        if (renewalForm) {
+                            renewalForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            const selectEl = document.getElementById('prescription-select');
+                            if (selectEl) {
+                                selectEl.focus();
+                                selectEl.style.boxShadow = '0 0 0 3px rgba(231, 76, 60, 0.3)';
+                                setTimeout(() => { selectEl.style.boxShadow = ''; }, 2000);
+                            }
+                        }
+                    }, 300);
+                });
+            }
+
+            // Header Get Help button
+            const headerHelpBtn = document.querySelector('.header-actions .btn-primary:last-child');
+            if (headerHelpBtn) {
+                headerHelpBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showHelpModal();
+                });
+            }
+
+            // Action buttons in prescriptions table
+            // These will be dynamically bound when prescriptions load from database
+
+            // Edit Profile button
+            const editProfileBtn = document.querySelector('.profile-header .btn-primary');
+            if (editProfileBtn) {
+                editProfileBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    openEditProfileModal();
+                });
+            }
+
+            // History table view buttons
+                        document.querySelectorAll('#history-table .btn-secondary').forEach((btn, idx) => {
+                            btn.addEventListener('click', () => {
+                                const record = histJson.records[idx];
+                                showMedicalHistoryDetails(record);
+                            });
+                        });            // History search
+            const historySearchBtn = document.getElementById('history-search-btn');
+            const historySearchInput = document.getElementById('history-search');
+            const historyTypeFilter = document.getElementById('history-type-filter');
+
+            function filterHistory() {
+                const q = historySearchInput.value.toLowerCase();
+                const type = historyTypeFilter.value;
+                const rows = document.querySelectorAll('#history-table tbody tr');
+                rows.forEach(r => {
+                    const text = r.textContent.toLowerCase();
+                    const matchesQuery = !q || text.includes(q);
+                    const matchesType = !type || r.cells[1].textContent.toLowerCase().includes(type);
+                    r.style.display = (matchesQuery && matchesType) ? '' : 'none';
+                });
+            }
+            if (historySearchBtn) historySearchBtn.addEventListener('click', filterHistory);
+            if (historySearchInput) historySearchInput.addEventListener('keyup', function(e){ if (e.key === 'Enter') filterHistory(); });
+            if (historyTypeFilter) historyTypeFilter.addEventListener('change', filterHistory);
+
+            // Load patient-specific data from server
+            async function loadPatientData() {
+                try {
+                    console.log('Starting to load patient data...');
+                    // Get current logged-in user
+                    const userResp = await fetch(`${AUTH_API}?action=getCurrentUser`);
+                    const userJson = await userResp.json();
+                    console.log('User response:', userJson);
+                    if (!userJson.success) {
+                        console.error('Failed to get current user - Not logged in');
+                        console.log('Redirecting to login page...');
+                        window.location.href = 'login.html';
+                        return;
+                    }
+                    const user = userJson.user;
+                    console.log('Current user:', user);
+                    // Update header info
+                    if (typeof updateUserInfo === 'function') {
+                        updateUserInfo(user);
+                    }
+
+                    // Get patients list to find patient_id for this user
+                    const patsResp = await fetch('../php/prescription.php?action=getPatients');
+                    const patsJson = await patsResp.json();
+                    console.log('Patients response:', patsJson);
+                    if (!patsJson.success) {
+                        console.error('Failed to get patients list');
+                        return;
+                    }
+
+                    const patients = patsJson.patients || [];
+                    console.log('Looking for patient with user_id:', user.user_id);
+                    const myPatient = patients.find(p => String(p.user_id) === String(user.user_id) || String(p.username) === String(user.username));
+                    if (!myPatient) {
+                        console.error('No patient record found for user', user);
+                        console.log('Available patients:', patients.map(p => ({ user_id: p.user_id, username: p.username })));
+                        alert('Patient record not found. Please contact administrator.');
+                        return;
+                    }
+                    const patientId = myPatient.patient_id;
+                    console.log('Found patient:', myPatient);
+
+                    // Show which account is logged in
+                    const patientIdentifier = document.getElementById('patient-identifier');
+                    if (patientIdentifier) {
+                        patientIdentifier.textContent = `(Patient ID: ${patientId} - ${user.username})`;
+                    }
+
+                    console.log('============================================');
+                    console.log(`🔐 LOGGED IN AS: ${user.full_name} (${user.username})`);
+                    console.log(`📋 Patient ID: ${patientId}`);
+                    console.log('============================================');
+
+                    // Populate profile fields (use DB-provided fields)
+                    const fullNameEl = document.getElementById('profile-fullname');
+                    if (fullNameEl) fullNameEl.textContent = ((myPatient.first_name || '') + ' ' + (myPatient.last_name || '')).trim();
+                    // Show DOB and age if available
+                    const dobEl = document.getElementById('profile-dob');
+                    if (dobEl && myPatient.date_of_birth) {
+                        const dob = new Date(myPatient.date_of_birth);
+                        const opts = { year: 'numeric', month: 'short', day: 'numeric' };
+                        const age = myPatient.age ? (' (' + myPatient.age + ' years)') : '';
+                        dobEl.textContent = dob.toLocaleDateString(undefined, opts) + age;
+                    } else if (dobEl && myPatient.age) {
+                        dobEl.textContent = myPatient.age + ' years';
+                    }
+                    const bloodTypeEl = document.getElementById('profile-bloodtype');
+                    if (bloodTypeEl && myPatient.blood_type) bloodTypeEl.textContent = myPatient.blood_type;
+                    const emailEl = document.getElementById('profile-email');
+                    if (emailEl && myPatient.email) emailEl.textContent = myPatient.email;
+                    const phoneEl = document.getElementById('profile-phone');
+                    if (phoneEl && myPatient.phone) phoneEl.textContent = myPatient.phone;
+                    const addressEl = document.getElementById('profile-address');
+                    if (addressEl && myPatient.address) addressEl.textContent = myPatient.address;
+                    // emergency_contact composed from two fields if present
+                    const ecName = myPatient.emergency_contact_name || '';
+                    const ecPhone = myPatient.emergency_contact_phone || '';
+                    const emergencyEl = document.getElementById('profile-emergency');
+                    if (emergencyEl && (ecName || ecPhone)) {
+                        emergencyEl.textContent = (ecName + (ecPhone ? (' ' + ecPhone) : '')).trim();
+                    }
+                    const patientIdEl = document.getElementById('profile-patientid');
+                    if (patientIdEl) patientIdEl.textContent = myPatient.patient_id || '';
+                    const pharmacyEl = document.getElementById('profile-pharmacy');
+                    if (pharmacyEl) pharmacyEl.textContent = myPatient.primary_pharmacy || myPatient.pharmacy || 'N/A';
+                    const insuranceEl = document.getElementById('profile-insurance');
+                    if (insuranceEl) insuranceEl.textContent = myPatient.insurance_provider || myPatient.insurance_number || 'N/A';
+                    const statusEl = document.getElementById('profile-status');
+                    if (statusEl) {
+                        statusEl.textContent = 'Active';
+                        statusEl.className = 'status-badge status-active';
+                    }
+
+                    // Load prescriptions for patient
+                    console.log('============================================');
+                    console.log(`Loading data for: ${user.full_name} (${user.username})`);
+                    console.log(`Patient ID: ${patientId}`);
+                    console.log('============================================');
+                    console.log('Loading prescriptions for patient_id:', patientId);
+                    const presResp = await fetch(`../php/prescription.php?action=getPrescriptions&patient_id=${encodeURIComponent(patientId)}`);
+                    const presJson = await presResp.json();
+                    console.log('Prescriptions response:', presJson);
+                    if (presJson.success && Array.isArray(presJson.prescriptions)) {
+                        const tbody = document.querySelector('#prescriptions-table tbody');
+                        const select = document.getElementById('prescription-select');
+                        tbody.innerHTML = '';
+                        if (select) select.innerHTML = '<option value="">Choose a prescription...</option>';
+
+                        let activeCount = 0;
+                        let upcomingRefills = 0;
+
+                        for (let i = 0; i < presJson.prescriptions.length; i++) {
+                            const p = presJson.prescriptions[i];
+                            // compute simple stats
+                            if ((p.status || '').toLowerCase() === 'active') activeCount++;
+                            if (p.renewal_requested || p.renewal_requested === '1' || p.renewal_requested === 1) upcomingRefills++;
+
+                            const meds = (p.diagnosis || '');
+                            const qty = '-';
+                            const refills = '-';
+
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${p.prescription_id}</td>
+                                <td>${p.prescription_date}</td>
+                                <td>${p.doctor_name || ''}</td>
+                                <td>${meds}</td>
+                                <td>${qty}</td>
+                                <td>${refills}</td>
+                                <td><span class="status-badge status-${(p.status||'').toLowerCase()}">${p.status || ''}</span></td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" data-rx="${p.prescription_id}">Renew</button>
+                                    <button class="btn btn-secondary btn-sm" data-rx="${p.prescription_id}">Details</button>
+                                </td>
+                            `;
+                            tbody.appendChild(tr);
+
+                            // add option to select
+                            if (select) {
+                                const opt = document.createElement('option');
+                                opt.value = p.prescription_id;
+                                opt.textContent = `RX-${p.prescription_id} ${p.diagnosis ? '- ' + p.diagnosis : ''}`;
+                                select.appendChild(opt);
+                            }
+                        }
+
+                        // update stats
+                        const activeEl = document.getElementById('active-prescriptions-stat');
+                        const upcomingEl = document.getElementById('upcoming-refills-stat');
+                        if (activeEl) activeEl.textContent = String(activeCount);
+                        if (upcomingEl) upcomingEl.textContent = String(upcomingRefills);
+
+                        // rebind actions
+                        document.querySelectorAll('#prescriptions-table .btn-primary').forEach(btn => {
+                            btn.addEventListener('click', async (e) => {
+                                const rx = e.currentTarget.getAttribute('data-rx');
+                                if (confirm(`Submit renewal request for Prescription #${rx}?\n\nYour doctor will review this request.`)) {
+                                    submitRenewalRequest(rx, '');
+                                }
+                            });
+                        });
+                        document.querySelectorAll('#prescriptions-table .btn-secondary').forEach(btn => {
+                            btn.addEventListener('click', async (e) => {
+                                const rx = e.currentTarget.getAttribute('data-rx');
+                                // fetch details and show
+                                const detResp = await fetch(`../php/prescription.php?action=getPrescriptionDetails&id=${encodeURIComponent(rx)}`);
+                                const detJson = await detResp.json();
+                                if (detJson.success) {
+                                    showPrescriptionDetails(detJson.prescription, detJson.items || []);
+                                } else {
+                                    alert('Details not found: ' + (detJson.message || 'Unknown error'));
+                                }
+                            });
+                        });
+                    }
+
+                    // Load medical history
+                    console.log('Loading medical history for patient_id:', patientId);
+                    const histResp = await fetch(`../php/prescription.php?action=getMedicalHistory&patient_id=${encodeURIComponent(patientId)}`);
+                    const histJson = await histResp.json();
+                    console.log('Medical history response:', histJson);
+                    if (histJson.success && Array.isArray(histJson.records)) {
+                        const tbody = document.querySelector('#history-table tbody');
+                        tbody.innerHTML = '';
+                        for (let i = 0; i < histJson.records.length; i++) {
+                            const r = histJson.records[i];
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${r.visit_date}</td>
+                                <td>Record</td>
+                                <td>${r.diagnosis || ''}</td>
+                                <td>${r.doctor_name || ''}</td>
+                                <td>${r.notes || ''}</td>
+                                <td><button class="btn btn-secondary btn-sm">View</button></td>
+                            `;
+                            tbody.appendChild(tr);
+                        }
+                        document.querySelectorAll('#history-table .btn-secondary').forEach((btn, idx) => {
+                            btn.addEventListener('click', () => {
+                                const record = histJson.records[idx];
+                                showMedicalHistoryDetails(record);
+                            });
+                        });
+
+                        // update medical records stat
+                        const medRecEl = document.getElementById('medical-records-stat');
+                        if (medRecEl) medRecEl.textContent = String(histJson.records.length || 0);
+                    }
+
+                    // Log summary of loaded data
+                    console.log('============================================');
+                    console.log('✓ Data loaded successfully for:', user.full_name);
+                    console.log('✓ Prescriptions:', presJson.prescriptions?.length || 0);
+                    console.log('✓ Medical History:', histJson.records?.length || 0);
+                    console.log('============================================');
+                } catch (err) {
+                    console.error('Failed to load patient data:', err);
+                    console.error('Error stack:', err.stack);
+                    const errorMsg = err.message || 'Unknown error occurred';
+                    alert(`Error loading patient data: ${errorMsg}\n\nPlease check the console (F12) for more details.`);
+                }
+            }
+
+            // Kick off loading patient data
+            loadPatientData();
+        });
+
+        // Global variable to store current prescription for renewal
+        let currentPrescriptionId = null;
+
+        // Show prescription details in modal
+        function showPrescriptionDetails(prescription, items) {
+            currentPrescriptionId = prescription.prescription_id;
+            
+            // Populate header info
+            document.getElementById('modal-prescription-id').textContent = 'RX-' + prescription.prescription_id;
+            document.getElementById('modal-prescription-date').textContent = prescription.prescription_date || '-';
+            document.getElementById('modal-expiry-date').textContent = prescription.expiry_date || '-';
+            
+            // Status badge
+            const statusEl = document.getElementById('modal-status');
+            const status = prescription.status || 'unknown';
+            statusEl.innerHTML = `<span class="status-badge status-${status.toLowerCase()}">${status}</span>`;
+            
+            document.getElementById('modal-doctor').textContent = prescription.doctor_name || '-';
+            document.getElementById('modal-patient').textContent = prescription.patient_name || '-';
+            document.getElementById('modal-diagnosis').textContent = prescription.diagnosis || 'No diagnosis provided';
+            document.getElementById('modal-notes').textContent = prescription.notes || 'No additional notes';
+            
+            // Populate medications table
+            const tbody = document.getElementById('modal-medications-tbody');
+            tbody.innerHTML = '';
+            
+            if (items && items.length > 0) {
+                items.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>
+                            <strong>${item.medicine_name || '-'}</strong>
+                            <br><small style="color: #666;">${item.generic_name || ''}</small>
+                        </td>
+                        <td>${item.dosage || item.strength || '-'}</td>
+                        <td>${item.quantity || '-'}</td>
+                        <td>${item.frequency || '-'}</td>
+                        <td>${item.duration || '-'}</td>
+                        <td>${item.instructions || '-'}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center">No medications prescribed</td></tr>';
+            }
+            
+            // Show modal
+            document.getElementById('prescription-modal').style.display = 'flex';
+        }
+
+        // Close prescription modal
+        function closePrescriptionModal() {
+            document.getElementById('prescription-modal').style.display = 'none';
+            currentPrescriptionId = null;
+        }
+
+        // Request renewal from modal
+        function requestRenewal() {
+            if (currentPrescriptionId) {
+                // Show confirmation
+                if (confirm(`Submit renewal request for Prescription #${currentPrescriptionId}?\n\nYour doctor will review this request.`)) {
+                    submitRenewalRequest(currentPrescriptionId, '');
+                }
+            }
+        }
+
+        // Submit renewal request via API
+        async function submitRenewalRequest(prescriptionId, notes) {
+            try {
+                const formData = new FormData();
+                formData.append('prescription_id', prescriptionId);
+                formData.append('notes', notes || '');
+
+                const response = await fetch('../php/prescription.php?action=requestRenewal', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✓ Renewal request submitted successfully!\n\nRenewal ID: ' + result.renewal_id + '\nYour doctor will review your request shortly.');
+                    
+                    // Clear the renewal form
+                    const selectEl = document.getElementById('prescription-select');
+                    const notesEl = document.getElementById('renewal-notes');
+                    if (selectEl) selectEl.value = '';
+                    if (notesEl) notesEl.value = '';
+                    
+                    // Close modal if open
+                    closePrescriptionModal();
+                    
+                    // Reload prescription data to update renewal status
+                    loadPatientData();
+                } else {
+                    alert('❌ Failed to submit renewal request:\n' + (result.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error submitting renewal request:', error);
+                alert('❌ Error submitting renewal request. Please try again.');
+            }
+        }
+
+        // Medical History Modal Functions
+        function showMedicalHistoryDetails(record) {
+            document.getElementById('history-modal-id').textContent = record.history_id || 'N/A';
+            document.getElementById('history-modal-date').textContent = record.visit_date || 'N/A';
+            document.getElementById('history-modal-doctor').textContent = record.doctor_name || 'N/A';
+            document.getElementById('history-modal-diagnosis').textContent = record.diagnosis || 'No diagnosis recorded';
+            document.getElementById('history-modal-treatment').textContent = record.treatment || 'No treatment information';
+            document.getElementById('history-modal-notes').textContent = record.notes || 'No additional notes';
+            document.getElementById('medical-history-modal').style.display = 'flex';
+        }
+
+        function closeMedicalHistoryModal() {
+            document.getElementById('medical-history-modal').style.display = 'none';
+        }
+
+        function printMedicalRecord() {
+            alert('Print functionality would generate a PDF report of this medical record.');
+        }
+
+        // Edit Profile Modal Functions
+        let currentPatientData = null;
+
+        function openEditProfileModal() {
+            // Populate form with current values
+            document.getElementById('edit-email').value = document.getElementById('profile-email')?.textContent || '';
+            document.getElementById('edit-phone').value = document.getElementById('profile-phone')?.textContent || '';
+            document.getElementById('edit-address').value = document.getElementById('profile-address')?.textContent || '';
+            document.getElementById('edit-emergency').value = document.getElementById('profile-emergency')?.textContent || '';
+            document.getElementById('edit-pharmacy').value = document.getElementById('profile-pharmacy')?.textContent || '';
+            document.getElementById('edit-profile-modal').style.display = 'flex';
+        }
+
+        function closeEditProfileModal() {
+            document.getElementById('edit-profile-modal').style.display = 'none';
+        }
+
+        async function saveProfileChanges() {
+            const email = document.getElementById('edit-email').value.trim();
+            const phone = document.getElementById('edit-phone').value.trim();
+            const address = document.getElementById('edit-address').value.trim();
+            const emergency = document.getElementById('edit-emergency').value.trim();
+            const pharmacy = document.getElementById('edit-pharmacy').value.trim();
+
+            // Basic validation
+            if (!email) {
+                alert('Email address is required');
+                return;
+            }
+            if (!phone) {
+                alert('Phone number is required');
+                return;
+            }
+
+            // In a real application, this would send data to the server
+            // For now, we'll update the display values
+            try {
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                // Update display values
+                document.getElementById('profile-email').textContent = email;
+                document.getElementById('profile-phone').textContent = phone;
+                document.getElementById('profile-address').textContent = address || 'N/A';
+                document.getElementById('profile-emergency').textContent = emergency || 'N/A';
+                document.getElementById('profile-pharmacy').textContent = pharmacy || 'N/A';
+
+                closeEditProfileModal();
+                alert('✓ Profile updated successfully!\n\nYour changes have been saved.');
+            } catch (error) {
+                alert('Failed to save changes. Please try again.');
+            }
+        }
+
+        // Help Modal Functions
+        function showHelpModal() {
+            document.getElementById('help-modal').style.display = 'flex';
+        }
+
+        function closeHelpModal() {
+            document.getElementById('help-modal').style.display = 'none';
+        }
+
+        function startLiveChat() {
+            alert('Live Chat\n\nThis would connect you to a support representative.\n\nIn a real application, this would open a live chat widget.');
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('prescription-modal');
+            if (event.target === modal) {
+                closePrescriptionModal();
+            }
+            // Also handle other modals
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        });
+    </script>
+
+    <style>
+        /* Modal Styles - Compact Version */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 6px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.2s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 2px solid #e74c3c;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border-radius: 6px 6px 0 0;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 16px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 12px 16px;
+            border-top: 1px solid #eee;
+            background: #f8f9fa;
+            border-radius: 0 0 6px 6px;
+        }
+
+        .prescription-details-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .detail-section {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 4px;
+            border-left: 3px solid #e74c3c;
+        }
+
+        .detail-section h3 {
+            margin: 0 0 8px 0;
+            color: #2c3e50;
+            font-size: 0.95em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .detail-item {
+            background: white;
+            padding: 8px 10px;
+            border-radius: 3px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .detail-item label {
+            display: block;
+            font-size: 0.7em;
+            color: #666;
+            margin-bottom: 3px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            color: #2c3e50;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .detail-text {
+            background: white;
+            padding: 10px;
+            border-radius: 3px;
+            border: 1px solid #e0e0e0;
+            color: #2c3e50;
+            line-height: 1.4;
+            font-size: 0.9em;
+        }
+
+        .medications-table-container {
+            background: white;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
+
+        .medications-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85em;
+        }
+
+        .medications-table th {
+            background: #2c3e50;
+            color: white;
+            padding: 8px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.85em;
+            text-transform: uppercase;
+        }
+
+        .medications-table td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            color: #2c3e50;
+        }
+
+        .medications-table td strong {
+            font-size: 0.95em;
+        }
+
+        .medications-table td small {
+            font-size: 0.85em;
+        }
+
+        .medications-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .medications-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .text-center {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+            font-size: 0.9em;
+        }
+
+        /* Unified Help Modal Grouping */
+        .help-groups {display:flex;flex-direction:column;gap:12px;margin-top:8px;}
+        .help-group {display:flex;gap:12px;background:#fff;border:1px solid #e3e6e9;padding:10px 12px;border-radius:6px;align-items:flex-start;}
+        .help-channel-icon {width:42px;height:42px;display:flex;align-items:center;justify-content:center;background:#27ae601a;color:#27ae60;font-size:18px;border-radius:8px;flex-shrink:0;}
+        .help-channel-body {display:flex;flex-direction:column;gap:2px;}
+        .help-channel-title {font-weight:600;color:#2c3e50;font-size:0.9em;}
+        .help-channel-value {font-size:0.9em;color:#34495e;}
+        .help-channel-meta {font-size:0.65em;color:#666;text-transform:uppercase;letter-spacing:0.5px;}
+        .help-channel-action {margin-top:6px;}
+        .help-escalation-list {margin:6px 0 0 18px;padding:0;display:flex;flex-direction:column;gap:6px;}
+        .help-escalation-list li {font-size:0.85em;color:#555;line-height:1.4;}
+
+        /* Form Group Styles for Edit Profile */
+        .form-group {margin-bottom:15px;}
+        .form-group label {display:block;margin-bottom:5px;color:#2c3e50;font-weight:600;font-size:0.9em;}
+        .form-control {width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:4px;font-size:0.9em;transition:border-color .2s;}
+        .form-control:focus {outline:none;border-color:#3498db;box-shadow:0 0 0 3px rgba(52,152,219,0.1);}
+
+        /* Responsive modal */
+        @media (max-width: 768px) {
+            .modal-content {width:95%;max-height:90vh;}
+            .detail-grid {grid-template-columns:repeat(2,1fr);}
+            .help-group {flex-direction:row;}
+            .help-channel-icon {width:36px;height:36px;font-size:16px;}
+            .help-escalation-list li {font-size:0.8em;}
+            .medications-table {font-size:0.75em;}
+            .medications-table th,
+            .medications-table td {padding:6px;}
+            .modal-header h2 {font-size:1em;}
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VitalSoft - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/login.css">
+</head>
+<body>
+    <script src="../js/login.js"></script>
+    <div class="login-container">
+        <div class="login-background">
+            <div class="floating-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+                <div class="shape shape-4"></div>
+            </div>
+        </div>
+        
+        <div class="login-card">
+            <div class="card-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>VitalSoft</h1>
+                        <p>Healthcare Management</p>
+                    </div>
+                </div>
+                <h2>Welcome Back</h2>
+                <p class="subtitle">Sign in to your account to continue</p>
+            </div>
+
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <div class="input-container">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="username" name="username" placeholder="Username or email" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="input-container">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="password" name="password" placeholder="Password" required>
+                        <button type="button" class="toggle-password" id="togglePassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-options">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="rememberMe">
+                        <span class="checkmark"></span>
+                        Remember me
+                    </label>
+                    <a href="#" class="forgot-link">Forgot password?</a>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <span class="btn-text">Sign In</span>
+                    <i class="fas fa-arrow-right btn-icon"></i>
+                </button>
+            </form>
+
+            <div class="demo-section">
+                <div class="demo-header">
+                    <span>Demo Accounts</span>
+                    <div class="demo-toggle" id="demoToggle">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+                
+                <div class="demo-content" id="demoContent">
+                    <div class="demo-grid">
+                        <div class="demo-account" data-role="admin">
+                            <div class="demo-badge admin-badge">Admin</div>
+                            <div class="demo-info">
+                                <div class="demo-username">admin / admin123</div>
+                                <div class="demo-desc">Full system access</div>
+                            </div>
+                        </div>
+                        
+                        <div class="demo-account" data-role="doctor">
+                            <div class="demo-badge doctor-badge">Doctor</div>
+                            <div class="demo-info">
+                                <div class="demo-username">doctor / doctor123</div>
+                                <div class="demo-desc">Patient & prescription management</div>
+                            </div>
+                        </div>
+                        
+                        <div class="demo-account" data-role="pharmacist">
+                            <div class="demo-badge pharmacist-badge">Pharmacist</div>
+                            <div class="demo-info">
+                                <div class="demo-username">pharmacist / pharma123</div>
+                                <div class="demo-desc">Dispensing & inventory</div>
+                            </div>
+                        </div>
+                        
+                        <div class="demo-account" data-role="manager">
+                            <div class="demo-badge manager-badge">Manager</div>
+                            <div class="demo-info">
+                                <div class="demo-username">manager / manager123</div>
+                                <div class="demo-desc">Branch & staff management</div>
+                            </div>
+                        </div>
+                        
+                        <div class="demo-account" data-role="patient">
+                            <div class="demo-badge patient-badge">Patient</div>
+                            <div class="demo-info">
+                                <div class="demo-username">patient / patient123</div>
+                                <div class="demo-desc">Personal health portal</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <p>Don't have an account? <a href="#" class="signup-link">Contact administrator</a></p>
+            </div>
+        </div>
+
+        <div class="welcome-panel">
+            <div class="welcome-content">
+                <h1>Your Health,<br>Our Priority</h1>
+                <p class="welcome-text">Experience seamless pharmacy management with our comprehensive healthcare platform designed for modern medical practices.</p>
+                
+                <div class="features">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h3>Secure & Compliant</h3>
+                            <p>HIPAA compliant data protection</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h3>Fast & Reliable</h3>
+                            <p>99.9% uptime guarantee</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-hand-holding-heart"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h3>Patient Focused</h3>
+                            <p>Enhanced patient experience</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle password visibility
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            });
+            
+            // Demo accounts toggle
+            const demoToggle = document.getElementById('demoToggle');
+            const demoContent = document.getElementById('demoContent');
+            
+            demoToggle.addEventListener('click', function() {
+                demoContent.classList.toggle('active');
+                this.innerHTML = demoContent.classList.contains('active') ? 
+                    '<i class="fas fa-chevron-up"></i>' : '<i class="fas fa-chevron-down"></i>';
+            });
+            
+            // Demo account auto-fill
+            const demoAccounts = document.querySelectorAll('.demo-account');
+            
+            demoAccounts.forEach(account => {
+                account.addEventListener('click', function() {
+                    const role = this.getAttribute('data-role');
+                    let username, password;
+                    
+                    switch(role) {
+                        case 'admin':
+                            username = 'admin';
+                            password = 'admin123';
+                            break;
+                        case 'doctor':
+                            username = 'doctor';
+                            password = 'doctor123';
+                            break;
+                        case 'pharmacist':
+                            username = 'pharmacist';
+                            password = 'pharma123';
+                            break;
+                        case 'manager':
+                            username = 'manager';
+                            password = 'manager123';
+                            break;
+                        case 'patient':
+                            username = 'patient';
+                            password = 'patient123';
+                            break;
+                    }
+                    
+                    document.getElementById('username').value = username;
+                    document.getElementById('password').value = password;
+                    
+                    // Visual feedback
+                    demoAccounts.forEach(acc => acc.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    // Show success message
+                    showMessage(`${role.charAt(0).toUpperCase() + role.slice(1)} credentials filled!`, 'success');
+                });
+            });
+            
+            // Form submission
+            const loginForm = document.getElementById('loginForm');
+            
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const rememberMe = document.getElementById('rememberMe').checked;
+                
+                // Simple validation
+                if (!username || !password) {
+                    showMessage('Please fill in all fields', 'error');
+                    return;
+                }
+                
+                // Show loading state
+                const btn = this.querySelector('.btn');
+                const btnText = btn.querySelector('.btn-text');
+                const originalText = btnText.textContent;
+                
+                btnText.textContent = 'Signing In...';
+                btn.disabled = true;
+                
+                // Simulate login process
+                setTimeout(function() {
+                    // Determine role based on username
+                    let role = 'patient';
+                    let redirectUrl = 'patient.html';
+                    
+                    if (username === 'admin') {
+                        role = 'admin';
+                        redirectUrl = 'admin.html';
+                    } else if (username === 'doctor') {
+                        role = 'doctor';
+                        redirectUrl = 'doctor.html';
+                    } else if (username === 'pharmacist') {
+                        role = 'pharmacist';
+                        redirectUrl = 'pharmacy-employee.html';
+                    } else if (username === 'manager') {
+                        role = 'manager';
+                        redirectUrl = 'pharmacy-manager.html';
+                    }
+                    
+                    showMessage(`Welcome! Redirecting to ${role} dashboard...`, 'success');
+                    
+                    // Redirect to appropriate dashboard
+                    setTimeout(function() {
+                        window.location.href = redirectUrl;
+                    }, 1500);
+                    
+                }, 1500);
+            });
+            
+            // Show message function
+            function showMessage(message, type) {
+                // Remove existing messages
+                const existingMessage = document.querySelector('.message');
+                if (existingMessage) {
+                    existingMessage.remove();
+                }
+                
+                // Create new message
+                const messageEl = document.createElement('div');
+                messageEl.className = `message ${type}`;
+                messageEl.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                    <span>${message}</span>
+                `;
+                
+                // Insert after form
+                loginForm.parentNode.insertBefore(messageEl, loginForm.nextSibling);
+                
+                // Remove message after 5 seconds
+                setTimeout(function() {
+                    if (messageEl.parentNode) {
+                        messageEl.remove();
+                    }
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>
