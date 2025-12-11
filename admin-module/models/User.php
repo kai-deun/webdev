@@ -27,7 +27,6 @@ class User
     public function __construct()
     {
         $this->connection = getConn();
-        throw new \Exception('Not implemented');
     }
 
     // CREATE
