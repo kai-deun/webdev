@@ -25,7 +25,7 @@ exports.login = async (req, res) => {
 
     conn.release();
 
-    if (users.length == 0) {
+    if (users.length === 0) {
       return res.status(401).json({
         success: false,
         error: "Invalid credentials",
