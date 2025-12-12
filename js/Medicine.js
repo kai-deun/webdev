@@ -1,4 +1,4 @@
-import { prescriptObj, prescriptUtils, display } from "./Instances";
+import { prescriptObj, prescriptUtils, display } from "./Instances.js";
 
 export class Medicine {
 

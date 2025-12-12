@@ -383,10 +383,6 @@ INSERT INTO users (username, email, password_hash, role_id, first_name, last_nam
 -- Pharmacist users (username: pharmacist/pharmacist2, password: pharma123)
 ('pharmacist', 'pharmacist1@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 3, 'Michael', 'Chen', '+1234567896', '1990-02-14', '987 Pharmacy Ln, City, State', 'active'),
 ('pharmacist2', 'pharmacist2@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 3, 'Sarah', 'Johnson', '+1234567897', '1988-09-25', '147 Medicine Way, City, State', 'active'),
-('pharmacist3', 'pharmacist3@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 3, 'Lisa', 'Thompson', '+1234567900', '1992-04-18', '258 Rx Street, City, State', 'active'),
-('pharmacist4', 'pharmacist4@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 3, 'David', 'Martinez', '+1234567901', '1987-12-08', '369 Pharma Ave, City, State', 'inactive'),
-('pharmacist5', 'pharmacist5@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 3, 'Jennifer', 'Lee', '+1234567902', '1991-06-22', '147 Med Lane, City, State', 'active'),
-('pharmacist6', 'pharmacist6@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 3, 'James', 'Wilson', '+1234567903', '1989-03-15', '753 Drug Way, City, State', 'active'),
 -- Patient users (username: patient/patient2, password: patient123)
 ('patient', 'patient1@email.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 5, 'Maria', 'Thompson', '+1234567904', '1995-07-12', '741 Patient Ave, City, State', 'active'),
 ('patient2', 'patient2@email.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 5, 'Christopher', 'White', '+1234567905', '1989-01-28', '852 Wellness Rd, City, State', 'active');

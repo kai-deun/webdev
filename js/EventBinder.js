@@ -1,4 +1,4 @@
-import { prescriptUtils, prescriptions, meds, patient, display } from "./Instances";
+import { prescriptUtils, prescriptions, meds, patient, display } from "./Instances.js";
 
 export class BindEvents {
 

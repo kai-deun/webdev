@@ -1,5 +1,5 @@
 // render patients, prescriptions, medicines to DOM
-import { prescriptObj } from "./Instances";
+import { prescriptObj } from "./Instances.js";
 
 export class Display {
 

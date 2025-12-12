@@ -1,4 +1,4 @@
-import { prescriptObj, prescriptUtils } from "./Instances"
+import { prescriptObj, prescriptUtils } from "./Instances.js"
 
 export class Prescriptions {
 
