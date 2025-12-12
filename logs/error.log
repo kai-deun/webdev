@@ -6700,3 +6700,179 @@ Stack trace:
 )
 
 [12-Dec-2025 15:36:01 UTC] User found in session: doctor
+[12-Dec-2025 15:44:13 UTC] getCurrentUser called. Session ID: jcedfkdsrsstud1brms5q4hhuj
+[12-Dec-2025 15:44:13 UTC] Session cookie: jcedfkdsrsstud1brms5q4hhuj
+[12-Dec-2025 15:44:13 UTC] Session cookie path: /
+[12-Dec-2025 15:44:13 UTC] Session data: Array
+(
+)
+
+[12-Dec-2025 15:44:13 UTC] All cookies: Array
+(
+    [PHPSESSID] => jcedfkdsrsstud1brms5q4hhuj
+)
+
+[12-Dec-2025 15:44:13 UTC] No user_id in session
+[12-Dec-2025 15:44:13 UTC] getCurrentUser called. Session ID: jcedfkdsrsstud1brms5q4hhuj
+[12-Dec-2025 15:44:13 UTC] Session cookie: jcedfkdsrsstud1brms5q4hhuj
+[12-Dec-2025 15:44:13 UTC] Session cookie path: /
+[12-Dec-2025 15:44:13 UTC] Session data: Array
+(
+)
+
+[12-Dec-2025 15:44:13 UTC] All cookies: Array
+(
+    [PHPSESSID] => jcedfkdsrsstud1brms5q4hhuj
+)
+
+[12-Dec-2025 15:44:13 UTC] No user_id in session
+[12-Dec-2025 15:44:16 UTC] Login successful for user: doctor2, role: Doctor
+[12-Dec-2025 15:44:16 UTC] Session ID: jcedfkdsrsstud1brms5q4hhuj
+[12-Dec-2025 15:44:16 UTC] Session cookie path: /
+[12-Dec-2025 15:44:16 UTC] Session cookie name: PHPSESSID
+[12-Dec-2025 15:44:16 UTC] Session set: Array
+(
+    [user_id] => 4
+    [username] => doctor2
+    [email] => dr.johnson@hospital.com
+    [role] => Doctor
+    [full_name] => Michael Johnson
+    [gender] => Male
+    [login_time] => 1765554256
+)
+
+[12-Dec-2025 15:44:17 UTC] getCurrentUser called. Session ID: jcedfkdsrsstud1brms5q4hhuj
+[12-Dec-2025 15:44:17 UTC] Session cookie: jcedfkdsrsstud1brms5q4hhuj
+[12-Dec-2025 15:44:17 UTC] Session cookie path: /
+[12-Dec-2025 15:44:17 UTC] Session data: Array
+(
+    [user_id] => 4
+    [username] => doctor2
+    [email] => dr.johnson@hospital.com
+    [role] => Doctor
+    [full_name] => Michael Johnson
+    [gender] => Male
+    [login_time] => 1765554256
+)
+
+[12-Dec-2025 15:44:17 UTC] All cookies: Array
+(
+    [PHPSESSID] => jcedfkdsrsstud1brms5q4hhuj
+)
+
+[12-Dec-2025 15:44:17 UTC] User found in session: doctor2
+[12-Dec-2025 15:44:35 UTC] getCurrentUser called. Session ID: jcedfkdsrsstud1brms5q4hhuj
+[12-Dec-2025 15:44:35 UTC] Session cookie: jcedfkdsrsstud1brms5q4hhuj
+[12-Dec-2025 15:44:35 UTC] Session cookie path: /
+[12-Dec-2025 15:44:35 UTC] Session data: Array
+(
+    [user_id] => 4
+    [username] => doctor2
+    [email] => dr.johnson@hospital.com
+    [role] => Doctor
+    [full_name] => Michael Johnson
+    [gender] => Male
+    [login_time] => 1765554256
+)
+
+[12-Dec-2025 15:44:35 UTC] All cookies: Array
+(
+    [PHPSESSID] => jcedfkdsrsstud1brms5q4hhuj
+)
+
+[12-Dec-2025 15:44:35 UTC] User found in session: doctor2
+[12-Dec-2025 15:44:35 UTC] getCurrentUser called. Session ID: jcedfkdsrsstud1brms5q4hhuj
+[12-Dec-2025 15:44:35 UTC] Session cookie: jcedfkdsrsstud1brms5q4hhuj
+[12-Dec-2025 15:44:35 UTC] Session cookie path: /
+[12-Dec-2025 15:44:35 UTC] Session data: Array
+(
+    [user_id] => 4
+    [username] => doctor2
+    [email] => dr.johnson@hospital.com
+    [role] => Doctor
+    [full_name] => Michael Johnson
+    [gender] => Male
+    [login_time] => 1765554256
+)
+
+[12-Dec-2025 15:44:35 UTC] All cookies: Array
+(
+    [PHPSESSID] => jcedfkdsrsstud1brms5q4hhuj
+)
+
+[12-Dec-2025 15:44:35 UTC] User found in session: doctor2
+[12-Dec-2025 15:44:40 UTC] Login successful for user: doctor, role: Doctor
+[12-Dec-2025 15:44:40 UTC] Session ID: jcedfkdsrsstud1brms5q4hhuj
+[12-Dec-2025 15:44:40 UTC] Session cookie path: /
+[12-Dec-2025 15:44:40 UTC] Session cookie name: PHPSESSID
+[12-Dec-2025 15:44:40 UTC] Session set: Array
+(
+    [user_id] => 3
+    [username] => doctor
+    [email] => dr.smith@hospital.com
+    [role] => Doctor
+    [full_name] => Sarah Smith
+    [gender] => Female
+    [login_time] => 1765554280
+)
+
+[12-Dec-2025 15:44:42 UTC] getCurrentUser called. Session ID: jcedfkdsrsstud1brms5q4hhuj
+[12-Dec-2025 15:44:42 UTC] Session cookie: jcedfkdsrsstud1brms5q4hhuj
+[12-Dec-2025 15:44:42 UTC] Session cookie path: /
+[12-Dec-2025 15:44:42 UTC] Session data: Array
+(
+    [user_id] => 3
+    [username] => doctor
+    [email] => dr.smith@hospital.com
+    [role] => Doctor
+    [full_name] => Sarah Smith
+    [gender] => Female
+    [login_time] => 1765554280
+)
+
+[12-Dec-2025 15:44:42 UTC] All cookies: Array
+(
+    [PHPSESSID] => jcedfkdsrsstud1brms5q4hhuj
+)
+
+[12-Dec-2025 15:44:42 UTC] User found in session: doctor
+[12-Dec-2025 15:45:56 UTC] getCurrentUser called. Session ID: jcedfkdsrsstud1brms5q4hhuj
+[12-Dec-2025 15:45:56 UTC] Session cookie: jcedfkdsrsstud1brms5q4hhuj
+[12-Dec-2025 15:45:56 UTC] Session cookie path: /
+[12-Dec-2025 15:45:56 UTC] Session data: Array
+(
+    [user_id] => 3
+    [username] => doctor
+    [email] => dr.smith@hospital.com
+    [role] => Doctor
+    [full_name] => Sarah Smith
+    [gender] => Female
+    [login_time] => 1765554280
+)
+
+[12-Dec-2025 15:45:56 UTC] All cookies: Array
+(
+    [PHPSESSID] => jcedfkdsrsstud1brms5q4hhuj
+)
+
+[12-Dec-2025 15:45:56 UTC] User found in session: doctor
+[12-Dec-2025 15:45:57 UTC] getCurrentUser called. Session ID: jcedfkdsrsstud1brms5q4hhuj
+[12-Dec-2025 15:45:57 UTC] Session cookie: jcedfkdsrsstud1brms5q4hhuj
+[12-Dec-2025 15:45:57 UTC] Session cookie path: /
+[12-Dec-2025 15:45:57 UTC] Session data: Array
+(
+    [user_id] => 3
+    [username] => doctor
+    [email] => dr.smith@hospital.com
+    [role] => Doctor
+    [full_name] => Sarah Smith
+    [gender] => Female
+    [login_time] => 1765554280
+)
+
+[12-Dec-2025 15:45:57 UTC] All cookies: Array
+(
+    [PHPSESSID] => jcedfkdsrsstud1brms5q4hhuj
+)
+
+[12-Dec-2025 15:45:57 UTC] User found in session: doctor
