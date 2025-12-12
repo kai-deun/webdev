@@ -10,8 +10,8 @@ route_point.use(authMidware);
 route_point.get("/", userControl.getAllUsers);
 route_point.get("/roles", userControl.getAllRoles);
 route_point.get("/:id", userControl.getUserId);
-route_point.get("/", userControl.createUser);
-route_point.get("/:id", userControl.updateUser);
-route_point.get("/:id", userControl.deleteUser);
+route_point.post("/", userControl.createUser);
+route_point.put("/:id", userControl.updateUser);
+route_point.delete("/:id", userControl.deleteUser);
 
 module.exports = route_point;

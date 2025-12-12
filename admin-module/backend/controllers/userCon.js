@@ -10,7 +10,7 @@ exports.getAllUsers = async (req, res) => {
     const conn = await pool.getConnection();
 
     let query = `SELECT u.user_id, u.username, u.email,
-    u.first_name, u.last_name, u.phone_number, u.status, r.role_name
+    u.first_name, u.last_name, u.phone_number, u.status, r.role_id, r.role_name
     FROM users u
     JOIN roles r ON u.role_id = r.role_id
     WHERE u.status = 'active'`;
@@ -20,7 +20,7 @@ exports.getAllUsers = async (req, res) => {
     let params = [];
 
     if (search) {
-      query += `AND (u.first_name LIKE ? OR u.last_name LIKE ?
+      query += ` AND (u.first_name LIKE ? OR u.last_name LIKE ?
         OR u.email LIKE ?)`;
 
       count_q += ` AND (first_name LIKE ? OR last_name LIKE ?
@@ -31,7 +31,7 @@ exports.getAllUsers = async (req, res) => {
       params = [searching, searching, searching];
     }
 
-    query += `ORDER BY u.created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    query += ` ORDER BY u.created_at DESC LIMIT ${limit} OFFSET ${offset}`;
 
     const [users] = await conn.query(query, params);
     const [countResult] = await conn.query(count_q, params);
@@ -205,7 +205,7 @@ exports.getAllRoles = async (req, res) => {
   try {
     const conn = await pool.getConnection();
 
-    const [roles] = await pool.conn.query("SELECT * FROM roles");
+    const [roles] = await conn.query("SELECT * FROM roles");
 
     conn.release();
 
