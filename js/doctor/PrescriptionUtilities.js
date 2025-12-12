@@ -1,5 +1,5 @@
 // load data, filter and batch-render lists
-import { prescriptObj, display } from "./Instances.js"
+import { prescriptObj, display } from "../prescription/Instances.js"
 
 export class PrescriptionUtils {
     constructor() {

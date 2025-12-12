@@ -1,5 +1,5 @@
 // loads patients, medicines, prescriptions and initializes events
-import { prescriptUtils, eventBinder } from "./Instances.js";
+import { prescriptUtils, eventBinder } from "../prescription/Instances.js";
 
 class PrescriptionManager {
     constructor() {
