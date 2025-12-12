@@ -36,6 +36,9 @@
     - node_modules (dependencies)
     - public
     - src
+        - components
+        - pages
+        - styles
         - App.js
         - services (manual creation)
     - .env
