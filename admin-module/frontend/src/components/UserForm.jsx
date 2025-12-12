@@ -51,116 +51,116 @@ const UserForm = ({ user, roles, onSave, onCancel }) => {
       setLoading(false);
     }
   };
-};
 
-return (
-  <div className="form-modal">
-    <div className="form-modal-content">
-      <h2>{user ? "Edit User" : "Add User"}</h2>
+  return (
+    <div className="form-modal">
+      <div className="form-modal-content">
+        <h2>{user ? "Edit User" : "Add User"}</h2>
 
-      <form onSubmit={handleSubmit}>
-        <div className="form-row">
-          <div className="form-group">
-            <label>Username</label>
-            <input
-              type="text"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              disabled={!!user}
-              required
-            />
+        <form onSubmit={handleSubmit}>
+          <div className="form-row">
+            <div className="form-group">
+              <label>Username</label>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                disabled={!!user}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Email</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
           </div>
 
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-        </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label>First Name</label>
+              <input
+                type="text"
+                name="first_name"
+                value={formData.first_name}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-        <div className="form-row">
-          <div className="form-group">
-            <label>First Name</label>
-            <input
-              type="text"
-              name="first_name"
-              value={formData.first_name}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Last Name</label>
-            <input
-              type="text"
-              name="last_name"
-              value={formData.last_name}
-              onChange={handleChange}
-              required
-            />
-          </div>
-        </div>
-
-        <div className="form-row">
-          <div className="form-group">
-            <label>Phone</label>
-            <input
-              type="tel"
-              name="phone_number"
-              value={formData.phone_number}
-              onChange={handleChange}
-            />
+            <div className="form-group">
+              <label>Last Name</label>
+              <input
+                type="text"
+                name="last_name"
+                value={formData.last_name}
+                onChange={handleChange}
+                required
+              />
+            </div>
           </div>
 
-          <div className="form-group">
-            <label>Role</label>
-            <select
-              name="role_id"
-              value={formData.role_id}
-              onChange={handleChange}
-            >
-              {roles.map((role) => (
-                <option key={role.role_id} value={role.role_id}>
-                  {role.role_name}
-                </option>
-              ))}
-            </select>
+          <div className="form-row">
+            <div className="form-group">
+              <label>Phone</label>
+              <input
+                type="tel"
+                name="phone_number"
+                value={formData.phone_number}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Role</label>
+              <select
+                name="role_id"
+                value={formData.role_id}
+                onChange={handleChange}
+              >
+                {roles.map((role) => (
+                  <option key={role.role_id} value={role.role_id}>
+                    {role.role_name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-        </div>
 
-        {!user && (
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Leave empty for default: password123"
-            />
+          {!user && (
+            <div className="form-group">
+              <label>Password</label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Leave empty for default: password123"
+              />
+            </div>
+          )}
+
+          {error && <div className="error-message">{error}</div>}
+
+          <div className="form-buttons">
+            <button type="submit" disabled={loading} className="btn-primary">
+              {loading ? "Saving..." : "Save"}
+            </button>
+            <button type="button" onClick={onCancel} className="btn-secondary">
+              Cancel
+            </button>
           </div>
-        )}
-
-        {error && <div className="error-message">{error}</div>}
-
-        <div className="form-buttons">
-          <button type="submit" disabled={loading} className="btn-primary">
-            {loading ? "Saving..." : "Save"}
-          </button>
-          <button type="button" onClick={onCancel} className="btn-secondary">
-            Cancel
-          </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default UserForm;

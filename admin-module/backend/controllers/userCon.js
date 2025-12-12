@@ -208,7 +208,10 @@ exports.getAllRoles = async (req, res) => {
     const [roles] = await pool.conn.query("SELECT * FROM roles");
 
     conn.release();
+
+    res.json({success: true, data: roles});
   } catch (error) {
+    console.error('getAllRoles error:', error);
     res.status(500).json({
       success: false,
       error: error.message,

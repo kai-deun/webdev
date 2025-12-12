@@ -1,25 +1,27 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {} from "..services/authService";
+import { login } from "../services/authService";
 import "../styles/LoginPage.css";
 
 const LoginPage = () => {
-  const [username, setUsername] = useState("admin");
-  const [password, setPass] = useState("password");
+  const [username, setUsername] = useState("suadmin");
+  const [password, setPassword] = useState("su12345");
   const [loading, setLoading] = useState(false);
-  const [error, setErr] = useState("");
-  const navigate = useNavigate;
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-    e.prevalentDefault();
+    e.preventDefault();
+    console.log("handleLogin fired", { username, password });
     setLoading(true);
-    setErr("");
+    setError("");
 
     try {
       await login(username, password);
       navigate("/users");
     } catch (err) {
-      setErr(err.response?.data?.error || "Login failed");
+      console.error("Login error:", err);
+      setError(err.response?.data?.error || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -29,7 +31,7 @@ const LoginPage = () => {
     <div className="login-container">
       <div className="login-box">
         <h1>VitalSoft Admin</h1>
-        <p>Management System</p>
+        <p>Pharmacy Management System</p>
 
         <form onSubmit={handleLogin}>
           <div className="form-group">
@@ -48,7 +50,7 @@ const LoginPage = () => {
             <input
               type="password"
               value={password}
-              onChange={(e) => setPass(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               disabled={loading}
               required
             />
@@ -57,12 +59,12 @@ const LoginPage = () => {
           {error && <div className="error">{error}</div>}
 
           <button type="submit" disabled={loading}>
-            {loading ? "Logging in" : "Login"}
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
         <div className="demo-info">
-          <p>Demo: suadmin / su12345 (from the db)</p>
+          <p>Demo: suadmin / su12345</p>
         </div>
       </div>
     </div>

@@ -10,7 +10,7 @@ const app = express();
 app.use(helmet());
 app.use(
   cors({
-    origin: process.env.CORS_ORIG,
+    origin: 'http://localhost:3000',
     credentials: true,
   })
 );
@@ -47,7 +47,7 @@ app.use((req, res) => {
 // 5. err handling
 app.use((err, req, res, next) => {
     console.error('Error:', err);
-    resizeTo.status(500).json({
+    res.status(500).json({
         success: false,
         error: err.message
     });

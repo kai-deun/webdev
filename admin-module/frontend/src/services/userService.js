@@ -18,7 +18,7 @@ export const createUser = async (userData) => {
   return response.data;
 };
 
-export const updateUser = async (id, userDate) => {
+export const updateUser = async (id, userData) => {
   const response = await api.put(`/users/${id}`, userData);
   return response.data;
 };
@@ -30,5 +30,5 @@ export const deleteUser = async (id) => {
 
 export const getAllRoles = async () => {
   const response = await api.get(`/users/roles`);
-  return response.data;
+  return response.data.data;
 };
