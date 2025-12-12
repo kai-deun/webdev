@@ -81,10 +81,23 @@
                         <button class="btn btn-primary" id="branch-search-btn"><i class="fas fa-search"></i> Search</button>
                     </div>
 
-                    <div class="branches-container">
-                        <div class="branches-grid" id="branches-grid">
-                            <!-- Branches will be populated from database -->
-                        </div>
+                    <div class="table-container">
+                        <table class="data-table" id="branches-table">
+                            <thead>
+                                <tr>
+                                    <th>Branch ID</th>
+                                    <th>Branch Name</th>
+                                    <th>Address</th>
+                                    <th>Phone</th>
+                                    <th>Manager</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Branches will be populated from database -->
+                            </tbody>
+                        </table>
                         <div class="loading" id="branches-loading" style="display:none;">Loading branches...</div>
                     </div>
                 </div>
@@ -165,14 +178,35 @@
                 </div>
 
                 <div class="tab-content" id="approvals-tab">
-                    <div class="approval-requests">
-                        <h3>Pending Approval Requests</h3>
-                        <div class="requests-container">
-                            <div class="request-list" id="pending-requests-list">
-                                <!-- Pending requests will be populated from database -->
-                            </div>
-                            <div class="loading" id="approvals-loading" style="display:none;">Loading approval requests...</div>
-                        </div>
+                    <div class="search-filter">
+                        <input type="text" id="approval-search" class="search-box" placeholder="Search approval requests...">
+                        <select id="approval-status-filter" class="filter-select">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table" id="approvals-table">
+                            <thead>
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>Request Type</th>
+                                    <th>Medicine</th>
+                                    <th>Branch</th>
+                                    <th>Requested By</th>
+                                    <th>Request Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Approval requests will be populated from database -->
+                            </tbody>
+                        </table>
+                        <div class="loading" id="approvals-loading" style="display:none;">Loading approval requests...</div>
                     </div>
                 </div>
             </div>

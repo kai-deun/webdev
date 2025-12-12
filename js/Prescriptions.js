@@ -204,7 +204,6 @@ export class Prescriptions {
                                         <label>Status</label>
                                         <select name="status" class="form-control">
                                             <option value="active" ${p.status==='active'?'selected':''}>Active</option>
-                                            <option value="dispensed" ${p.status==='dispensed'?'selected':''}>Dispensed</option>
                                             <option value="expired" ${p.status==='expired'?'selected':''}>Expired</option>
                                             <option value="cancelled" ${p.status==='cancelled'?'selected':''}>Cancelled</option>
                                         </select>

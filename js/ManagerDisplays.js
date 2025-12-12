@@ -36,10 +36,10 @@ export class ManagerDisplay {
 
     // USER STORY 2: Display branches
     displayBranches(branches = null) {
-        const container = document.getElementById('branches-grid');
+        const tbody = document.querySelector('#branches-table tbody');
         const loading = document.getElementById('branches-loading');
         
-        if (!container) return;
+        if (!tbody) return;
 
         if (loading) loading.style.display = 'block';
 
@@ -48,31 +48,28 @@ export class ManagerDisplay {
         if (loading) loading.style.display = 'none';
 
         if (!source || source.length === 0) {
-            container.innerHTML = '<p style="text-align:center; padding:20px; color:#666;">No branches found</p>';
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:#666;">No branches found</td></tr>';
             return;
         }
 
-        container.innerHTML = source.map(branch => {
-            const statusClass = branch.status === 'active' ? 'status-active' : 'status-inactive';
+        tbody.innerHTML = source.map(branch => {
+            const statusClass = branch.status === 'active' ? 'status-active' : 
+                               branch.status === 'inactive' ? 'status-cancelled' : 'status-expired';
             const statusText = branch.status.charAt(0).toUpperCase() + branch.status.slice(1).replace('_', ' ');
             
             return `
-                <div class="branch-card">
-                    <div class="branch-header">
-                        <h3>${branch.branch_name}</h3>
-                        <span class="branch-status ${statusClass}">${statusText}</span>
-                    </div>
-                    <div class="branch-details">
-                        <p><i class="fas fa-map-marker-alt"></i> ${branch.address || 'N/A'}</p>
-                        <p><i class="fas fa-phone"></i> ${branch.phone_number || 'N/A'}</p>
-                        <p><i class="fas fa-users"></i> ${branch.staff_count || 0} staff | <i class="fas fa-pills"></i> ${branch.product_count || 0} products</p>
-                    </div>
-                    <div class="branch-actions">
-                        <button class="btn btn-sm btn-primary js-edit-branch" data-branch-id="${branch.branch_id}"><i class="fas fa-edit"></i> Edit</button>
-                        <button class="btn btn-sm btn-warning js-change-status" data-branch-id="${branch.branch_id}" data-current-status="${branch.status}"><i class="fas fa-sync"></i> Status</button>
-                        <button class="btn btn-sm btn-danger js-delete-branch" data-branch-id="${branch.branch_id}"><i class="fas fa-trash"></i> Delete</button>
-                    </div>
-                </div>
+                <tr>
+                    <td><strong>#${branch.branch_id}</strong></td>
+                    <td><i class="fas fa-clinic-medical"></i> ${branch.branch_name}</td>
+                    <td><small><i class="fas fa-map-marker-alt"></i> ${branch.address || 'N/A'}</small></td>
+                    <td><i class="fas fa-phone"></i> ${branch.phone_number || 'N/A'}</td>
+                    <td>${branch.manager_name || 'Not Assigned'}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td style="white-space:nowrap;">
+                        <button class="btn btn-primary btn-sm js-edit-branch" data-branch-id="${branch.branch_id}"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn btn-secondary btn-sm js-change-status" data-branch-id="${branch.branch_id}" data-current-status="${branch.status}"><i class="fas fa-sync"></i></button>
+                    </td>
+                </tr>
             `;
         }).join('');
 
@@ -175,10 +172,10 @@ export class ManagerDisplay {
 
     // USER STORY 5: Display pending requests
     displayPendingRequests(requests = null) {
-        const container = document.getElementById('pending-requests-list');
+        const tbody = document.querySelector('#approvals-table tbody');
         const loading = document.getElementById('approvals-loading');
         
-        if (!container) return;
+        if (!tbody) return;
 
         if (loading) loading.style.display = 'block';
 
@@ -187,50 +184,43 @@ export class ManagerDisplay {
         if (loading) loading.style.display = 'none';
 
         if (!source || source.length === 0) {
-            container.innerHTML = '<p style="text-align:center; padding:40px; color:#666;">No pending requests</p>';
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px; color:#999;"><i class="fas fa-check-circle" style="font-size:32px;color:#27ae60;margin-bottom:10px;"></i><p style="font-size:16px;margin:10px 0 0 0;">No pending approval requests</p></td></tr>';
             return;
         }
 
-        container.innerHTML = source.map(request => `
-            <div class="request-card">
-                <div class="request-header">
-                    <div class="request-info">
-                        <span class="request-type">${request.request_type.toUpperCase()}</span>
-                        <span class="request-date">${new Date(request.created_at).toLocaleDateString()}</span>
-                    </div>
-                    <div class="request-status pending">Pending</div>
-                </div>
-                <div class="request-details">
-                    <p><strong>Requested by:</strong> ${request.requested_by_name || 'N/A'}</p>
-                    <p><strong>Reason:</strong> ${request.reason || 'No reason provided'}</p>
-                    <p><strong>Old Quantity:</strong> ${request.old_quantity || 'N/A'}</p>
-                    <p><strong>New Quantity:</strong> ${request.new_quantity || 'N/A'}</p>
-                </div>
-                <div class="request-actions">
-                    <button class="btn btn-success js-approve-request"
-                        data-request-id="${request.request_id}"
-                        type="button"
-                        onclick="window.openApproveRequestModal('${request.request_id}')">
-                        <i class="fas fa-check"></i> Approve
-                    </button>
-                    <button class="btn btn-danger js-reject-request"
-                        data-request-id="${request.request_id}"
-                        type="button"
-                        onclick="window.openRejectRequestModal('${request.request_id}')">
-                        <i class="fas fa-times"></i> Reject
-                    </button>
-                </div>
-            </div>
-        `).join('');
+        tbody.innerHTML = source.map(request => {
+            const statusClass = request.status === 'pending' ? 'status-active' : 
+                               request.status === 'approved' ? 'status-completed' : 'status-expired';
+            const requestDate = request.created_at ? new Date(request.created_at).toLocaleString('en-US', {
+                month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'
+            }) : '-';
+            const actions = request.status === 'pending'
+                ? `<button class="btn btn-success btn-sm js-approve-request" data-request-id="${request.request_id}"><i class="fas fa-check"></i> Approve</button>
+                   <button class="btn btn-danger btn-sm js-reject-request" data-request-id="${request.request_id}"><i class="fas fa-times"></i> Reject</button>`
+                : `<small style="color:#666;"><i class="fas fa-check-circle"></i> Reviewed</small>`;
+            
+            return `
+                <tr>
+                    <td><strong>#${request.request_id}</strong></td>
+                    <td><span class="status-badge ${statusClass}">${request.request_type || 'Update'}</span></td>
+                    <td>${request.medicine_name || 'N/A'}</td>
+                    <td><i class="fas fa-clinic-medical"></i> ${request.branch_name || 'N/A'}</td>
+                    <td><i class="fas fa-user"></i> ${request.requested_by_name || 'N/A'}</td>
+                    <td><small>${requestDate}</small></td>
+                    <td><span class="status-badge ${statusClass}">${request.status || 'Pending'}</span></td>
+                    <td style="white-space:nowrap;">${actions}</td>
+                </tr>
+            `;
+        }).join('');
 
-        // Ensure buttons are clickable even if event delegation fails
-        container.querySelectorAll('.js-approve-request').forEach(btn => {
+        // Bind event listeners
+        tbody.querySelectorAll('.js-approve-request').forEach(btn => {
             btn.addEventListener('click', () => {
                 const id = btn.dataset.requestId;
                 window.openApproveRequestModal(id);
             });
         });
-        container.querySelectorAll('.js-reject-request').forEach(btn => {
+        tbody.querySelectorAll('.js-reject-request').forEach(btn => {
             btn.addEventListener('click', () => {
                 const id = btn.dataset.requestId;
                 window.openRejectRequestModal(id);

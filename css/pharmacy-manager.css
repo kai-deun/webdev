@@ -1039,3 +1039,57 @@ header {
     margin: 8px 0;
     color: #2c3e50;
 }
+
+/* Branch and Approval Tab Enhancements */
+.branches-header, .approvals-header {
+    transition: box-shadow 0.2s ease;
+}
+
+.branches-header:hover, .approvals-header:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.branches-badge, .approvals-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.branches-grid .branch-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.branches-grid .branch-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.request-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-left: 4px solid var(--warning);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.request-card:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.request-card.approved {
+    border-left-color: var(--success);
+}
+
+.request-card.rejected {
+    border-left-color: var(--danger);
+}
+
+#approvals-tab .loading {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+

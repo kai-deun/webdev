@@ -45,21 +45,21 @@
             <!-- A-Z filter removed; search bar will be used for filtering -->
           </div>
 
-          <!-- small cards showing counts (patients, prescriptions, low stock, appointments) -->
+          <!-- small cards showing counts (patients, prescriptions, consultations, pending requests) -->
           <div class="stats-cards">
             <div class="stat-card">
-              <i class="fas fa-user-injured"></i>
-              <h3>Today's Patients</h3>
+              <i class="fas fa-users"></i>
+              <h3>Active Patients</h3>
               <div class="value" id="patients-today-stat">0</div>
             </div>
             <div class="stat-card">
               <i class="fas fa-prescription-bottle"></i>
-              <h3>Prescriptions Today</h3>
+              <h3>Active Prescriptions</h3>
               <div class="value" id="prescriptions-today-stat">0</div>
             </div>
             <div class="stat-card">
-              <i class="fas fa-calendar-check"></i>
-              <h3>Upcoming Appointments</h3>
+              <i class="fas fa-clock"></i>
+              <h3>Pending Renewals</h3>
               <div class="value" id="appointments-stat">0</div>
             </div>
           </div>
@@ -71,9 +71,12 @@
             <button class="tab-btn" data-tab="prescriptions">
               Prescriptions
             </button>
+            <button class="tab-btn" data-tab="renewals">
+              Renewal Requests
+            </button>
           </div>
 
-          <!-- searchable list with scroll/batch loading -->
+          <!-- searchable list with table layout -->
           <div class="tab-content active" id="patients-tab">
             <div class="search-filter">
               <input
@@ -86,15 +89,28 @@
               </button>
             </div>
 
-            <div id="patients-container" class="patients-container">
-              <div class="patients-list">
-                <p>Loading patients...</p>
-              </div>
+            <div class="table-container">
+              <table class="data-table" id="patients-table">
+                <thead>
+                  <tr>
+                    <th>Patient ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Patients will be populated from database -->
+                </tbody>
+              </table>
               <div class="loading" id="patients-loading" style="display:none;">Loading...</div>
             </div>
           </div>
 
-          <!-- searchable and filterable list with batch scroll -->
+          <!-- searchable and filterable table with batch scroll -->
           <div class="tab-content" id="prescriptions-tab">
             <div class="search-filter">
               <input
@@ -106,19 +122,72 @@
                 <option value="">All Status</option>
                 <option value="active">Active</option>
                 <option value="expired">Expired</option>
-                <option value="dispensed">Dispensed</option>
                 <option value="cancelled">Cancelled</option>
               </select>
-              <button class="btn btn-primary">
-                <i class="fas fa-search"></i> Filter
-              </button>
             </div>
 
-            <div id="prescriptions-container" class="prescriptions-container">
-              <div class="prescriptions-list">
-                <p>Loading prescriptions...</p>
-              </div>
+            <div class="table-container">
+              <table class="data-table" id="prescriptions-table">
+                <thead>
+                  <tr>
+                    <th>Prescription ID</th>
+                    <th>Date</th>
+                    <th>Patient</th>
+                    <th>Diagnosis</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Prescriptions will be populated from database -->
+                </tbody>
+              </table>
               <div class="loading" id="prescriptions-loading" style="display:none;">Loading...</div>
+            </div>
+          </div>
+
+          <!-- renewal approvals tab -->
+          <div class="tab-content" id="renewals-tab">
+            <div class="renewals-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+              <div>
+                <h3 style="margin:0;color:#2c3e50;font-size:18px;">Prescription Renewal Requests</h3>
+                <p style="color:#666;font-size:14px;margin:5px 0 0 0;">Review and manage patient renewal requests</p>
+              </div>
+              <div class="renewals-badge" style="background:#3498db;color:white;padding:8px 16px;border-radius:20px;font-weight:600;font-size:14px;">
+                <i class="fas fa-list"></i> <span id="renewals-count">0</span> Requests
+              </div>
+            </div>
+            
+            <div class="search-filter">
+              <input type="text" class="search-box" id="renewals-search" placeholder="Search by patient name, prescription ID...">
+              <select class="filter-select" id="renewals-status-filter">
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+
+            <div class="table-container">
+              <table class="data-table" id="renewals-table">
+                <thead>
+                  <tr>
+                    <th>Renewal ID</th>
+                    <th>Patient Name</th>
+                    <th>Prescription ID</th>
+                    <th>Request Date</th>
+                    <th>Patient Notes</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td colspan="7" class="text-center" style="padding:40px;color:#666;">
+                    <i class="fas fa-spinner fa-spin" style="font-size:24px;margin-bottom:10px;"></i>
+                    <p>Loading renewal requests...</p>
+                  </td></tr>
+                </tbody>
+              </table>
             </div>
           </div>
 

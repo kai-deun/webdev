@@ -75,7 +75,7 @@ function handleLogin($mysqli) {
     try {
         // Query user with role information
         $query = "
-            SELECT u.user_id, u.username, u.email, u.password_hash, u.first_name, u.last_name, u.status,
+            SELECT u.user_id, u.username, u.email, u.password_hash, u.first_name, u.last_name, u.gender, u.status,
                    r.role_name
             FROM users u
             JOIN roles r ON u.role_id = r.role_id
@@ -120,6 +120,7 @@ function handleLogin($mysqli) {
         $_SESSION['email'] = $user['email'];
         $_SESSION['role'] = $user['role_name'];
         $_SESSION['full_name'] = $user['first_name'] . ' ' . $user['last_name'];
+        $_SESSION['gender'] = $user['gender'];
         $_SESSION['login_time'] = time();
         
         // Force session to be written to disk
@@ -142,7 +143,8 @@ function handleLogin($mysqli) {
                 'user_id' => $user['user_id'],
                 'username' => $user['username'],
                 'role' => $user['role_name'],
-                'full_name' => $user['first_name'] . ' ' . $user['last_name']
+                'full_name' => $user['first_name'] . ' ' . $user['last_name'],
+                'gender' => $user['gender']
             ],
             'redirect' => $redirect
         ]);
@@ -198,7 +200,8 @@ function getCurrentUser() {
             'username' => $_SESSION['username'],
             'role' => $_SESSION['role'],
             'full_name' => $_SESSION['full_name'],
-            'email' => $_SESSION['email']
+            'email' => $_SESSION['email'],
+            'gender' => $_SESSION['gender'] ?? 'Prefer not to say'
         ]
     ]);
 }

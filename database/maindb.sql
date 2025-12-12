@@ -19,6 +19,7 @@ CREATE TABLE users (
     role_id INT NOT NULL,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
+    gender ENUM('Male', 'Female', 'Other', 'Prefer not to say') DEFAULT 'Prefer not to say',
     phone_number VARCHAR(20),
     date_of_birth DATE,
     address TEXT,
@@ -370,22 +371,28 @@ INSERT INTO payment_methods (method_name) VALUES
 -- Pharmacist password: pharma123
 -- Manager password: manager123
 -- Patient password: patient123
-INSERT INTO users (username, email, password_hash, role_id, first_name, last_name, phone_number, date_of_birth, address, status) VALUES
+INSERT INTO users (username, email, password_hash, role_id, first_name, last_name, gender, phone_number, date_of_birth, address, status) VALUES
 -- Admin users (username: admin/admin2, password: admin123)
-('admin', 'admin@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 1, 'John', 'Anderson', '+1234567890', '1980-05-15', '123 Admin St, City, State', 'active'),
-('admin2', 'admin2@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 1, 'Jane', 'Williams', '+1234567891', '1982-07-20', '124 Admin St, City, State', 'active'),
+('admin', 'admin@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 1, 'John', 'Anderson', 'Male', '+1234567890', '1980-05-15', '123 Admin St, City, State', 'active'),
+('admin2', 'admin2@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 1, 'Jane', 'Williams', 'Female', '+1234567891', '1982-07-20', '124 Admin St, City, State', 'active'),
 -- Doctor users (username: doctor/doctor2, password: doctor123)
-('doctor', 'dr.smith@hospital.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 2, 'Sarah', 'Smith', '+1234567892', '1975-08-22', '456 Medical Ave, City, State', 'active'),
-('doctor2', 'dr.johnson@hospital.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 2, 'Michael', 'Johnson', '+1234567893', '1982-03-10', '789 Health Blvd, City, State', 'active'),
+('doctor', 'dr.smith@hospital.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 2, 'Sarah', 'Smith', 'Female', '+1234567892', '1975-08-22', '456 Medical Ave, City, State', 'active'),
+('doctor2', 'dr.johnson@hospital.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 2, 'Michael', 'Johnson', 'Male', '+1234567893', '1982-03-10', '789 Health Blvd, City, State', 'active'),
 -- Pharmacy Manager users (username: manager/manager2, password: manager123)
-('manager', 'manager1@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 4, 'Emily', 'Davis', '+1234567894', '1985-11-30', '321 Manager Rd, City, State', 'active'),
-('manager2', 'manager2@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 4, 'Robert', 'Wilson', '+1234567895', '1978-06-18', '654 Branch St, City, State', 'active'),
+('manager', 'manager1@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 4, 'Emily', 'Davis', 'Female', '+1234567894', '1985-11-30', '321 Manager Rd, City, State', 'active'),
+('manager2', 'manager2@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 4, 'Robert', 'Wilson', 'Male', '+1234567895', '1978-06-18', '654 Branch St, City, State', 'active'),
 -- Pharmacist users (username: pharmacist/pharmacist2, password: pharma123)
-('pharmacist', 'pharmacist1@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 3, 'Michael', 'Chen', '+1234567896', '1990-02-14', '987 Pharmacy Ln, City, State', 'active'),
-('pharmacist2', 'pharmacist2@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 3, 'Sarah', 'Johnson', '+1234567897', '1988-09-25', '147 Medicine Way, City, State', 'active'),
+('pharmacist', 'pharmacist1@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 3, 'Michael', 'Chen', 'Male', '+1234567896', '1990-02-14', '987 Pharmacy Ln, City, State', 'active'),
+('pharmacist2', 'pharmacist2@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 3, 'Sarah', 'Johnson', 'Female', '+1234567897', '1988-09-25', '147 Medicine Way, City, State', 'active'),
 -- Patient users (username: patient/patient2, password: patient123)
-('patient', 'patient1@email.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 5, 'Maria', 'Thompson', '+1234567904', '1995-07-12', '741 Patient Ave, City, State', 'active'),
-('patient2', 'patient2@email.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 5, 'Christopher', 'White', '+1234567905', '1989-01-28', '852 Wellness Rd, City, State', 'active');
+('patient', 'patient1@email.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 5, 'Maria', 'Thompson', 'Female', '+1234567904', '1995-07-12', '741 Patient Ave, City, State', 'active'),
+('patient2', 'patient2@email.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 5, 'Christopher', 'White', 'Male', '+1234567905', '1989-01-28', '852 Wellness Rd, City, State', 'active'),
+-- Additional patient users
+('patient3', 'patient3@email.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 5, 'John', 'Doe', 'Male', '555-0101', '1985-03-15', '123 Main St, City, State 12345', 'active'),
+('patient4', 'patient4@email.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 5, 'Mary', 'Smith', 'Female', '555-0102', '1990-07-22', '456 Oak Ave, Town, State 67890', 'active'),
+('patient5', 'patient5@email.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 5, 'Robert', 'Johnson', 'Male', '555-0103', '1978-11-08', '789 Pine Rd, Village, State 24680', 'active'),
+('patient6', 'patient6@email.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 5, 'Emma', 'Wilson', 'Female', '555-0104', '1992-05-30', '321 Elm St, District, State 13579', 'active'),
+('patient7', 'patient7@email.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 5, 'Charles', 'Brown', 'Male', '555-0105', '1988-09-12', '654 Maple Dr, County, State 97531', 'active');
 
 -- Insert pharmacy branches
 INSERT INTO pharmacy_branches (branch_name, branch_code, address, city, state, postal_code, phone_number, email, manager_id, status) VALUES
@@ -409,7 +416,12 @@ INSERT INTO branch_staff (user_id, branch_id, assigned_date, status) VALUES
 -- Insert patient details
 INSERT INTO patients (user_id, insurance_number, insurance_provider, emergency_contact_name, emergency_contact_phone, blood_type, allergies) VALUES
 (9, 'INS-001-2024', 'HealthCare Plus', 'John Thompson', '+1234567900', 'O+', 'Penicillin'),
-(10, 'INS-002-2024', 'MediCare Shield', 'Sarah White', '+1234567901', 'A+', 'None');
+(10, 'INS-002-2024', 'MediCare Shield', 'Sarah White', '+1234567901', 'A+', 'None'),
+(11, 'INS001234', 'Blue Cross', 'Jane Doe', '555-0101', 'B+', 'None'),
+(12, 'INS005678', 'Aetna', 'James Smith', '555-0102', 'A-', 'Sulfa drugs'),
+(13, 'INS009012', 'Cigna', 'Patricia Johnson', '555-0103', 'O+', 'Aspirin'),
+(14, 'INS003456', 'United Healthcare', 'Michael Wilson', '555-0104', 'B-', 'Codeine'),
+(15, 'INS007890', 'Humana', 'David Brown', '555-0105', 'AB+', 'None');
 
 -- Insert medicines
 INSERT INTO medicines (medicine_name, generic_name, manufacturer, description, dosage_form, strength, unit_price, requires_prescription) VALUES
@@ -509,7 +521,9 @@ INSERT INTO payments (order_id, payment_method_id, amount, transaction_reference
 
 -- Insert prescription renewal requests
 INSERT INTO prescription_renewals (prescription_id, requested_by, request_date, status, reviewed_by, review_date, notes) VALUES
-(2, 10, '2024-11-01 09:00:00', 'approved', 4, '2024-11-01 14:30:00', 'Patient showing good response to medication. Approved for renewal.');
+(2, 10, '2024-11-01 09:00:00', 'approved', 4, '2024-11-01 14:30:00', 'Patient showing good response to medication. Approved for renewal.'),
+(3, 10, '2024-12-10 10:30:00', 'pending', NULL, NULL, 'Running low on medication, need refill soon.'),
+(2, 10, '2024-12-11 15:45:00', 'pending', NULL, NULL, 'Requesting early renewal due to travel plans next month.');
 
 -- Insert support tickets
 INSERT INTO support_tickets (user_id, subject, description, priority, status, assigned_to) VALUES

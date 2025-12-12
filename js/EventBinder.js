@@ -101,7 +101,7 @@ export class BindEvents {
         // A–Z filter removed from UI; search input handles filtering now.
     }
 
-    // Handles elements that are dynamically added to the DOM (like patient cards)
+    // Handles elements that are dynamically added to the DOM (like table rows)
     bindDynamicContent() {
         // Use a high-level static parent element for delegation
         const mainAppContainer = document.body; 
@@ -110,38 +110,28 @@ export class BindEvents {
             const button = e.target.closest('button');
             if (!button) return; // Not a button click
 
-            // --- 1. Patient List Actions ---
-            if (button.closest('.patients-list')) {
+            // --- 1. Patient Table Actions ---
+            if (button.classList.contains('js-new-prescription')) {
                 const patientId = button.dataset.patientId;
-
-                if (button.classList.contains('js-select-patient')) {
-                    console.log(`Viewing medical history for patient: ${patientId}`);
-                    // Open medical history modal (different from selecting patient for prescription)
-                    patient.viewMedicalHistory(patientId);
-                } else if (button.classList.contains('js-new-prescription')) {
-                    console.log(`Creating prescription for: ${patientId}`);
-                    patient.createPrescriptionForPatient(patientId);
-                }
-            } 
+                console.log(`Creating prescription for: ${patientId}`);
+                patient.createPrescriptionForPatient(patientId);
+            }
             
-            // --- 2. Prescription Card Actions (View/Edit/Delete) ---
-            else if (button.closest('.prescriptions-list')) {
-                // Find the ID from the closest .prescription-card parent element
-                const card = button.closest('.prescription-card');
-                const prescriptionId = card ? card.dataset.prescriptionId : null;
-
-                if (!prescriptionId) return;
-
-                if (button.classList.contains('js-view-prescription')) {
-                    console.log(`Viewing prescription: ${prescriptionId}`);
-                    prescriptions.viewPrescription(prescriptionId);
-                } else if (button.classList.contains('js-edit-prescription')) {
-                    console.log(`Editing prescription: ${prescriptionId}`);
-                    prescriptions.editPrescription(prescriptionId);
-                } else if (button.classList.contains('js-delete-prescription')) {
-                    console.log(`Deleting prescription: ${prescriptionId}`);
-                    prescriptions.deletePrescription(prescriptionId);
-                }
+            // --- 2. Prescription Table Actions (View/Edit/Delete) ---
+            else if (button.classList.contains('js-view-prescription')) {
+                const rx = button.dataset.rx;
+                console.log(`Viewing prescription: ${rx}`);
+                prescriptions.viewPrescription(rx);
+            }
+            else if (button.classList.contains('js-edit-prescription')) {
+                const rx = button.dataset.rx;
+                console.log(`Editing prescription: ${rx}`);
+                prescriptions.editPrescription(rx);
+            }
+            else if (button.classList.contains('js-delete-prescription')) {
+                const rx = button.dataset.rx;
+                console.log(`Deleting prescription: ${rx}`);
+                prescriptions.deletePrescription(rx);
             }
 
             // --- 3. Current Prescription Removal (Medicine) ---

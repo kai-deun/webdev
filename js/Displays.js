@@ -17,14 +17,13 @@ export class Display {
     // render a provided patients array or all patients by default.
     // If append === true, appends to the existing list instead of replacing it.
     displayPatients(patients = null, append = false) {
-        const patientsList = document.querySelector('.patients-list');
-        if (!patientsList) return;
+        const tbody = document.querySelector('#patients-table tbody');
+        if (!tbody) return;
 
         const source = patients || prescriptObj.getPatients() || [];
 
         if (!source || source.length === 0) {
-            if (append) patientsList.insertAdjacentHTML('beforeend', '<p>No patients found</p>');
-            else patientsList.innerHTML = '<p>No patients found</p>';
+            if (!append) tbody.innerHTML = '<tr><td colspan="7" class="text-center">No patients found</td></tr>';
             return;
         }
 
@@ -32,31 +31,23 @@ export class Display {
         for (let i = 0; i < source.length; i++) {
             const patient = source[i];
             parts.push(
-                `<div class="patient-card">` +
-                    `<div class="patient-info">` +
-                        `<div class="patient-name">${patient.first_name} ${patient.last_name}</div>` +
-                        `<div class="patient-details">` +
-                            `ID: ${patient.patient_id} | Age: ${patient.age} | Gender: ${patient.gender}` +
-                        `</div>` +
-                        `<div class="patient-contact">` +
-                            `Phone: ${patient.phone || 'N/A'} | Email: ${patient.email || 'N/A'}` +
-                        `</div>` +
-                    `</div>` +
-                    `<div class="patient-actions">` +
-                        `<button class="btn btn-primary js-select-patient" data-patient-id="${patient.patient_id}">` +
-                            `<i class="fas fa-file-medical"></i> Medical History` +
-                        `</button>` +
-                        `<button class="btn btn-success js-new-prescription" data-patient-id="${patient.patient_id}">` +
-                            `<i class="fas fa-prescription"></i> New Prescription` +
-                        `</button>` +
-                    `</div>` +
-                `</div>`
+                `<tr>` +
+                    `<td>${patient.patient_id}</td>` +
+                    `<td>${patient.first_name} ${patient.last_name}</td>` +
+                    `<td>${patient.email || 'N/A'}</td>` +
+                    `<td>${patient.phone || 'N/A'}</td>` +
+                    `<td>${patient.age || 'N/A'}</td>` +
+                    `<td>${patient.gender || 'N/A'}</td>` +
+                    `<td>` +
+                        `<button class="btn btn-primary btn-sm js-new-prescription" data-patient-id="${patient.patient_id}">New Prescription</button>` +
+                    `</td>` +
+                `</tr>`
             );
         }
 
         const html = parts.join('');
-        if (append) patientsList.insertAdjacentHTML('beforeend', html);
-        else patientsList.innerHTML = html;
+        if (append) tbody.insertAdjacentHTML('beforeend', html);
+        else tbody.innerHTML = html;
     }
 
     displayMedicines() {
@@ -101,15 +92,14 @@ export class Display {
 
     displayPrescriptions() {
         // Accept optional array and append flag to support batching
-        const prescriptionsList = document.querySelector('.prescriptions-list');
-        if (!prescriptionsList) return;
+        const tbody = document.querySelector('#prescriptions-table tbody');
+        if (!tbody) return;
 
         const source = arguments[0] || prescriptObj.getPrescriptions() || [];
         const append = arguments[1] || false;
 
         if (!source || source.length === 0) {
-            if (append) prescriptionsList.insertAdjacentHTML('beforeend', '<p>No prescriptions found</p>');
-            else prescriptionsList.innerHTML = '<p>No prescriptions found</p>';
+            if (!append) tbody.innerHTML = '<tr><td colspan="6" class="text-center">No prescriptions found</td></tr>';
             return;
         }
 
@@ -129,37 +119,23 @@ export class Display {
             }
 
             parts.push(
-                `<div class="prescription-card" data-prescription-id="${prescription.prescription_id}">` +
-                    `<div class="prescription-info">` +
-                        `<div class="prescription-header">` +
-                            `<h4>Prescription #${prescription.prescription_id}</h4>` +
-                            `<span class="status-badge status-${statusKey}">${statusLabel}</span>` +
-                        `</div>` +
-                        `<div class="prescription-details">` +
-                            `<p><strong>Patient:</strong> ${patientName} (${prescription.patient_id})</p>` +
-                            `<p><strong>Date:</strong> ${prescription.prescription_date}</p>` +
-                            `<p><strong>Diagnosis:</strong> ${prescription.diagnosis || 'Not specified'}</p>` +
-                            `<p><strong>Notes:</strong> ${prescription.notes || 'No additional notes'}</p>` +
-                        `</div>` +
-                    `</div>` +
-                    `<div class="prescription-actions">` +
-                        `<button class="btn btn-primary js-view-prescription">` +
-                            `<i class="fas fa-eye"></i> View Details` +
-                        `</button>` +
-                        `<button class="btn btn-warning js-edit-prescription">` +
-                            `<i class="fas fa-edit"></i> Edit` +
-                        `</button>` +
-                        `<button class="btn btn-danger js-delete-prescription">` +
-                            `<i class="fas fa-trash"></i> Delete` +
-                        `</button>` +
-                    `</div>` +
-                `</div>`
+                `<tr>` +
+                    `<td>${prescription.prescription_id}</td>` +
+                    `<td>${prescription.prescription_date}</td>` +
+                    `<td>${patientName}</td>` +
+                    `<td>${prescription.diagnosis || 'N/A'}</td>` +
+                    `<td><span class="status-badge status-${statusKey}">${statusLabel}</span></td>` +
+                    `<td>` +
+                        `<button class="btn btn-primary btn-sm js-view-prescription" data-rx="${prescription.prescription_id}">View</button>` +
+                        `<button class="btn btn-warning btn-sm js-edit-prescription" data-rx="${prescription.prescription_id}">Edit</button>` +
+                    `</td>` +
+                `</tr>`
             );
         }
 
         const html = parts.join('');
-        if (append) prescriptionsList.insertAdjacentHTML('beforeend', html);
-        else prescriptionsList.innerHTML = html;
+        if (append) tbody.insertAdjacentHTML('beforeend', html);
+        else tbody.innerHTML = html;
     }
 
     displayCurrentPrescription() {
@@ -201,11 +177,11 @@ export class Display {
     }
 
     displayFilteredPatients(patients) {
-        const patientsList = document.querySelector('.patients-list');
-        if (!patientsList) return;
+        const tbody = document.querySelector('#patients-table tbody');
+        if (!tbody) return;
 
         if (!patients || patients.length === 0) {
-            patientsList.innerHTML = '<p>No patients found matching the criteria</p>';
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center">No patients found matching the criteria</td></tr>';
             return;
         }
 
@@ -213,37 +189,29 @@ export class Display {
         for (let i = 0; i < patients.length; i++) {
             const patient = patients[i];
             parts.push(
-                `<div class="patient-card">` +
-                    `<div class="patient-info">` +
-                        `<div class="patient-name">${patient.first_name} ${patient.last_name}</div>` +
-                        `<div class="patient-details">` +
-                            `ID: ${patient.patient_id} | Age: ${patient.age} | Gender: ${patient.gender}` +
-                        `</div>` +
-                        `<div class="patient-contact">` +
-                            `Phone: ${patient.phone || 'N/A'} | Email: ${patient.email || 'N/A'}` +
-                        `</div>` +
-                    `</div>` +
-                    `<div class="patient-actions">` +
-                        `<button class="btn btn-primary js-select-patient" data-patient-id="${patient.patient_id}">` +
-                            `<i class="fas fa-file-medical"></i> Medical History` +
-                        `</button>` +
-                        `<button class="btn btn-success js-new-prescription" data-patient-id="${patient.patient_id}">` +
-                            `<i class="fas fa-prescription"></i> New Prescription` +
-                        `</button>` +
-                    `</div>` +
-                `</div>`
+                `<tr>` +
+                    `<td>${patient.patient_id}</td>` +
+                    `<td>${patient.first_name} ${patient.last_name}</td>` +
+                    `<td>${patient.email || 'N/A'}</td>` +
+                    `<td>${patient.phone || 'N/A'}</td>` +
+                    `<td>${patient.age || 'N/A'}</td>` +
+                    `<td>${patient.gender || 'N/A'}</td>` +
+                    `<td>` +
+                        `<button class="btn btn-primary btn-sm js-new-prescription" data-patient-id="${patient.patient_id}">New Prescription</button>` +
+                    `</td>` +
+                `</tr>`
             );
         }
 
-        patientsList.innerHTML = parts.join('');
+        tbody.innerHTML = parts.join('');
     }
 
     displayFilteredPrescriptions(prescriptions) {
-        const prescriptionsList = document.querySelector('.prescriptions-list');
-        if (!prescriptionsList) return;
+        const tbody = document.querySelector('#prescriptions-table tbody');
+        if (!tbody) return;
 
         if (!prescriptions || prescriptions.length === 0) {
-            prescriptionsList.innerHTML = '<p>No prescriptions found matching the criteria</p>';
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center">No prescriptions found matching the criteria</td></tr>';
             return;
         }
 
@@ -263,34 +231,20 @@ export class Display {
             }
 
             parts.push(
-                `<div class="prescription-card" data-prescription-id="${prescription.prescription_id}">` +
-                    `<div class="prescription-info">` +
-                        `<div class="prescription-header">` +
-                            `<h4>Prescription #${prescription.prescription_id}</h4>` +
-                            `<span class="status-badge status-${statusKey}">${statusLabel}</span>` +
-                        `</div>` +
-                        `<div class="prescription-details">` +
-                            `<p><strong>Patient:</strong> ${patientName} (${prescription.patient_id})</p>` +
-                            `<p><strong>Date:</strong> ${prescription.prescription_date}</p>` +
-                            `<p><strong>Diagnosis:</strong> ${prescription.diagnosis || 'Not specified'}</p>` +
-                            `<p><strong>Notes:</strong> ${prescription.notes || 'No additional notes'}</p>` +
-                        `</div>` +
-                    `</div>` +
-                    `<div class="prescription-actions">` +
-                        `<button class="btn btn-primary js-view-prescription">` +
-                            `<i class="fas fa-eye"></i> View Details` +
-                        `</button>` +
-                        `<button class="btn btn-warning js-edit-prescription">` +
-                            `<i class="fas fa-edit"></i> Edit` +
-                        `</button>` +
-                        `<button class="btn btn-danger js-delete-prescription">` +
-                            `<i class="fas fa-trash"></i> Delete` +
-                        `</button>` +
-                    `</div>` +
-                `</div>`
+                `<tr>` +
+                    `<td>${prescription.prescription_id}</td>` +
+                    `<td>${prescription.prescription_date}</td>` +
+                    `<td>${patientName}</td>` +
+                    `<td>${prescription.diagnosis || 'N/A'}</td>` +
+                    `<td><span class="status-badge status-${statusKey}">${statusLabel}</span></td>` +
+                    `<td>` +
+                        `<button class="btn btn-primary btn-sm js-view-prescription" data-rx="${prescription.prescription_id}">View</button>` +
+                        `<button class="btn btn-warning btn-sm js-edit-prescription" data-rx="${prescription.prescription_id}">Edit</button>` +
+                    `</td>` +
+                `</tr>`
             );
         }
 
-        prescriptionsList.innerHTML = parts.join('');
+        tbody.innerHTML = parts.join('');
     }
 }
