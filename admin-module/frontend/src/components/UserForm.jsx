@@ -11,6 +11,7 @@ const UserForm = ({ user, roles, onSave, onCancel }) => {
     phone_number: "",
     role_id: 1,
     password: "",
+    status: ""
   });
 
   const [loading, setLoading] = useState(false);
@@ -25,6 +26,7 @@ const UserForm = ({ user, roles, onSave, onCancel }) => {
         last_name: user.last_name,
         phone_number: user.phone_number || "",
         role_id: user.role_id,
+        status: user.status
       });
     }
   }, [user]);
@@ -45,6 +47,7 @@ const UserForm = ({ user, roles, onSave, onCancel }) => {
       } else {
         await createUser(formData);
       }
+      onSave();
     } catch (err) {
       setErr(err.response?.data?.error || "Error occured");
     } finally {

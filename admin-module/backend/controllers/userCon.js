@@ -148,16 +148,16 @@ exports.createUser = async (req, res) => {
 // UPDATE function
 exports.updateUser = async (req, res) => {
   const { id } = req.params;
-  const { email, first_name, last_name, phone_number, status } = req.body;
+  const { email, first_name, last_name, phone_number, status, role_id } = req.body;
 
   try {
     const conn = await pool.getConnection();
 
     await conn.query(
       `UPDATE users SET email = ?, first_name = ?, last_name = ?,
-      phone_number = ?, status = ?
+      phone_number = ?, status = ?, role_id = ?
       WHERE user_id = ?`,
-      [email, first_name, last_name, phone_number, status, id]
+      [email, first_name, last_name, phone_number, status || "active", role_id, id]
     );
 
     conn.release();
