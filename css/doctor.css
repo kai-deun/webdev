@@ -789,3 +789,48 @@ header {
     padding: 5px 10px;
     font-size: 0.8em;
 }
+/* Renewal Tab Enhancements */
+.renewals-header {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--doctor-primary);
+}
+
+.renewals-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#renewals-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+#renewals-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+#renewals-table .btn-approve {
+    padding: 6px 12px;
+    font-size: 0.85em;
+}
+
+#renewals-table .btn-reject {
+    padding: 6px 12px;
+    font-size: 0.85em;
+}
+
+#renewals-table td {
+    vertical-align: middle;
+}
+
+#renewals-table .fas {
+    margin-right: 5px;
+}
+
+.status-badge.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}

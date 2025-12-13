@@ -4,7 +4,6 @@ const AUTH_API = '../php/auth.php';
 
 document.addEventListener('DOMContentLoaded', function() {
     setupLoginForm();
-    setupDemoAccounts();
     setupPasswordToggle();
 });
 
@@ -39,7 +38,8 @@ function setupLoginForm() {
             
             const response = await fetch(AUTH_API, {
                 method: 'POST',
-                body: formData
+                body: formData,
+                credentials: 'same-origin'
             });
             
             const data = await response.json();
@@ -61,57 +61,6 @@ function setupLoginForm() {
             btnText.textContent = originalText;
             btn.disabled = false;
         }
-    });
-}
-
-function setupDemoAccounts() {
-    const demoToggle = document.getElementById('demoToggle');
-    const demoContent = document.getElementById('demoContent');
-    
-    demoToggle.addEventListener('click', function() {
-        demoContent.classList.toggle('active');
-        this.innerHTML = demoContent.classList.contains('active') ? 
-            '<i class="fas fa-chevron-up"></i>' : '<i class="fas fa-chevron-down"></i>';
-    });
-    
-    const demoAccounts = document.querySelectorAll('.demo-account');
-    
-    demoAccounts.forEach(account => {
-        account.addEventListener('click', function() {
-            const role = this.getAttribute('data-role');
-            let username, password;
-            
-            switch(role) {
-                case 'admin':
-                    username = 'admin';
-                    password = 'admin123';
-                    break;
-                case 'doctor':
-                    username = 'doctor';
-                    password = 'doctor123';
-                    break;
-                case 'pharmacist':
-                    username = 'pharmacist';
-                    password = 'pharma123';
-                    break;
-                case 'manager':
-                    username = 'manager';
-                    password = 'manager123';
-                    break;
-                case 'patient':
-                    username = 'patient';
-                    password = 'patient123';
-                    break;
-            }
-            
-            document.getElementById('username').value = username;
-            document.getElementById('password').value = password;
-            
-            demoAccounts.forEach(acc => acc.classList.remove('selected'));
-            this.classList.add('selected');
-            
-            showMessage(`${role.charAt(0).toUpperCase() + role.slice(1)} credentials filled!`, 'success');
-        });
     });
 }
 

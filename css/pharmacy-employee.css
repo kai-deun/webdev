@@ -742,4 +742,126 @@ header {
     .medicine-stock {
         align-items: flex-start;
     }
+    /* ============================================
+   PHARMACY EMPLOYEE ADDITIONAL STYLES
+   Add these to the end of your existing CSS
+   ============================================ */
+
+/* Pharmacy Prescriptions List */
+.pharm-pending-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.pharm-card {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    border-left: 4px solid var(--pharmacy-primary);
+}
+
+.pharm-card-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.pharm-line {
+    margin-bottom: 8px;
+    display: flex;
+    gap: 8px;
+}
+
+.pharm-label {
+    font-weight: 600;
+    color: var(--dark);
+    min-width: 90px;
+}
+
+.pharm-card-status {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+/* Badges */
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-active,
+.status-ready {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-dispensed {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+/* Empty States */
+.pharm-empty {
+    text-align: center;
+    padding: 40px;
+    color: var(--gray);
+    font-size: 16px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--gray);
+}
+
+/* Loading Overlay */
+.pharm-loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px 40px;
+    border-radius: 8px;
+    z-index: 9999;
+    display: none;
+    font-size: 16px;
+}
+
+/* Search Input */
+.pharm-search {
+    width: 100%;
+    max-width: 500px;
+}
+
+/* Stock Level Variations */
+.stock-level.out {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .pharm-card-main {
+        flex-direction: column;
+    }
+    
+    .pharm-card-status {
+        align-items: flex-start;
+        width: 100%;
+    }
+    
+    .pharm-label {
+        min-width: 80px;
+    }
+}
+
 }

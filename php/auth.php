@@ -4,19 +4,27 @@
  * Handles user login, logout, and session management
  */
 
+// Configure session before starting
+ini_set('session.cookie_httponly', 1);
+ini_set('session.use_only_cookies', 1);
+ini_set('session.cookie_path', '/');
+ini_set('session.cookie_domain', '');
+ini_set('session.cookie_lifetime', 0);
+ini_set('session.cache_limiter', '');
+
+// Start session first before any output
+session_start();
+
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
-header('Access-Control-Allow-Headers: Content-Type');
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
 
 // Handle CORS preflight
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
     exit;
 }
-
-// Start session
-session_start();
 
 // Include the centralized database connection
 require_once 'config.php';
@@ -67,7 +75,7 @@ function handleLogin($mysqli) {
     try {
         // Query user with role information
         $query = "
-            SELECT u.user_id, u.username, u.email, u.password_hash, u.first_name, u.last_name, u.status,
+            SELECT u.user_id, u.username, u.email, u.password_hash, u.first_name, u.last_name, u.gender, u.status,
                    r.role_name
             FROM users u
             JOIN roles r ON u.role_id = r.role_id
@@ -112,7 +120,18 @@ function handleLogin($mysqli) {
         $_SESSION['email'] = $user['email'];
         $_SESSION['role'] = $user['role_name'];
         $_SESSION['full_name'] = $user['first_name'] . ' ' . $user['last_name'];
+        $_SESSION['gender'] = $user['gender'];
         $_SESSION['login_time'] = time();
+        
+        // Force session to be written to disk
+        session_write_close();
+        
+        // Debug logging
+        error_log("Login successful for user: " . $user['username'] . ", role: " . $user['role_name']);
+        error_log("Session ID: " . session_id());
+        error_log("Session cookie path: " . ini_get('session.cookie_path'));
+        error_log("Session cookie name: " . session_name());
+        error_log("Session set: " . print_r($_SESSION, true));
 
         // Determine redirect based on role
         $redirect = getDashboardRedirect($user['role_name']);
@@ -124,7 +143,8 @@ function handleLogin($mysqli) {
                 'user_id' => $user['user_id'],
                 'username' => $user['username'],
                 'role' => $user['role_name'],
-                'full_name' => $user['first_name'] . ' ' . $user['last_name']
+                'full_name' => $user['first_name'] . ' ' . $user['last_name'],
+                'gender' => $user['gender']
             ],
             'redirect' => $redirect
         ]);
@@ -155,8 +175,16 @@ function handleLogout() {
  * Get current logged-in user
  */
 function getCurrentUser() {
+    // Debug logging
+    error_log("getCurrentUser called. Session ID: " . session_id());
+    error_log("Session cookie: " . (isset($_COOKIE[session_name()]) ? $_COOKIE[session_name()] : 'NOT SET'));
+    error_log("Session cookie path: " . ini_get('session.cookie_path'));
+    error_log("Session data: " . print_r($_SESSION, true));
+    error_log("All cookies: " . print_r($_COOKIE, true));
+    
     if (!isset($_SESSION['user_id'])) {
         http_response_code(401);
+        error_log("No user_id in session");
         echo json_encode([
             'success' => false,
             'message' => 'Not logged in'
@@ -164,6 +192,7 @@ function getCurrentUser() {
         return;
     }
 
+    error_log("User found in session: " . $_SESSION['username']);
     echo json_encode([
         'success' => true,
         'user' => [
@@ -171,7 +200,8 @@ function getCurrentUser() {
             'username' => $_SESSION['username'],
             'role' => $_SESSION['role'],
             'full_name' => $_SESSION['full_name'],
-            'email' => $_SESSION['email']
+            'email' => $_SESSION['email'],
+            'gender' => $_SESSION['gender'] ?? 'Prefer not to say'
         ]
     ]);
 }

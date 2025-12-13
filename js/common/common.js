@@ -7,17 +7,30 @@ const AUTH_API = '../php/auth.php';
 // Check if user is logged in
 async function checkAuth() {
     try {
-        const response = await fetch(`${AUTH_API}?action=checkSession`);
-        const data = await response.json();
+        console.log('checkAuth: Fetching current user...');
+        const response = await fetch(`${AUTH_API}?action=getCurrentUser`, {
+            credentials: 'same-origin'
+        });
         
-        if (!data.logged_in) {
-            window.location.href = 'login.html';
+        console.log('checkAuth: Response status:', response.status);
+        
+        if (!response.ok) {
+            console.log('checkAuth: Response not OK');
             return null;
         }
         
+        const data = await response.json();
+        console.log('checkAuth: Data received:', data);
+        
+        if (!data.success || !data.user) {
+            console.log('checkAuth: No user in response');
+            return null;
+        }
+        
+        console.log('checkAuth: User found:', data.user.username);
         return data.user;
     } catch (error) {
-        console.error('Auth check failed:', error);
+        console.error('checkAuth: Exception occurred:', error);
         return null;
     }
 }

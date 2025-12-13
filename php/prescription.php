@@ -81,6 +81,18 @@ switch ($action) {
     case 'requestRenewal':
         requestPrescriptionRenewal($mysqli);
         break;
+    case 'getPatientDashboardStats':
+        getPatientDashboardStats($mysqli);
+        break;
+    case 'getDoctorDashboardStats':
+        getDoctorDashboardStats($mysqli);
+        break;
+    case 'getDoctorRenewals':
+        getDoctorRenewals($mysqli);
+        break;
+    case 'updateRenewalStatus':
+        updateRenewalStatus($mysqli);
+        break;
     default:
         http_response_code(400);
         echo json_encode([
@@ -145,6 +157,7 @@ function getPatients($mysqli) {
              u.phone_number AS phone,
              u.address AS address,
              u.date_of_birth,
+             u.gender,
              CAST(p.patient_id AS CHAR) AS patient_id,
              p.insurance_number,
              p.insurance_provider,
@@ -152,8 +165,7 @@ function getPatients($mysqli) {
              p.emergency_contact_phone AS emergency_contact_phone,
              p.blood_type,
              p.allergies,
-             TIMESTAMPDIFF(YEAR, u.date_of_birth, CURDATE()) AS age,
-             '' AS gender
+             TIMESTAMPDIFF(YEAR, u.date_of_birth, CURDATE()) AS age
             FROM users u
             LEFT JOIN patients p ON u.user_id = p.user_id
             WHERE u.role_id = (SELECT role_id FROM roles WHERE role_name = 'Patient')
@@ -915,6 +927,307 @@ function requestPrescriptionRenewal($mysqli) {
     } catch (Exception $e) {
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Error submitting renewal request: ' . $e->getMessage()]);
+    }
+}
+
+// Patient dashboard statistics
+function getPatientDashboardStats($mysqli) {
+    if (!isset($_SESSION['user_id'])) {
+        http_response_code(401);
+        echo json_encode(['success' => false, 'message' => 'Not logged in']);
+        return;
+    }
+
+    $userId = $_SESSION['user_id'];
+
+    try {
+        // Map user to patient record
+        $patientQuery = "SELECT patient_id FROM patients WHERE user_id = ? LIMIT 1";
+        $stmt = $mysqli->prepare($patientQuery);
+        if (!$stmt) {
+            throw new Exception('Prepare failed: ' . $mysqli->error);
+        }
+        $stmt->bind_param('i', $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $patient = $result->fetch_assoc();
+        $stmt->close();
+
+        if (!$patient) {
+            http_response_code(404);
+            echo json_encode(['success' => false, 'message' => 'No patient record found for this user']);
+            return;
+        }
+
+        $patientId = (int)$patient['patient_id'];
+
+        // Queries for each stat
+        $queries = [
+            'active_prescriptions' => "SELECT COUNT(*) AS cnt FROM prescriptions WHERE patient_id = ? AND status = 'active'",
+            'upcoming_refills' => "SELECT COUNT(*) AS cnt FROM prescriptions WHERE patient_id = ? AND status = 'active' AND expiry_date IS NOT NULL AND expiry_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 30 DAY)",
+            'medical_records' => "SELECT COUNT(*) AS cnt FROM medical_history WHERE patient_id = ?",
+            'pending_requests' => "SELECT COUNT(*) AS cnt FROM prescription_renewals pr JOIN prescriptions p ON pr.prescription_id = p.prescription_id WHERE p.patient_id = ? AND pr.status = 'pending'"
+        ];
+
+        $stats = [];
+        foreach ($queries as $key => $sql) {
+            $stmt = $mysqli->prepare($sql);
+            if (!$stmt) {
+                throw new Exception('Prepare failed: ' . $mysqli->error);
+            }
+            $stmt->bind_param('i', $patientId);
+            $stmt->execute();
+            $res = $stmt->get_result();
+            $row = $res->fetch_assoc();
+            $stats[$key] = isset($row['cnt']) ? (int)$row['cnt'] : 0;
+            $stmt->close();
+        }
+
+        echo json_encode(['success' => true, 'stats' => $stats]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'Error loading dashboard stats: ' . $e->getMessage()]);
+    }
+}
+
+// Doctor dashboard statistics
+function getDoctorDashboardStats($mysqli) {
+    if (!isset($_SESSION['user_id'])) {
+        http_response_code(401);
+        echo json_encode(['success' => false, 'message' => 'Not logged in']);
+        return;
+    }
+
+    $userId = $_SESSION['user_id'];
+
+    try {
+        // Ensure this user is a doctor or admin
+        $roleQuery = "SELECT r.role_name FROM users u JOIN roles r ON u.role_id = r.role_id WHERE u.user_id = ? LIMIT 1";
+        $stmt = $mysqli->prepare($roleQuery);
+        if (!$stmt) {
+            throw new Exception('Prepare failed: ' . $mysqli->error);
+        }
+        $stmt->bind_param('i', $userId);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $roleRow = $res->fetch_assoc();
+        $stmt->close();
+
+        if (!$roleRow || ($roleRow['role_name'] !== 'Doctor' && $roleRow['role_name'] !== 'Admin')) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Access denied']);
+            return;
+        }
+
+        $stats = [];
+
+        // Active patients (all active patient accounts)
+        $patientSql = "SELECT COUNT(*) AS cnt FROM users u JOIN patients p ON u.user_id = p.user_id WHERE u.status = 'active'";
+        $stmt = $mysqli->prepare($patientSql);
+        if (!$stmt) throw new Exception('Prepare failed: ' . $mysqli->error);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+        $stats['active_patients'] = isset($row['cnt']) ? (int)$row['cnt'] : 0;
+        $stmt->close();
+
+        // Active prescriptions (system-wide)
+        $prescSql = "SELECT COUNT(*) AS cnt FROM prescriptions WHERE status = 'active'";
+        $stmt = $mysqli->prepare($prescSql);
+        if (!$stmt) throw new Exception('Prepare failed: ' . $mysqli->error);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+        $stats['active_prescriptions'] = isset($row['cnt']) ? (int)$row['cnt'] : 0;
+        $stmt->close();
+
+        // Pending renewals (system-wide)
+        $renewSql = "SELECT COUNT(*) AS cnt FROM prescription_renewals WHERE status = 'pending'";
+        $stmt = $mysqli->prepare($renewSql);
+        if (!$stmt) throw new Exception('Prepare failed: ' . $mysqli->error);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+        $stats['pending_renewals'] = isset($row['cnt']) ? (int)$row['cnt'] : 0;
+        $stmt->close();
+
+        echo json_encode(['success' => true, 'stats' => $stats]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'Error loading doctor dashboard stats: ' . $e->getMessage()]);
+    }
+}
+
+// List renewal requests visible to the doctor/admin
+function getDoctorRenewals($mysqli) {
+    if (!isset($_SESSION['user_id'])) {
+        http_response_code(401);
+        echo json_encode(['success' => false, 'message' => 'Not logged in']);
+        return;
+    }
+
+    $userId = $_SESSION['user_id'];
+
+    try {
+        // Determine role
+        $roleQuery = "SELECT r.role_name FROM users u JOIN roles r ON u.role_id = r.role_id WHERE u.user_id = ? LIMIT 1";
+        $stmt = $mysqli->prepare($roleQuery);
+        if (!$stmt) throw new Exception('Prepare failed: ' . $mysqli->error);
+        $stmt->bind_param('i', $userId);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $roleRow = $res->fetch_assoc();
+        $stmt->close();
+
+        if (!$roleRow) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Access denied']);
+            return;
+        }
+
+        $role = $roleRow['role_name'];
+        $isAdmin = ($role === 'Admin');
+
+        $sql = "
+            SELECT 
+                pr.renewal_id,
+                pr.prescription_id,
+                pr.request_date,
+                pr.status AS renewal_status,
+                pr.notes AS patient_notes,
+                pr.review_date,
+                pr.reviewed_by,
+                p.patient_id,
+                p.doctor_id,
+                p.status AS prescription_status,
+                p.prescription_date,
+                p.expiry_date,
+                CONCAT(u_pat.first_name, ' ', u_pat.last_name) AS patient_name,
+                CONCAT(u_doc.first_name, ' ', u_doc.last_name) AS doctor_name
+            FROM prescription_renewals pr
+            JOIN prescriptions p ON pr.prescription_id = p.prescription_id
+            JOIN patients pat ON p.patient_id = pat.patient_id
+            JOIN users u_pat ON pat.user_id = u_pat.user_id
+            JOIN users u_doc ON p.doctor_id = u_doc.user_id
+            " . ($isAdmin ? "" : "WHERE p.doctor_id = ?") . "
+            ORDER BY pr.request_date DESC, pr.renewal_id DESC";
+
+        $stmt = $mysqli->prepare($sql);
+        if (!$stmt) throw new Exception('Prepare failed: ' . $mysqli->error);
+        if ($isAdmin) {
+            $stmt->execute();
+        } else {
+            $stmt->bind_param('i', $userId);
+            $stmt->execute();
+        }
+
+        $result = $stmt->get_result();
+        $renewals = [];
+        while ($row = $result->fetch_assoc()) {
+            $renewals[] = $row;
+        }
+        $stmt->close();
+
+        echo json_encode(['success' => true, 'renewals' => $renewals]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'Error loading renewals: ' . $e->getMessage()]);
+    }
+}
+
+// Approve or reject a renewal request
+function updateRenewalStatus($mysqli) {
+    if (!isset($_SESSION['user_id'])) {
+        http_response_code(401);
+        echo json_encode(['success' => false, 'message' => 'Not logged in']);
+        return;
+    }
+
+    $userId = $_SESSION['user_id'];
+    $input = $GLOBALS['REQUEST_JSON'] ?? [];
+
+    $renewalId = isset($input['renewal_id']) ? (int)$input['renewal_id'] : (int)($_POST['renewal_id'] ?? 0);
+    $newStatus = strtolower(trim($input['status'] ?? ($_POST['status'] ?? '')));
+
+    if (!$renewalId || !in_array($newStatus, ['approved', 'rejected'], true)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'renewal_id and valid status (approved/rejected) are required']);
+        return;
+    }
+
+    try {
+        // Determine role
+        $roleQuery = "SELECT r.role_name FROM users u JOIN roles r ON u.role_id = r.role_id WHERE u.user_id = ? LIMIT 1";
+        $stmt = $mysqli->prepare($roleQuery);
+        if (!$stmt) throw new Exception('Prepare failed: ' . $mysqli->error);
+        $stmt->bind_param('i', $userId);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $roleRow = $res->fetch_assoc();
+        $stmt->close();
+
+        if (!$roleRow) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Access denied']);
+            return;
+        }
+
+        $role = $roleRow['role_name'];
+        $isAdmin = ($role === 'Admin');
+
+        // Fetch renewal to check ownership and current status
+        $checkSql = "
+            SELECT pr.prescription_id, pr.status AS current_status, p.doctor_id
+            FROM prescription_renewals pr
+            JOIN prescriptions p ON pr.prescription_id = p.prescription_id
+            WHERE pr.renewal_id = ?
+            LIMIT 1";
+        $stmt = $mysqli->prepare($checkSql);
+        if (!$stmt) throw new Exception('Prepare failed: ' . $mysqli->error);
+        $stmt->bind_param('i', $renewalId);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $row = $res->fetch_assoc();
+        $stmt->close();
+
+        if (!$row) {
+            http_response_code(404);
+            echo json_encode(['success' => false, 'message' => 'Renewal not found']);
+            return;
+        }
+
+        if (!$isAdmin && (int)$row['doctor_id'] !== $userId) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Not authorized to update this renewal']);
+            return;
+        }
+
+        if ($row['current_status'] !== 'pending') {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Only pending renewals can be updated']);
+            return;
+        }
+
+        // Update renewal status
+        $updSql = "UPDATE prescription_renewals SET status = ?, reviewed_by = ?, review_date = NOW() WHERE renewal_id = ?";
+        $stmt = $mysqli->prepare($updSql);
+        if (!$stmt) throw new Exception('Prepare failed: ' . $mysqli->error);
+        $stmt->bind_param('sii', $newStatus, $userId, $renewalId);
+        if (!$stmt->execute()) {
+            throw new Exception('Execute failed: ' . $stmt->error);
+        }
+        $stmt->close();
+
+        // Clear renewal_requested flag on the prescription
+        $clearSql = "UPDATE prescriptions p JOIN prescription_renewals pr ON p.prescription_id = pr.prescription_id SET p.renewal_requested = FALSE WHERE pr.renewal_id = ?";
+        $stmt = $mysqli->prepare($clearSql);
+        if ($stmt) {
+            $stmt->bind_param('i', $renewalId);
+            $stmt->execute();
+            $stmt->close();
+        }
+
+        echo json_encode(['success' => true, 'message' => 'Renewal updated', 'status' => $newStatus]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'Error updating renewal: ' . $e->getMessage()]);
     }
 }
 ?>

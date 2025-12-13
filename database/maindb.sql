@@ -19,6 +19,7 @@ CREATE TABLE users (
     role_id INT NOT NULL,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
+    gender ENUM('Male', 'Female', 'Other', 'Prefer not to say') DEFAULT 'Prefer not to say',
     phone_number VARCHAR(20),
     date_of_birth DATE,
     address TEXT,
@@ -158,6 +159,29 @@ CREATE TABLE inventory_update_requests (
     approval_date TIMESTAMP NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (inventory_id) REFERENCES branch_inventory(inventory_id) ON DELETE CASCADE,
+    FOREIGN KEY (requested_by) REFERENCES users(user_id),
+    FOREIGN KEY (approved_by) REFERENCES users(user_id)
+);
+
+-- Track an immutable history of approvals/rejections
+CREATE TABLE approval_history (
+    history_id INT PRIMARY KEY AUTO_INCREMENT,
+    request_id INT NOT NULL,
+    inventory_id INT NOT NULL,
+    branch_id INT NOT NULL,
+    request_type ENUM('add', 'update', 'delete') NOT NULL,
+    old_quantity INT,
+    new_quantity INT,
+    status ENUM('approved', 'rejected') NOT NULL,
+    requested_by INT NOT NULL,
+    approved_by INT NOT NULL,
+    reason TEXT,
+    rejection_reason TEXT,
+    approval_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (request_id) REFERENCES inventory_update_requests(request_id) ON DELETE CASCADE,
+    FOREIGN KEY (inventory_id) REFERENCES branch_inventory(inventory_id) ON DELETE CASCADE,
+    FOREIGN KEY (branch_id) REFERENCES pharmacy_branches(branch_id) ON DELETE CASCADE,
     FOREIGN KEY (requested_by) REFERENCES users(user_id),
     FOREIGN KEY (approved_by) REFERENCES users(user_id)
 );
@@ -347,39 +371,57 @@ INSERT INTO payment_methods (method_name) VALUES
 -- Pharmacist password: pharma123
 -- Manager password: manager123
 -- Patient password: patient123
-INSERT INTO users (username, email, password_hash, role_id, first_name, last_name, phone_number, date_of_birth, address, status) VALUES
+INSERT INTO users (username, email, password_hash, role_id, first_name, last_name, gender, phone_number, date_of_birth, address, status) VALUES
 -- Admin users (username: admin/admin2, password: admin123)
-('admin', 'admin@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 1, 'John', 'Anderson', '+1234567890', '1980-05-15', '123 Admin St, City, State', 'active'),
-('admin2', 'admin2@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 1, 'Jane', 'Williams', '+1234567891', '1982-07-20', '124 Admin St, City, State', 'active'),
+('admin', 'admin@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 1, 'John', 'Anderson', 'Male', '+1234567890', '1980-05-15', '123 Admin St, City, State', 'active'),
+('admin2', 'admin2@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 1, 'Jane', 'Williams', 'Female', '+1234567891', '1982-07-20', '124 Admin St, City, State', 'active'),
 -- Doctor users (username: doctor/doctor2, password: doctor123)
-('doctor', 'dr.smith@hospital.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 2, 'Sarah', 'Smith', '+1234567892', '1975-08-22', '456 Medical Ave, City, State', 'active'),
-('doctor2', 'dr.johnson@hospital.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 2, 'Michael', 'Johnson', '+1234567893', '1982-03-10', '789 Health Blvd, City, State', 'active'),
+('doctor', 'dr.smith@hospital.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 2, 'Sarah', 'Smith', 'Female', '+1234567892', '1975-08-22', '456 Medical Ave, City, State', 'active'),
+('doctor2', 'dr.johnson@hospital.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 2, 'Michael', 'Johnson', 'Male', '+1234567893', '1982-03-10', '789 Health Blvd, City, State', 'active'),
 -- Pharmacy Manager users (username: manager/manager2, password: manager123)
-('manager', 'manager1@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 4, 'Emily', 'Davis', '+1234567894', '1985-11-30', '321 Manager Rd, City, State', 'active'),
-('manager2', 'manager2@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 4, 'Robert', 'Wilson', '+1234567895', '1978-06-18', '654 Branch St, City, State', 'active'),
+('manager', 'manager1@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 4, 'Emily', 'Davis', 'Female', '+1234567894', '1985-11-30', '321 Manager Rd, City, State', 'active'),
+('manager2', 'manager2@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 4, 'Robert', 'Wilson', 'Male', '+1234567895', '1978-06-18', '654 Branch St, City, State', 'active'),
 -- Pharmacist users (username: pharmacist/pharmacist2, password: pharma123)
-('pharmacist', 'pharmacist1@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 3, 'Jessica', 'Martinez', '+1234567896', '1990-02-14', '987 Pharmacy Ln, City, State', 'active'),
-('pharmacist2', 'pharmacist2@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 3, 'David', 'Garcia', '+1234567897', '1988-09-25', '147 Medicine Way, City, State', 'active'),
+('pharmacist', 'pharmacist1@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 3, 'Michael', 'Chen', 'Male', '+1234567896', '1990-02-14', '987 Pharmacy Ln, City, State', 'active'),
+('pharmacist2', 'pharmacist2@pharmacy.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 3, 'Sarah', 'Johnson', 'Female', '+1234567897', '1988-09-25', '147 Medicine Way, City, State', 'active'),
 -- Patient users (username: patient/patient2, password: patient123)
-('patient', 'patient1@email.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 5, 'Maria', 'Thompson', '+1234567898', '1995-07-12', '741 Patient Ave, City, State', 'active'),
-('patient2', 'patient2@email.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 5, 'Christopher', 'White', '+1234567899', '1989-01-28', '852 Wellness Rd, City, State', 'active');
+('patient', 'patient1@email.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 5, 'Maria', 'Thompson', 'Female', '+1234567904', '1995-07-12', '741 Patient Ave, City, State', 'active'),
+('patient2', 'patient2@email.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 5, 'Christopher', 'White', 'Male', '+1234567905', '1989-01-28', '852 Wellness Rd, City, State', 'active'),
+-- Additional patient users
+('patient3', 'patient3@email.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 5, 'John', 'Doe', 'Male', '555-0101', '1985-03-15', '123 Main St, City, State 12345', 'active'),
+('patient4', 'patient4@email.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 5, 'Mary', 'Smith', 'Female', '555-0102', '1990-07-22', '456 Oak Ave, Town, State 67890', 'active'),
+('patient5', 'patient5@email.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 5, 'Robert', 'Johnson', 'Male', '555-0103', '1978-11-08', '789 Pine Rd, Village, State 24680', 'active'),
+('patient6', 'patient6@email.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 5, 'Emma', 'Wilson', 'Female', '555-0104', '1992-05-30', '321 Elm St, District, State 13579', 'active'),
+('patient7', 'patient7@email.com', '$2y$10$YourSystemWillGenerateThis.OnFirstRun.UseUpdateScript', 5, 'Charles', 'Brown', 'Male', '555-0105', '1988-09-12', '654 Maple Dr, County, State 97531', 'active');
 
 -- Insert pharmacy branches
 INSERT INTO pharmacy_branches (branch_name, branch_code, address, city, state, postal_code, phone_number, email, manager_id, status) VALUES
-('Central Pharmacy', 'PH-CENTRAL-001', '100 Main Street', 'Metro City', 'Metro Manila', '1000', '+6321234567', 'central@pharmacy.com', 4, 'active'),
-('North Branch Pharmacy', 'PH-NORTH-002', '200 Northern Ave', 'Quezon City', 'Metro Manila', '1100', '+6321234568', 'north@pharmacy.com', 4, 'active'),
-('East Side Pharmacy', 'PH-EAST-003', '300 Eastern Road', 'Pasig City', 'Metro Manila', '1600', '+6321234569', 'east@pharmacy.com', 5, 'active'),
-('South Mall Pharmacy', 'PH-SOUTH-004', '400 Southern Blvd', 'Makati City', 'Metro Manila', '1200', '+6321234570', 'south@pharmacy.com', 5, 'inactive');
+('Downtown Pharmacy', 'PH-DOWN-001', '123 Main Street, Downtown', 'Metro City', 'Metro Manila', '1000', '(555) 123-4567', 'downtown@pharmacy.com', 5, 'active'),
+('Westside Pharmacy', 'PH-WEST-002', '456 Oak Avenue, Westside', 'Quezon City', 'Metro Manila', '1100', '(555) 234-5678', 'westside@pharmacy.com', 5, 'active'),
+('Northside Pharmacy', 'PH-NORTH-003', '789 Pine Road, Northside', 'Pasig City', 'Metro Manila', '1600', '(555) 345-6789', 'northside@pharmacy.com', 5, 'inactive'),
+('East Mall Pharmacy', 'PH-EAST-004', '321 Eastern Blvd', 'Makati City', 'Metro Manila', '1200', '(555) 456-7890', 'eastmall@pharmacy.com', 5, 'active'),
+('South Branch Pharmacy', 'PH-SOUTH-005', '654 Southern Ave', 'Taguig City', 'Metro Manila', '1630', '(555) 567-8901', 'south@pharmacy.com', 6, 'active');
 
 -- Assign staff to branches
 INSERT INTO branch_staff (user_id, branch_id, assigned_date, status) VALUES
-(7, 1, '2024-01-15', 'active'),  -- pharmacist1 at Central
-(8, 1, '2024-01-15', 'active');  -- pharmacist2 at Central
+(7, 1, '2024-01-15', 'active'),  -- pharmacist1 (Michael Chen) at Downtown
+(8, 1, '2024-01-15', 'active'),  -- pharmacist2 (Sarah Johnson) at Downtown
+(9, 2, '2024-02-01', 'active'),  -- pharmacist3 (Lisa Thompson) at Westside
+(10, 3, '2024-02-15', 'inactive'),  -- pharmacist4 (David Martinez) at Northside (inactive)
+(11, 2, '2024-03-01', 'active'),  -- pharmacist5 (Jennifer Lee) at Westside
+(12, 3, '2024-03-10', 'active'),  -- pharmacist6 (James Wilson) at Northside
+(7, 4, '2024-04-01', 'active'),  -- pharmacist1 also at East Mall
+(8, 5, '2024-04-01', 'active');  -- pharmacist2 also at South Branch
 
 -- Insert patient details
 INSERT INTO patients (user_id, insurance_number, insurance_provider, emergency_contact_name, emergency_contact_phone, blood_type, allergies) VALUES
 (9, 'INS-001-2024', 'HealthCare Plus', 'John Thompson', '+1234567900', 'O+', 'Penicillin'),
-(10, 'INS-002-2024', 'MediCare Shield', 'Sarah White', '+1234567901', 'A+', 'None');
+(10, 'INS-002-2024', 'MediCare Shield', 'Sarah White', '+1234567901', 'A+', 'None'),
+(11, 'INS001234', 'Blue Cross', 'Jane Doe', '555-0101', 'B+', 'None'),
+(12, 'INS005678', 'Aetna', 'James Smith', '555-0102', 'A-', 'Sulfa drugs'),
+(13, 'INS009012', 'Cigna', 'Patricia Johnson', '555-0103', 'O+', 'Aspirin'),
+(14, 'INS003456', 'United Healthcare', 'Michael Wilson', '555-0104', 'B-', 'Codeine'),
+(15, 'INS007890', 'Humana', 'David Brown', '555-0105', 'AB+', 'None');
 
 -- Insert medicines
 INSERT INTO medicines (medicine_name, generic_name, manufacturer, description, dosage_form, strength, unit_price, requires_prescription) VALUES
@@ -396,10 +438,10 @@ INSERT INTO medicines (medicine_name, generic_name, manufacturer, description, d
 
 -- Insert branch inventory
 INSERT INTO branch_inventory (branch_id, medicine_id, quantity, reorder_level, expiry_date, batch_number, status, last_updated_by) VALUES
--- Central Pharmacy (Branch 1)
-(1, 1, 150, 20, '2025-12-31', 'BATCH-A001', 'available', 7),
+-- Downtown Pharmacy (Branch 1)
+(1, 1, 125, 20, '2025-12-31', 'BATCH-A001', 'available', 7),
 (1, 2, 500, 50, '2026-06-30', 'BATCH-A002', 'available', 7),
-(1, 3, 300, 30, '2025-11-30', 'BATCH-A003', 'available', 7),
+(1, 3, 45, 30, '2025-11-30', 'BATCH-A003', 'low_stock', 7),
 (1, 4, 200, 25, '2025-10-31', 'BATCH-A004', 'available', 7),
 (1, 5, 100, 15, '2026-03-31', 'BATCH-A005', 'available', 7),
 (1, 6, 120, 20, '2025-09-30', 'BATCH-A006', 'available', 7),
@@ -407,12 +449,30 @@ INSERT INTO branch_inventory (branch_id, medicine_id, quantity, reorder_level, e
 (1, 8, 250, 40, '2026-05-31', 'BATCH-A008', 'available', 7),
 (1, 9, 50, 10, '2025-08-31', 'BATCH-A009', 'available', 7),
 (1, 10, 400, 60, '2026-12-31', 'BATCH-A010', 'available', 7),
--- North Branch (Branch 2)
-(2, 1, 100, 20, '2025-11-30', 'BATCH-B001', 'available', 8),
-(2, 2, 350, 50, '2026-04-30', 'BATCH-B002', 'available', 8),
-(2, 3, 200, 30, '2025-12-31', 'BATCH-B003', 'available', 8),
-(2, 4, 150, 25, '2025-09-30', 'BATCH-B004', 'available', 8),
-(2, 5, 75, 15, '2026-02-28', 'BATCH-B005', 'available', 8);
+-- Westside Pharmacy (Branch 2)
+(2, 1, 100, 20, '2025-11-30', 'BATCH-B001', 'available', 9),
+(2, 2, 350, 50, '2026-04-30', 'BATCH-B002', 'available', 9),
+(2, 3, 200, 30, '2025-12-31', 'BATCH-B003', 'available', 9),
+(2, 4, 8, 25, '2025-09-30', 'BATCH-B004', 'low_stock', 9),
+(2, 5, 75, 15, '2026-02-28', 'BATCH-B005', 'available', 9),
+(2, 6, 90, 20, '2026-01-31', 'BATCH-B006', 'available', 9),
+(2, 7, 60, 15, '2025-12-31', 'BATCH-B007', 'available', 9),
+(2, 8, 180, 40, '2026-03-31', 'BATCH-B008', 'available', 9),
+-- Northside Pharmacy (Branch 3)
+(3, 1, 85, 20, '2026-01-31', 'BATCH-C001', 'available', 12),
+(3, 2, 420, 50, '2026-07-31', 'BATCH-C002', 'available', 12),
+(3, 3, 150, 30, '2025-10-31', 'BATCH-C003', 'available', 12),
+(3, 5, 95, 15, '2026-04-30', 'BATCH-C005', 'available', 12),
+-- East Mall Pharmacy (Branch 4)
+(4, 1, 110, 20, '2025-11-30', 'BATCH-D001', 'available', 7),
+(4, 2, 380, 50, '2026-05-31', 'BATCH-D002', 'available', 7),
+(4, 3, 220, 30, '2025-12-31', 'BATCH-D003', 'available', 7),
+(4, 6, 105, 20, '2025-10-31', 'BATCH-D006', 'available', 7),
+-- South Branch Pharmacy (Branch 5)
+(5, 2, 450, 50, '2026-08-31', 'BATCH-E002', 'available', 8),
+(5, 3, 280, 30, '2025-11-30', 'BATCH-E003', 'available', 8),
+(5, 8, 195, 40, '2026-04-30', 'BATCH-E008', 'available', 8),
+(5, 10, 520, 60, '2026-12-31', 'BATCH-E010', 'available', 8);
 
 -- Insert medical history
 INSERT INTO medical_history (patient_id, doctor_id, diagnosis, notes, visit_date) VALUES
@@ -461,7 +521,9 @@ INSERT INTO payments (order_id, payment_method_id, amount, transaction_reference
 
 -- Insert prescription renewal requests
 INSERT INTO prescription_renewals (prescription_id, requested_by, request_date, status, reviewed_by, review_date, notes) VALUES
-(2, 10, '2024-11-01 09:00:00', 'approved', 4, '2024-11-01 14:30:00', 'Patient showing good response to medication. Approved for renewal.');
+(2, 10, '2024-11-01 09:00:00', 'approved', 4, '2024-11-01 14:30:00', 'Patient showing good response to medication. Approved for renewal.'),
+(3, 10, '2024-12-10 10:30:00', 'pending', NULL, NULL, 'Running low on medication, need refill soon.'),
+(2, 10, '2024-12-11 15:45:00', 'pending', NULL, NULL, 'Requesting early renewal due to travel plans next month.');
 
 -- Insert support tickets
 INSERT INTO support_tickets (user_id, subject, description, priority, status, assigned_to) VALUES
@@ -470,8 +532,13 @@ INSERT INTO support_tickets (user_id, subject, description, priority, status, as
 
 -- Insert inventory update requests
 INSERT INTO inventory_update_requests (inventory_id, requested_by, request_type, old_quantity, new_quantity, reason, status, approved_by, approval_date) VALUES
+(1, 7, 'update', 125, 104, 'Stock dispensed for patient prescriptions - 21 units', 'pending', NULL, NULL),
+(4, 9, 'update', 8, 18, 'Received new stock shipment from supplier', 'pending', NULL, NULL),
+(14, 9, 'update', 8, 8, 'Price increase from $12.00 to $12.50 due to supplier cost change', 'pending', NULL, NULL),
 (1, 7, 'update', 150, 130, 'Stock dispensed for multiple prescriptions', 'approved', 5, '2024-10-15 15:00:00'),
-(2, 7, 'update', 500, 486, 'Daily dispensing adjustments', 'approved', 5, '2024-10-15 15:00:00');
+(2, 7, 'update', 500, 486, 'Daily dispensing adjustments', 'approved', 5, '2024-10-15 15:00:00'),
+(3, 7, 'update', 45, 50, 'Emergency restock from warehouse', 'rejected', 5, '2024-11-01 10:30:00'),
+(14, 9, 'update', 10, 8, 'Dispensed to patient', 'approved', 5, '2024-10-28 14:20:00');
 
 -- Insert audit log entries
 INSERT INTO audit_log (user_id, action, table_name, record_id, old_values, new_values, ip_address) VALUES

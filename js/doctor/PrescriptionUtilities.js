@@ -1,5 +1,5 @@
 // load data, filter and batch-render lists
-import { prescriptObj, display } from "./Instances"
+import { prescriptObj, display } from "../prescription/Instances.js"
 
 export class PrescriptionUtils {
     constructor() {
@@ -175,8 +175,8 @@ export class PrescriptionUtils {
         // Use batching: set currentPatients to filtered results and render batches
         this.currentPatients = filteredPatients;
         this.renderedCount = 0;
-        const patientsList = document.querySelector('.patients-list');
-        if (patientsList) patientsList.innerHTML = '';
+        const patientsTbody = document.querySelector('#patients-table tbody');
+        if (patientsTbody) patientsTbody.innerHTML = '';
         this._hideLoading();
         this.loadMorePatients();
     }
@@ -196,8 +196,8 @@ export class PrescriptionUtils {
 
         // reset rendering and show first batch
         this.renderedCount = 0;
-        const patientsList = document.querySelector('.patients-list');
-        if (patientsList) patientsList.innerHTML = '';
+        const patientsTbody = document.querySelector('#patients-table tbody');
+        if (patientsTbody) patientsTbody.innerHTML = '';
         this._hideLoading();
         this.loadMorePatients();
     }
@@ -234,8 +234,8 @@ export class PrescriptionUtils {
         this._showPresLoading();
 
         const nextSlice = this.currentPrescriptions.slice(this.presRenderedCount, this.presRenderedCount + this.presBatchSize);
-        // append next slice
-        display.displayPrescriptions(nextSlice, true);
+        // append next slice (only append=true if presRenderedCount > 0)
+        display.displayPrescriptions(nextSlice, this.presRenderedCount > 0);
         this.presRenderedCount += nextSlice.length;
 
         this.presLoading = false;
@@ -374,15 +374,24 @@ export class PrescriptionUtils {
 
         // Load data for the active tab
         if (tabId === 'prescriptions') {
-            this.loadPrescriptions();
+            // If prescriptions are already loaded, reset batch rendering; otherwise fetch
+            if (this.currentPrescriptions && this.currentPrescriptions.length > 0) {
+                this.presRenderedCount = 0;
+                const presList = document.querySelector('.prescriptions-list');
+                if (presList) presList.innerHTML = '';
+                this._ensurePrescriptionsScrollHandler();
+                this.loadMorePrescriptions();
+            } else {
+                this.loadPrescriptions();
+            }
         } else if (tabId === 'inventory') {
             display.displayMedicines();
         } else if (tabId === 'patients') {
             // If patients are already loaded, reset batch rendering; otherwise fetch
             if (this.currentPatients && this.currentPatients.length > 0) {
                 this.renderedCount = 0;
-                const patientsList = document.querySelector('.patients-list');
-                if (patientsList) patientsList.innerHTML = '';
+                const patientsTbody = document.querySelector('#patients-table tbody');
+                if (patientsTbody) patientsTbody.innerHTML = '';
                 this._ensureScrollHandler();
                 this.loadMorePatients();
             } else {
@@ -431,8 +440,9 @@ export class PrescriptionUtils {
         this._showLoading();
 
         const nextSlice = this.currentPatients.slice(this.renderedCount, this.renderedCount + this.batchSize);
-        // append next slice
-        display.displayPatients(nextSlice, true);
+        // Only append if we already have rendered count > 0, otherwise replace
+        const shouldAppend = this.renderedCount > 0;
+        display.displayPatients(nextSlice, shouldAppend);
         this.renderedCount += nextSlice.length;
 
         this.loading = false;
