@@ -1,0 +1,19 @@
+admin-module
+
+- npm create vite = template for creating the client (similar to create react app)
+- npm install = installing of packages
+- npm run dev = running the client
+
+- npm install axios bootstrap react-router-dom bootstrap-icons
+
+
+Server
+
+- npm init -y = create package.json
+- npm install express mysql cors bcrypt jsonwebtoken cookie-parser multer path
+- npm install nodemon = for server side refresh when code changed
+- "start":  "nodemon index.js" = put it under the "scripts" of package.json
+- from package.json = change the "type": "commonjs" to "type": "module" (makes server running)
+
+
+
