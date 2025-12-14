@@ -8,9 +8,9 @@ const router = express.Router();
 router.post("/adminlogin", (req, res) => {
   console.log(req.body);
 
-  const sql = "SELECT * FROM users WHERE email = ? AND password_hash = ?";
+  const sql = "SELECT u.* FROM users u INNER JOIN roles r ON r.role_id = u.role_id WHERE u.email = ? AND u.password_hash = ? AND r.role_name = ?";
 
-  conn.query(sql, [req.body.email, req.body.password], (err, result) => {
+  conn.query(sql, [req.body.email, req.body.password, "Admin"], (err, result) => {
     if (err)
       return res.json({
         loginStatus: false,
@@ -20,12 +20,18 @@ router.post("/adminlogin", (req, res) => {
     if (result.length > 0) {
       const email = result[0].email;
       const token = jwt.sign(
-        { role: "admin", email: email },
+        { role: "Admin", email: email, id: result[0].id },
         "jwt_secret_key_samp",
         { expiresIn: "1d" }
       );
 
-      res.cookie("token", token);
+      res.cookie("token", token, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: false,
+        path: "/",
+        maxAge: 24 * 60 * 60 * 1000
+      });
 
       return res.json({
         loginStatus: true,
@@ -192,15 +198,107 @@ router.put("/edit_user/:id", (req, res) => {
   }
 });
 
-router.delete('/delete_user/:id', (req, res) => {
+router.delete("/delete_user/:id", (req, res) => {
   const id = req.params.id;
   const sql = "UPDATE users SET status = 'deactivated' WHERE user_id = ?";
   conn.query(sql, [id], (err) => {
     if (err) {
-      return res.status(500).json({ Status: false, Error: "Failed to delete user" });
+      return res
+        .status(500)
+        .json({ Status: false, Error: "Failed to delete user" });
     }
     return res.json({ Status: true });
   });
-})
+});
+
+// counts
+router.get("/admin_count", (req, res) => {
+  const sql =
+    "SELECT COUNT(*) AS admin FROM users u INNER JOIN roles r ON r.role_id = u.role_id WHERE u.status = 'active' AND r.role_name = ?";
+  conn.query(sql, ["Admin"], (err, rows) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ Status: false, Error: "Failed to fetch admin count" });
+    }
+    return res.json({ Status: true, Result: rows });
+  });
+});
+
+router.get("/doctor_count", (req, res) => {
+  const sql =
+    "SELECT COUNT(*) AS doctor FROM users u INNER JOIN roles r ON r.role_id = u.role_id WHERE u.status = 'active' AND r.role_name = ?";
+  conn.query(sql, ["Doctor"], (err, rows) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ Status: false, Error: "Failed to fetch admin count" });
+    }
+    return res.json({ Status: true, Result: rows });
+  });
+});
+
+router.get("/patient_count", (req, res) => {
+  const sql =
+    "SELECT COUNT(*) AS patient FROM users u INNER JOIN roles r ON r.role_id = u.role_id WHERE u.status = 'active' AND r.role_name = ?";
+  conn.query(sql, ["Patient"], (err, rows) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ Status: false, Error: "Failed to fetch admin count" });
+    }
+    return res.json({ Status: true, Result: rows });
+  });
+});
+
+router.get("/pharmacist_count", (req, res) => {
+  const sql =
+    "SELECT COUNT(*) AS pharmacist FROM users u INNER JOIN roles r ON r.role_id = u.role_id WHERE u.status = 'active' AND r.role_name = ?";
+  conn.query(sql, ["Pharmacist"], (err, rows) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ Status: false, Error: "Failed to fetch admin count" });
+    }
+    return res.json({ Status: true, Result: rows });
+  });
+});
+
+router.get("/manager_count", (req, res) => {
+  const sql =
+    "SELECT COUNT(*) AS pharmacy_manager FROM users u INNER JOIN roles r ON r.role_id = u.role_id WHERE u.status = 'active' AND r.role_name = ?";
+  conn.query(sql, ["Pharmacy Manager"], (err, rows) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ Status: false, Error: "Failed to fetch admin count" });
+    }
+    return res.json({ Status: true, Result: rows });
+  });
+});
+
+router.get("/adminOver", (req, res) => {
+  const sql =
+    "SELECT u.username, u.email FROM users u INNER JOIN roles r ON r.role_id = u.role_id WHERE r.role_name = ?";
+  conn.query(sql, ["Admin"], (err, rows) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ Status: false, Error: "Failed to fetch admin lists" });
+    }
+    return res.json({ Status: true, Result: rows });
+  });
+});
+
+router.get("/logout", (req, res) => {
+  // clear cookie
+  res.clearCookie("token", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: false,
+    path: "/"
+  });
+  return res.json({ Status: true });
+});
 
 export { router as adminRouter };

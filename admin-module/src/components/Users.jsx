@@ -6,7 +6,7 @@ const Users = () => {
   const [users, setUser] = useState([]);
   const [roles, setRoles] = useState([]);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   // get the id value and return the role name
   const getRolename = (id) => {
@@ -90,8 +90,18 @@ const Users = () => {
                 <td>{getRolename(e.role_id)}</td>
                 <td>{e.status}</td>
                 <td>
-                  <Link to={`/dashboard/edit_user/${e.user_id}`} className="btn btn-info btn-sm">Edit</Link>
-                  <button className="btn btn-warning btn-sm" onClick={() => handleDelete(e.user_id)}>Delete</button>
+                  <Link
+                    to={`/dashboard/edit_user/${e.user_id}`}
+                    className="btn btn-info btn-sm"
+                  >
+                    Edit
+                  </Link>
+                  <button
+                    className="btn btn-warning btn-sm"
+                    onClick={() => handleDelete(e.user_id)}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
