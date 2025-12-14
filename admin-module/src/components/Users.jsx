@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Users = () => {
   const [users, setUser] = useState([]);
   const [roles, setRoles] = useState([]);
+
+  const navigate = useNavigate()
 
   // get the id value and return the role name
   const getRolename = (id) => {
@@ -37,6 +39,20 @@ const Users = () => {
       .then((res) => setRoles(res.data || []))
       .catch(() => setRoles([]));
   }, []);
+
+  const handleDelete = (id) => {
+    axios
+      .delete("http://localhost:3000/auth/delete_user/" + id)
+      .then((result) => {
+        if (result.data && result.data.Status) {
+          setUser((prev) => prev.filter((u) => u.user_id !== id));
+          navigate("/dashboard/user_management");
+        } else {
+          alert(result.data.Error || "Failed to delete user");
+        }
+      })
+      .catch((err) => console.log(err));
+  };
 
   return (
     <div className="px-5 mt-3">
@@ -75,7 +91,7 @@ const Users = () => {
                 <td>{e.status}</td>
                 <td>
                   <Link to={`/dashboard/edit_user/${e.user_id}`} className="btn btn-info btn-sm">Edit</Link>
-                  <button className="btn btn-warning btn-sm">Delete</button>
+                  <button className="btn btn-warning btn-sm" onClick={() => handleDelete(e.user_id)}>Delete</button>
                 </td>
               </tr>
             ))}

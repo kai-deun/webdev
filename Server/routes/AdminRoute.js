@@ -192,4 +192,15 @@ router.put("/edit_user/:id", (req, res) => {
   }
 });
 
+router.delete('/delete_user/:id', (req, res) => {
+  const id = req.params.id;
+  const sql = "UPDATE users SET status = 'deactivated' WHERE user_id = ?";
+  conn.query(sql, [id], (err) => {
+    if (err) {
+      return res.status(500).json({ Status: false, Error: "Failed to delete user" });
+    }
+    return res.json({ Status: true });
+  });
+})
+
 export { router as adminRouter };
