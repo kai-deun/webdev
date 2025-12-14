@@ -65,7 +65,9 @@ router.post("/add_user", (req, res) => {
 
   bcrypt.hash(password, 10, (err, hash) => {
     if (err) {
-      return res.status(500).json({ Status: false, Error: "Password hashing failed" });
+      return res
+        .status(500)
+        .json({ Status: false, Error: "Password hashing failed" });
     }
 
     const values = [
@@ -82,11 +84,112 @@ router.post("/add_user", (req, res) => {
 
     conn.query(sql, values, (err, result) => {
       if (err) {
-        return res.status(500).json({ Status: false, Error: "Failed to add user" });
+        return res
+          .status(500)
+          .json({ Status: false, Error: "Failed to add user" });
       }
       return res.json({ Status: true, user_id: result.insertId });
     });
   });
+});
+
+router.get("/user_management", (req, res) => {
+  const sql = "SELECT * FROM users WHERE status='active'";
+  conn.query(sql, (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: "Failed to get users" });
+    }
+    res.json(rows);
+  });
+});
+
+// get or read a specific user based on the id
+router.get("/edit_user/:id", (req, res) => {
+  const id = req.params.id;
+
+  const sql = "SELECT * FROM users WHERE user_id = ?";
+  conn.query(sql, [id], (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: "Failed to get user information" });
+    }
+    res.json(rows);
+  });
+});
+
+// edit a specific user based on their id
+router.put("/edit_user/:id", (req, res) => {
+  const id = req.params.id;
+
+  const {
+    username,
+    email,
+    password,
+    role,
+    first_name,
+    last_name,
+    phone_number,
+    date_of_birth,
+    address,
+  } = req.body;
+
+  const commonValues = [
+    username,
+    email,
+    parseInt(role, 10),
+    first_name,
+    last_name,
+    phone_number || null,
+    date_of_birth || null,
+    address || null,
+    id,
+  ];
+
+  if (password && String(password).length > 0) {
+    // hash new password
+    bcrypt.hash(password, 10, (err, hash) => {
+      if (err) {
+        return res
+          .status(500)
+          .json({ Status: false, Error: "Password hashing failed" });
+      }
+
+      // then update the user info
+      const sql =
+        "UPDATE users SET username = ?, email = ?, password_hash = ?, role_id = ?, first_name = ?, last_name = ?, phone_number = ?, date_of_birth = ?, address = ? WHERE user_id = ?";
+
+      const values = [
+        username,
+        email,
+        hash,
+        parseInt(role, 10),
+        first_name,
+        last_name,
+        phone_number || null,
+        date_of_birth || null,
+        address || null,
+        id,
+      ];
+      conn.query(sql, values, (qErr) => {
+        if (qErr) {
+          return res
+            .status(500)
+            .json({ Status: false, Error: "Failed to update user" });
+        }
+        return res.json({ Status: true });
+      });
+    });
+  } else {
+    const sql =
+      "UPDATE users SET username = ?, email = ?, role_id = ?, first_name = ?, last_name = ?, phone_number = ?, date_of_birth = ?, address = ? WHERE user_id = ?";
+    conn.query(sql, commonValues, (err) => {
+      if (err) {
+        return res
+          .status(500)
+          .json({ Status: false, Error: "Failed to update user" });
+      }
+      return res.json({ Status: true });
+    });
+  }
 });
 
 export { router as adminRouter };

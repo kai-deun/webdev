@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const Add_User = () => {
+const Edit_User = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
   const [user, setUser] = useState({
     username: "",
     email: "",
@@ -17,24 +20,50 @@ const Add_User = () => {
 
   const [roles, setRoles] = useState([]);
 
-  const navigate = useNavigate();
-
   useEffect(() => {
     axios
       .get("http://localhost:3000/auth/roles")
       .then((res) => setRoles(res.data))
       .catch(() => setRoles([]));
-  }, []);
+
+    axios
+      .get("http://localhost:3000/auth/edit_user/" + id)
+      .then((result) => {
+        const data = Array.isArray(result.data) ? result.data[0] : result.data;
+        if (data) {
+          setUser({
+            username: data.username || "",
+            email: data.email || "",
+            password: "",
+            first_name: data.first_name || "",
+            last_name: data.last_name || "",
+            phone_number: data.phone_number || "",
+            date_of_birth: data.date_of_birth
+              ? new Date(data.date_of_birth).toISOString().slice(0, 10)
+              : "",
+            address: data.address || "",
+            role: data.role_id ?? "",
+          });
+        }
+      })
+      .catch((err) => console.log(err));
+  }, [id]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const payload = { ...user };
+    if (!payload.password) {
+      delete payload.password;
+    }
+
     axios
-      .post("http://localhost:3000/auth/add_user", user)
+      .put("http://localhost:3000/auth/edit_user/" + id, payload)
       .then((res) => {
         if (res.data && res.data.Status) {
           navigate("/dashboard/user_management");
         } else {
-          alert(res.data.Error || "Failed to add user");
+          alert(res.data.Error || "Failed to update user");
         }
       })
       .catch((err) => console.log(err));
@@ -43,7 +72,7 @@ const Add_User = () => {
   return (
     <div className="d-flex justify-content-center align-items-center mt-3">
       <div className="p-3 rounded w-50 border">
-        <h3 className="text-center">Add User</h3>
+        <h3 className="text-center">Editing a User</h3>
         <form className="row g-1" onSubmit={handleSubmit}>
           <div className="col-12">
             <label htmlFor="username" className="form-label">
@@ -53,6 +82,7 @@ const Add_User = () => {
               type="text"
               className="form-control rounded-0"
               id="username"
+              value={user.username}
               onChange={(e) => setUser({ ...user, username: e.target.value })}
             />
           </div>
@@ -64,6 +94,7 @@ const Add_User = () => {
               type="email"
               className="form-control rounded-0"
               id="email"
+              value={user.email}
               onChange={(e) => setUser({ ...user, email: e.target.value })}
             />
           </div>
@@ -75,6 +106,7 @@ const Add_User = () => {
               type="password"
               className="form-control rounded-0"
               id="password"
+              value={user.password}
               onChange={(e) => setUser({ ...user, password: e.target.value })}
             />
           </div>
@@ -86,6 +118,7 @@ const Add_User = () => {
               type="text"
               className="form-control rounded-0"
               id="first_name"
+              value={user.first_name}
               onChange={(e) => setUser({ ...user, first_name: e.target.value })}
             />
           </div>
@@ -97,6 +130,7 @@ const Add_User = () => {
               type="text"
               className="form-control rounded-0"
               id="last_name"
+              value={user.last_name}
               onChange={(e) => setUser({ ...user, last_name: e.target.value })}
             />
           </div>
@@ -108,6 +142,7 @@ const Add_User = () => {
               type="text"
               className="form-control rounded-0"
               id="phone_number"
+              value={user.phone_number}
               onChange={(e) =>
                 setUser({ ...user, phone_number: e.target.value })
               }
@@ -121,6 +156,7 @@ const Add_User = () => {
               type="date"
               className="form-control rounded-0"
               id="date_of_birth"
+              value={user.date_of_birth}
               onChange={(e) =>
                 setUser({ ...user, date_of_birth: e.target.value })
               }
@@ -134,6 +170,7 @@ const Add_User = () => {
               type="text"
               className="form-control rounded-0"
               id="address"
+              value={user.address}
               onChange={(e) => setUser({ ...user, address: e.target.value })}
             />
           </div>
@@ -160,7 +197,7 @@ const Add_User = () => {
 
           <div className="col-12">
             <button type="submit" className="btn btn-primary w-100">
-              Save User
+              Save Changes
             </button>
           </div>
         </form>
@@ -169,4 +206,4 @@ const Add_User = () => {
   );
 };
 
-export default Add_User;
+export default Edit_User;
