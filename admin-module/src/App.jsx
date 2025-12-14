@@ -1,12 +1,19 @@
-import './App.css'
+import "./App.css";
+
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Login from "./components/Login";
+import { Dashboard } from "./components/Dashboard";
 
 function App() {
-
   return (
-    <>
-    Pekpek
-    </>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="auth/adminLogin" element={<Login />} />
+        <Route path="dashboard" element={<Dashboard />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
