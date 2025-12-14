@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 export const Dashboard = () => {
@@ -43,7 +43,7 @@ export const Dashboard = () => {
               </li>
               <li className="w-100">
                 <Link
-                  to="/dashboard/branch_management"
+                  to="/dashboard/pharmacy_branch_management"
                   className="nav-link text-white px-0 align-middle"
                 >
                   <span className="ms-2 d-none d-sm-inline">
@@ -70,7 +70,15 @@ export const Dashboard = () => {
             </ul>
           </div>
         </div>
+        <div className="col p-0 m-0">
+          <div className="p-2 d-flex justify-content-center shadow">
+            <h4>Management System</h4>
+          </div>
+          <Outlet />
+        </div>
       </div>
     </div>
   );
 };
+
+export default Dashboard;

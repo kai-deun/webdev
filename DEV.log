@@ -19,7 +19,7 @@ admin-module
 Server
 
 - npm init -y = create package.json
-- npm install express mysql cors bcrypt jsonwebtoken cookie-parser multer path
+- npm install express mysql cors bcrypt jsonwebtoken cookie-parser
 - npm install nodemon = for server side refresh when code changed
 - "start":  "nodemon index.js" = put it under the "scripts" of package.json
 - from package.json = change the "type": "commonjs" to "type": "module" (makes server running)
@@ -28,4 +28,8 @@ Server
     - db.js
 - routes /
     - AdminRoute.js
+
+.LOG
+
+
 

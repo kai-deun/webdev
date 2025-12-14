@@ -1,6 +1,7 @@
 import express, { response } from "express";
 import conn from "../utils/db.js";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 const router = express.Router();
 
@@ -13,7 +14,7 @@ router.post("/adminlogin", (req, res) => {
     if (err)
       return res.json({
         loginStatus: false,
-        Error: "Query err",
+        Error: "Query syntax not working",
       });
 
     if (result.length > 0) {
@@ -32,6 +33,59 @@ router.post("/adminlogin", (req, res) => {
     } else {
       return res.json({ loginStatus: false, Error: "Wrong credentials" });
     }
+  });
+});
+
+// getting the roles
+router.get("/roles", (req, res) => {
+  const sql = "SELECT role_id, role_name FROM roles";
+  conn.query(sql, (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: "Failed to fetch roles" });
+    }
+    res.json(rows);
+  });
+});
+
+router.post("/add_user", (req, res) => {
+  const sql =
+    "INSERT INTO users (username, email, password_hash, role_id, first_name, last_name, phone_number, date_of_birth, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+  const {
+    username,
+    email,
+    password,
+    role,
+    first_name,
+    last_name,
+    phone_number,
+    date_of_birth,
+    address,
+  } = req.body;
+
+  bcrypt.hash(password, 10, (err, hash) => {
+    if (err) {
+      return res.status(500).json({ Status: false, Error: "Password hashing failed" });
+    }
+
+    const values = [
+      username,
+      email,
+      hash,
+      parseInt(role, 10),
+      first_name,
+      last_name,
+      phone_number || null,
+      date_of_birth || null,
+      address || null,
+    ];
+
+    conn.query(sql, values, (err, result) => {
+      if (err) {
+        return res.status(500).json({ Status: false, Error: "Failed to add user" });
+      }
+      return res.json({ Status: true, user_id: result.insertId });
+    });
   });
 });
 
