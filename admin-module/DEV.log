@@ -15,6 +15,7 @@ admin-module
 - components /
     - Login.jsx + style.css
     - Dashboard.jsx
+    - *.jsx
 
 Server
 

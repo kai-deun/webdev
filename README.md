@@ -485,55 +485,36 @@ For issues or questions:
 # ADMIN MODULE
 ## NODE dependencies
 
-- npm init (creates package.json)
+Tutorial of Code with Yousaf
 
-- npm install \<package\> (node-modules)
+- [Part 1 Video Reference](https://www.youtube.com/watch?v=IKQQIYDfyPc&t=1636s)
+- [Part 2 Video Reference](https://www.youtube.com/watch?v=6a4B7ev3vd0&t=56s)
 
-- express = framework and routing
+### Client.log List
 
-- mysql2 = improved mysql
+- npm create vite = template for creating the client (similar to create react app)
+- npm install = installing of packages
+- npm run dev = running the client
 
-- dotenv = loads environment vars in the .env file
+- npm install axios bootstrap react-router-dom bootstrap-icons
 
-- bcryptjs = hash and compare passwords
+- src/ App.jsx is the main application
+- src/ main.jsx is the main file when running npm run dev
+- components /
+    - Login.jsx + style.css
+    - Dashboard.jsx
+    - *.jsx
 
-- jsonwebtoken = authentication and session (API security)
+### Server.log List
 
-- cors = cross-origin request (blocks request from diff. domain)
+- npm init -y = create package.json
+- npm install express mysql cors bcrypt jsonwebtoken cookie-parser
+- npm install nodemon = for server side refresh when code changed
+- "start":  "nodemon index.js" = put it under the "scripts" of package.json
+- from package.json = change the "type": "commonjs" to "type": "module" (makes server running)
 
-- body-parser = parse incoming request bodies
-
-- helmet = set secure HTTP headers
-
-- npm install --save-dev nodemon (automatic restart or the server)
-
-- npx create-react-app frontend = (Create React App) </br> it's like a ready made template for the frontend
-
-- npm install axios react-router-dom:
-  
-  - axios = makes HTTP requests to the APIs
-  - react-router-dom = handles routing and navigation
-
-## TREE STRUCTURE
-
-- backend created manually:
-- backend:
-  - config
-  - controllers
-  - middleware
-  - routes
-  - node_modules (dependencies)
-  - .env (sensitive info)
-  - package.json
-  - server.js
-- frontend created via npx and npm but some files are created by the dev:
-  - node_modules (dependencies)
-  - public
-  - src
-    - components
-    - pages
-    - styles
-    - App.js
-    - services (manual creation)
-  - .env
-  - package.json
+- utils /
+    - db.js
+- routes /
+    - AdminRoute.js
+- index.js
