@@ -1,0 +1,35 @@
+No AI, just tutorial of Code with Yousaf
+https://www.youtube.com/watch?v=IKQQIYDfyPc&t=1636s
+https://www.youtube.com/watch?v=6a4B7ev3vd0&t=56s
+
+admin-module
+
+- npm create vite = template for creating the client (similar to create react app)
+- npm install = installing of packages
+- npm run dev = running the client
+
+- npm install axios bootstrap react-router-dom bootstrap-icons
+
+- src/ App.jsx is the main application
+- src/ main.jsx is the main file when running npm run dev
+- components /
+    - Login.jsx + style.css
+    - Dashboard.jsx
+
+Server
+
+- npm init -y = create package.json
+- npm install express mysql cors bcrypt jsonwebtoken cookie-parser
+- npm install nodemon = for server side refresh when code changed
+- "start":  "nodemon index.js" = put it under the "scripts" of package.json
+- from package.json = change the "type": "commonjs" to "type": "module" (makes server running)
+
+- utils /
+    - db.js
+- routes /
+    - AdminRoute.js
+
+.LOG
+
+
+
