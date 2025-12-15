@@ -5,23 +5,20 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { useEffect } from "react";
 
 export const Dashboard = () => {
-
-  const nav = useNavigate()
+  const nav = useNavigate();
 
   useEffect(() => {
-    axios.defaults.withCredentials = true
-  }, [])
+    axios.defaults.withCredentials = true;
+  }, []);
 
   const handleLogout = () => {
-    axios.get('http://localhost:3000/auth/logout')
-    .then(res => {
+    axios.get("http://localhost:3000/auth/logout").then((res) => {
       if (res.data.Status) {
-        localStorage.removeItem("valid")
-        nav('/auth/adminlogin')
+        localStorage.removeItem("valid");
+        nav("/auth/adminlogin");
       }
-    })
-  }
-
+    });
+  };
 
   return (
     <div className="container-fluid">
@@ -61,7 +58,7 @@ export const Dashboard = () => {
                   </span>
                 </Link>
               </li>
-              <li className="w-100">
+              {/*               <li className="w-100">
                 <Link
                   to="/dashboard/pharmacy_branch_management"
                   className="nav-link text-white px-0 align-middle"
@@ -70,15 +67,15 @@ export const Dashboard = () => {
                     Pharmacy Branch Management
                   </span>
                 </Link>
-              </li>
-              <li className="w-100">
+              </li> */}
+              {/*               <li className="w-100">
                 <Link
                   to="/dashboard/profile"
                   className="nav-link text-white px-0 align-middle"
                 >
                   <span className="ms-2 d-none d-sm-inline">Profile</span>
                 </Link>
-              </li>
+              </li> */}
               <li className="w-100" onClick={handleLogout}>
                 <Link
                   to="/dashboard"
