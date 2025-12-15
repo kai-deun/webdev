@@ -216,9 +216,9 @@ function getDashboardRedirect($role) {
         case 'Doctor':
             return '../html/Doctor.html';
         case 'Pharmacist':
-            return '../html/Pharmacy Employees.html';
+            return '../html/Pharmacy-Employees.html';
         case 'Pharmacy Manager':
-            return '../html/Pharmacy Manager.html';
+            return '../html/Pharmacy-Manager.html';
         case 'Patient':
             return '../html/patient.html';
         default:

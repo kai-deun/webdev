@@ -61,16 +61,16 @@ webdev/
 │   ├── Admin.html                    ← Admin dashboard
 │   ├── Doctor.html                   ← Doctor dashboard
 │   ├── patient.html                  ← Patient portal
-│   ├── Pharmacy Manager.html         ← Manager dashboard
-│   └── Pharmacy Employees.html       ← Pharmacist dashboard
+│   ├── Pharmacy-Manager.html         ← Manager dashboard
+│   └── Pharmacy-Employees.html       ← Pharmacist dashboard
 │
 ├── 📂 css/                           ← Stylesheets
 │   ├── login.css
 │   ├── admin.css
 │   ├── patient.css
 │   ├── doctor.css
-│   ├── pharmacy-manager.css
-│   └── pharmacy-employee.css
+│   ├── pharmacy_manager.css
+│   └── pharmacy_employee.css
 │
 ├── 📂 js/                            ← JavaScript modules
 │   ├── login.js                      ← Login functionality

@@ -4,7 +4,7 @@ import { PrescriptionUtils } from "../doctor/PrescriptionUtilities.js";
 import { Prescriptions } from "./Prescriptions.js";
 import { BindEvents } from "./EventBinder.js";
 import { Patient } from "./Patient.js";
-import { Medicine } from "./Medicine.js";
+import { Medicine } from "../common/Medicine.js";
 import { Display } from "./Displays.js";
 
 export const prescriptObj = new PrescriptionObject();

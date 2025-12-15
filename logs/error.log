@@ -7061,3 +7061,274 @@ Stack trace:
 )
 
 [12-Dec-2025 16:13:27 UTC] User found in session: patient
+[15-Dec-2025 13:12:49 UTC] Login successful for user: manager, role: Pharmacy Manager
+[15-Dec-2025 13:12:49 UTC] Session ID: oglk66k3e8vpkpf0uj0fe5045q
+[15-Dec-2025 13:12:49 UTC] Session cookie path: /
+[15-Dec-2025 13:12:49 UTC] Session cookie name: PHPSESSID
+[15-Dec-2025 13:12:49 UTC] Session set: Array
+(
+    [user_id] => 5
+    [username] => manager
+    [email] => manager1@pharmacy.com
+    [role] => Pharmacy Manager
+    [full_name] => Emily Davis
+    [gender] => Female
+    [login_time] => 1765804369
+)
+
+[15-Dec-2025 13:13:32 UTC] Login successful for user: patient, role: Patient
+[15-Dec-2025 13:13:32 UTC] Session ID: oglk66k3e8vpkpf0uj0fe5045q
+[15-Dec-2025 13:13:32 UTC] Session cookie path: /
+[15-Dec-2025 13:13:32 UTC] Session cookie name: PHPSESSID
+[15-Dec-2025 13:13:32 UTC] Session set: Array
+(
+    [user_id] => 9
+    [username] => patient
+    [email] => patient1@email.com
+    [role] => Patient
+    [full_name] => Maria Thompson
+    [gender] => Female
+    [login_time] => 1765804412
+)
+
+[15-Dec-2025 13:13:34 UTC] getCurrentUser called. Session ID: oglk66k3e8vpkpf0uj0fe5045q
+[15-Dec-2025 13:13:34 UTC] Session cookie: oglk66k3e8vpkpf0uj0fe5045q
+[15-Dec-2025 13:13:34 UTC] Session cookie path: /
+[15-Dec-2025 13:13:34 UTC] Session data: Array
+(
+    [user_id] => 9
+    [username] => patient
+    [email] => patient1@email.com
+    [role] => Patient
+    [full_name] => Maria Thompson
+    [gender] => Female
+    [login_time] => 1765804412
+)
+
+[15-Dec-2025 13:13:34 UTC] All cookies: Array
+(
+    [PHPSESSID] => oglk66k3e8vpkpf0uj0fe5045q
+)
+
+[15-Dec-2025 13:13:34 UTC] User found in session: patient
+[15-Dec-2025 13:13:34 UTC] getCurrentUser called. Session ID: oglk66k3e8vpkpf0uj0fe5045q
+[15-Dec-2025 13:13:34 UTC] Session cookie: oglk66k3e8vpkpf0uj0fe5045q
+[15-Dec-2025 13:13:34 UTC] Session cookie path: /
+[15-Dec-2025 13:13:34 UTC] Session data: Array
+(
+    [user_id] => 9
+    [username] => patient
+    [email] => patient1@email.com
+    [role] => Patient
+    [full_name] => Maria Thompson
+    [gender] => Female
+    [login_time] => 1765804412
+)
+
+[15-Dec-2025 13:13:34 UTC] All cookies: Array
+(
+    [PHPSESSID] => oglk66k3e8vpkpf0uj0fe5045q
+)
+
+[15-Dec-2025 13:13:34 UTC] User found in session: patient
+[15-Dec-2025 13:13:50 UTC] Login successful for user: admin, role: Admin
+[15-Dec-2025 13:13:50 UTC] Session ID: oglk66k3e8vpkpf0uj0fe5045q
+[15-Dec-2025 13:13:50 UTC] Session cookie path: /
+[15-Dec-2025 13:13:50 UTC] Session cookie name: PHPSESSID
+[15-Dec-2025 13:13:50 UTC] Session set: Array
+(
+    [user_id] => 1
+    [username] => admin
+    [email] => admin@pharmacy.com
+    [role] => Admin
+    [full_name] => John Anderson
+    [gender] => Male
+    [login_time] => 1765804430
+)
+
+[15-Dec-2025 13:14:01 UTC] Login successful for user: admin, role: Admin
+[15-Dec-2025 13:14:01 UTC] Session ID: oglk66k3e8vpkpf0uj0fe5045q
+[15-Dec-2025 13:14:01 UTC] Session cookie path: /
+[15-Dec-2025 13:14:01 UTC] Session cookie name: PHPSESSID
+[15-Dec-2025 13:14:01 UTC] Session set: Array
+(
+    [user_id] => 1
+    [username] => admin
+    [email] => admin@pharmacy.com
+    [role] => Admin
+    [full_name] => John Anderson
+    [gender] => Male
+    [login_time] => 1765804441
+)
+
+[15-Dec-2025 13:14:10 UTC] Login successful for user: doctor, role: Doctor
+[15-Dec-2025 13:14:10 UTC] Session ID: oglk66k3e8vpkpf0uj0fe5045q
+[15-Dec-2025 13:14:10 UTC] Session cookie path: /
+[15-Dec-2025 13:14:10 UTC] Session cookie name: PHPSESSID
+[15-Dec-2025 13:14:10 UTC] Session set: Array
+(
+    [user_id] => 3
+    [username] => doctor
+    [email] => dr.smith@hospital.com
+    [role] => Doctor
+    [full_name] => Sarah Smith
+    [gender] => Female
+    [login_time] => 1765804450
+)
+
+[15-Dec-2025 13:14:12 UTC] getCurrentUser called. Session ID: oglk66k3e8vpkpf0uj0fe5045q
+[15-Dec-2025 13:14:12 UTC] Session cookie: oglk66k3e8vpkpf0uj0fe5045q
+[15-Dec-2025 13:14:12 UTC] Session cookie path: /
+[15-Dec-2025 13:14:12 UTC] Session data: Array
+(
+    [user_id] => 3
+    [username] => doctor
+    [email] => dr.smith@hospital.com
+    [role] => Doctor
+    [full_name] => Sarah Smith
+    [gender] => Female
+    [login_time] => 1765804450
+)
+
+[15-Dec-2025 13:14:12 UTC] All cookies: Array
+(
+    [PHPSESSID] => oglk66k3e8vpkpf0uj0fe5045q
+)
+
+[15-Dec-2025 13:14:12 UTC] User found in session: doctor
+[15-Dec-2025 13:15:02 UTC] Login successful for user: pharmacist, role: Pharmacist
+[15-Dec-2025 13:15:02 UTC] Session ID: oglk66k3e8vpkpf0uj0fe5045q
+[15-Dec-2025 13:15:02 UTC] Session cookie path: /
+[15-Dec-2025 13:15:02 UTC] Session cookie name: PHPSESSID
+[15-Dec-2025 13:15:02 UTC] Session set: Array
+(
+    [user_id] => 7
+    [username] => pharmacist
+    [email] => pharmacist1@pharmacy.com
+    [role] => Pharmacist
+    [full_name] => Michael Chen
+    [gender] => Male
+    [login_time] => 1765804502
+)
+
+[15-Dec-2025 13:17:46 UTC] Login successful for user: pharmacist, role: Pharmacist
+[15-Dec-2025 13:17:46 UTC] Session ID: oglk66k3e8vpkpf0uj0fe5045q
+[15-Dec-2025 13:17:46 UTC] Session cookie path: /
+[15-Dec-2025 13:17:46 UTC] Session cookie name: PHPSESSID
+[15-Dec-2025 13:17:46 UTC] Session set: Array
+(
+    [user_id] => 7
+    [username] => pharmacist
+    [email] => pharmacist1@pharmacy.com
+    [role] => Pharmacist
+    [full_name] => Michael Chen
+    [gender] => Male
+    [login_time] => 1765804666
+    [userid] => 7
+)
+
+[15-Dec-2025 13:18:41 UTC] Login successful for user: manager, role: Pharmacy Manager
+[15-Dec-2025 13:18:41 UTC] Session ID: oglk66k3e8vpkpf0uj0fe5045q
+[15-Dec-2025 13:18:41 UTC] Session cookie path: /
+[15-Dec-2025 13:18:41 UTC] Session cookie name: PHPSESSID
+[15-Dec-2025 13:18:41 UTC] Session set: Array
+(
+    [user_id] => 5
+    [username] => manager
+    [email] => manager1@pharmacy.com
+    [role] => Pharmacy Manager
+    [full_name] => Emily Davis
+    [gender] => Female
+    [login_time] => 1765804721
+    [userid] => 7
+)
+
+[15-Dec-2025 13:18:43 UTC] getCurrentUser called. Session ID: oglk66k3e8vpkpf0uj0fe5045q
+[15-Dec-2025 13:18:43 UTC] Session cookie: oglk66k3e8vpkpf0uj0fe5045q
+[15-Dec-2025 13:18:43 UTC] Session cookie path: /
+[15-Dec-2025 13:18:43 UTC] Session data: Array
+(
+    [user_id] => 5
+    [username] => manager
+    [email] => manager1@pharmacy.com
+    [role] => Pharmacy Manager
+    [full_name] => Emily Davis
+    [gender] => Female
+    [login_time] => 1765804721
+    [userid] => 7
+)
+
+[15-Dec-2025 13:18:43 UTC] All cookies: Array
+(
+    [PHPSESSID] => oglk66k3e8vpkpf0uj0fe5045q
+)
+
+[15-Dec-2025 13:18:43 UTC] User found in session: manager
+[15-Dec-2025 13:18:57 UTC] Login successful for user: admin, role: Admin
+[15-Dec-2025 13:18:57 UTC] Session ID: oglk66k3e8vpkpf0uj0fe5045q
+[15-Dec-2025 13:18:57 UTC] Session cookie path: /
+[15-Dec-2025 13:18:57 UTC] Session cookie name: PHPSESSID
+[15-Dec-2025 13:18:57 UTC] Session set: Array
+(
+    [user_id] => 1
+    [username] => admin
+    [email] => admin@pharmacy.com
+    [role] => Admin
+    [full_name] => John Anderson
+    [gender] => Male
+    [login_time] => 1765804737
+    [userid] => 7
+)
+
+[15-Dec-2025 13:21:46 UTC] Login successful for user: manager, role: Pharmacy Manager
+[15-Dec-2025 13:21:46 UTC] Session ID: oglk66k3e8vpkpf0uj0fe5045q
+[15-Dec-2025 13:21:46 UTC] Session cookie path: /
+[15-Dec-2025 13:21:46 UTC] Session cookie name: PHPSESSID
+[15-Dec-2025 13:21:46 UTC] Session set: Array
+(
+    [user_id] => 5
+    [username] => manager
+    [email] => manager1@pharmacy.com
+    [role] => Pharmacy Manager
+    [full_name] => Emily Davis
+    [gender] => Female
+    [login_time] => 1765804906
+    [userid] => 7
+)
+
+[15-Dec-2025 13:21:48 UTC] getCurrentUser called. Session ID: oglk66k3e8vpkpf0uj0fe5045q
+[15-Dec-2025 13:21:48 UTC] Session cookie: oglk66k3e8vpkpf0uj0fe5045q
+[15-Dec-2025 13:21:48 UTC] Session cookie path: /
+[15-Dec-2025 13:21:48 UTC] Session data: Array
+(
+    [user_id] => 5
+    [username] => manager
+    [email] => manager1@pharmacy.com
+    [role] => Pharmacy Manager
+    [full_name] => Emily Davis
+    [gender] => Female
+    [login_time] => 1765804906
+    [userid] => 7
+)
+
+[15-Dec-2025 13:21:48 UTC] All cookies: Array
+(
+    [PHPSESSID] => oglk66k3e8vpkpf0uj0fe5045q
+)
+
+[15-Dec-2025 13:21:48 UTC] User found in session: manager
+[15-Dec-2025 13:22:05 UTC] Login successful for user: pharmacist, role: Pharmacist
+[15-Dec-2025 13:22:05 UTC] Session ID: oglk66k3e8vpkpf0uj0fe5045q
+[15-Dec-2025 13:22:05 UTC] Session cookie path: /
+[15-Dec-2025 13:22:05 UTC] Session cookie name: PHPSESSID
+[15-Dec-2025 13:22:05 UTC] Session set: Array
+(
+    [user_id] => 7
+    [username] => pharmacist
+    [email] => pharmacist1@pharmacy.com
+    [role] => Pharmacist
+    [full_name] => Michael Chen
+    [gender] => Male
+    [login_time] => 1765804925
+)
+
