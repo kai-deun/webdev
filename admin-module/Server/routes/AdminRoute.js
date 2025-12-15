@@ -8,9 +8,10 @@ const router = express.Router();
 router.post("/adminlogin", (req, res) => {
   console.log(req.body);
 
-  const sql = "SELECT u.* FROM users u INNER JOIN roles r ON r.role_id = u.role_id WHERE u.email = ? AND u.password_hash = ? AND r.role_name = ?";
+  const sql =
+    "SELECT u.* FROM users u INNER JOIN roles r ON r.role_id = u.role_id WHERE u.email = ? AND r.role_name = ? AND u.status = 'active'";
 
-  conn.query(sql, [req.body.email, req.body.password, "Admin"], (err, result) => {
+  conn.query(sql, [req.body.email, "Admin"], async (err, result) => {
     if (err)
       return res.json({
         loginStatus: false,
@@ -18,9 +19,30 @@ router.post("/adminlogin", (req, res) => {
       });
 
     if (result.length > 0) {
-      const email = result[0].email;
+      const user = result[0];
+      const incoming = String(req.body.password || "");
+      const stored = String(user.password_hash || "");
+
+      let ok = false;
+
+      try {
+        // for bcrypt checking
+        if (/^\$2[aby]\$/.test(stored)) {
+          ok = await bcrypt.compare(incoming, stored);
+        } else {
+          // for plaintext password (DEV PURPOSES)
+          ok = incoming === stored;
+        }
+      } catch {
+        ok = false;
+      }
+
+      if (!ok) {
+        return res.json({ loginStatus: false, Error: "Wrong credentials" });
+      }
+
       const token = jwt.sign(
-        { role: "Admin", email: email, id: result[0].id },
+        { role: "Admin", email: user.email, id: user.user_id },
         "jwt_secret_key_samp",
         { expiresIn: "1d" }
       );
