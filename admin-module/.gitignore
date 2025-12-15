@@ -1,7 +1,0 @@
-maindb.sql
-guide.md
-# recommended to not upload to the remote repo
-/backend/node_modules
-/frontend/node_modules
-/backend/.env
-/frontend/.env
