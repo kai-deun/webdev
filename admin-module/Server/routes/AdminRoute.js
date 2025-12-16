@@ -222,14 +222,65 @@ router.put("/edit_user/:id", (req, res) => {
 
 router.delete("/delete_user/:id", (req, res) => {
   const id = req.params.id;
-  const sql = "UPDATE users SET status = 'deactivated' WHERE user_id = ?";
-  conn.query(sql, [id], (err) => {
-    if (err) {
+  const roleQuery =
+    "SELECT r.role_name FROM users u INNER JOIN roles r ON r.role_id = u.role_id WHERE u.user_id = ?";
+
+  conn.query(roleQuery, [id], (roleErr, roleRows) => {
+    if (roleErr) {
       return res
         .status(500)
-        .json({ Status: false, Error: "Failed to delete user" });
+        .json({ Status: false, Error: "Failed to know user role" });
     }
-    return res.json({ Status: true });
+
+    const roleName = roleRows?.[0]?.role_name;
+
+    if (roleName === "Doctor") {
+      const presCountSql =
+        "SELECT COUNT(*) AS cnt FROM prescriptions WHERE doctor_id = ? AND status IN ('active', 'open', 'pending')";
+      conn.query(presCountSql, [id], (presErr, presRows) => {
+        if (presErr) {
+          return res
+            .status(500)
+            .json({
+              Status: false,
+              Error: "Failed to check doctor prescriptions",
+            });
+        }
+
+        const cnt = presRows?.[0]?.cnt ?? 0;
+        if (cnt > 0) {
+          return res.status(409).json({
+            Status: false,
+            Error:
+              "Doctor has assigned prescriptions. Contact doctor to finish outstanding prescriptions.",
+            Code: "HAS_PRESCRIPTIONS",
+            Count: cnt,
+          });
+        }
+
+        const deactivateQuery =
+          "UPDATE users SET status = 'deactivated' WHERE user_id = ?";
+        conn.query(deactivateQuery, [id], (deactErr) => {
+          if (deactErr) {
+            return res
+              .status(500)
+              .json({ Status: false, Error: "Failed to deactivate user" });
+          }
+          return res.json({ Status: true });
+        });
+      });
+
+    } else {
+      const sql = "UPDATE users SET status = 'deactivated' WHERE user_id = ?";
+      conn.query(sql, [id], (err) => {
+        if (err) {
+          return res
+            .status(500)
+            .json({ Status: false, Error: "Failed to delete user" });
+        }
+        return res.json({ Status: true });
+      });
+    }
   });
 });
 
