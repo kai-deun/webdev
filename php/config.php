@@ -10,7 +10,7 @@
 define('DB_HOST', 'localhost');     // MySQL server hostname
 define('DB_NAME', 'vitalsoft_db');  // Database name
 define('DB_USER', 'root');          // MySQL username
-define('DB_PASS', '');              // MySQL password (empty by default in WAMP)
+define('DB_PASS', 'host_12345');              // MySQL password (empty by default in WAMP)
 
 // =============================================
 // APPLICATION CONFIGURATION
