@@ -432,10 +432,13 @@ CREATE TABLE `prescription_items` (
   `medicine_id` int NOT NULL,
   `dosage` varchar(100) NOT NULL,
   `quantity` int NOT NULL,
+  `dispensed_quantity` int DEFAULT '0',
+  `remaining_quantity` int DEFAULT NULL,
   `frequency` varchar(200) DEFAULT NULL,
   `duration` varchar(100) DEFAULT NULL,
   `instructions` text,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`item_id`),
   KEY `prescription_id` (`prescription_id`),
   KEY `medicine_id` (`medicine_id`)
@@ -448,7 +451,7 @@ CREATE TABLE `prescription_items` (
 
 LOCK TABLES `prescription_items` WRITE;
 /*!40000 ALTER TABLE `prescription_items` DISABLE KEYS */;
-INSERT INTO `prescription_items` VALUES (1,1,1,'500mg',21,'Three times daily','7 days','Take one capsule after meals','2025-12-08 14:53:51'),(2,1,2,'500mg',14,'Twice daily as needed','7 days','For fever or pain','2025-12-08 14:53:51'),(3,2,6,'50mg',90,'Once daily','90 days','Take in the morning','2025-12-08 14:53:51'),(4,3,8,'10mg',30,'Once daily','30 days','Take at bedtime','2025-12-08 14:53:51');
+INSERT INTO `prescription_items` VALUES (1,1,1,'500mg',21,21,0,'Three times daily','7 days','Take one capsule after meals','2025-12-08 14:53:51','2025-12-08 14:53:51'),(2,1,2,'500mg',14,14,0,'Twice daily as needed','7 days','For fever or pain','2025-12-08 14:53:51','2025-12-08 14:53:51'),(3,2,6,'50mg',90,0,90,'Once daily','90 days','Take in the morning','2025-12-08 14:53:51','2025-12-08 14:53:51'),(4,3,8,'10mg',30,0,30,'Once daily','30 days','Take at bedtime','2025-12-08 14:53:51','2025-12-08 14:53:51');
 /*!40000 ALTER TABLE `prescription_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -500,8 +503,11 @@ CREATE TABLE `prescriptions` (
   `expiry_date` date DEFAULT NULL,
   `diagnosis` text,
   `notes` text,
-  `status` enum('active','dispensed','expired','cancelled') DEFAULT 'active',
+  `status` enum('active','dispensed','expired','cancelled','pending','partially_dispensed','fulfilled') DEFAULT 'pending',
   `renewal_requested` tinyint(1) DEFAULT '0',
+  `prescribed_quantity` int DEFAULT NULL,
+  `dispensed_quantity` int DEFAULT '0',
+  `remaining_quantity` int DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`prescription_id`),
@@ -517,8 +523,43 @@ CREATE TABLE `prescriptions` (
 
 LOCK TABLES `prescriptions` WRITE;
 /*!40000 ALTER TABLE `prescriptions` DISABLE KEYS */;
-INSERT INTO `prescriptions` VALUES (1,1,3,'2024-10-15','2024-11-15','Upper Respiratory Tract Infection','Take with food','dispensed',0,'2025-12-08 14:53:51','2025-12-08 14:53:51'),(2,2,4,'2024-09-20','2025-03-20','Hypertension','Take once daily in the morning','active',0,'2025-12-08 14:53:51','2025-12-08 14:53:51'),(3,2,3,'2024-10-28','2025-01-28','Allergic Rhinitis','Take as needed for symptoms','active',0,'2025-12-08 14:53:51','2025-12-08 14:53:51');
+INSERT INTO `prescriptions` VALUES (1,1,3,'2024-10-15','2024-11-15','Upper Respiratory Tract Infection','Take with food','fulfilled',0,21,21,0,'2025-12-08 14:53:51','2025-12-08 14:53:51'),(2,2,4,'2024-09-20','2025-03-20','Hypertension','Take once daily in the morning','pending',0,90,0,90,'2025-12-08 14:53:51','2025-12-08 14:53:51'),(3,2,3,'2024-10-28','2025-01-28','Allergic Rhinitis','Take as needed for symptoms','pending',0,30,0,30,'2025-12-08 14:53:51','2025-12-08 14:53:51');
 /*!40000 ALTER TABLE `prescriptions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `dispensing_history`
+--
+
+DROP TABLE IF EXISTS `dispensing_history`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `dispensing_history` (
+  `history_id` int NOT NULL AUTO_INCREMENT,
+  `prescription_id` int NOT NULL,
+  `medicine_id` int NOT NULL,
+  `quantity_dispensed` int NOT NULL,
+  `quantity_before` int NOT NULL,
+  `quantity_after` int NOT NULL,
+  `pharmacist_id` int NOT NULL,
+  `dispensed_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `notes` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`history_id`),
+  KEY `prescription_id` (`prescription_id`),
+  KEY `medicine_id` (`medicine_id`),
+  KEY `pharmacist_id` (`pharmacist_id`),
+  KEY `idx_dispensing_date` (`dispensed_date`)
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `dispensing_history`
+--
+
+LOCK TABLES `dispensing_history` WRITE;
+/*!40000 ALTER TABLE `dispensing_history` DISABLE KEYS */;
+/*!40000 ALTER TABLE `dispensing_history` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --

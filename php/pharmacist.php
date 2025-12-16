@@ -40,6 +40,12 @@ try {
         case 'dispensePrescription':
             dispensePrescription($mysqli, $input);
             break;
+        case 'partialDispensing':
+            partialDispensing($mysqli, $input);
+            break;
+        case 'getDispensingHistory':
+            getDispensingHistory($mysqli, $input);
+            break;
         case 'updateInventory':
             updateInventory($mysqli, $input);
             break;
@@ -60,7 +66,7 @@ try {
 
 function getPendingPrescriptions($mysqli) {
     try {
-        // Get prescriptions with active status
+        // Get prescriptions with pending or partially_dispensed status
         $sql = "SELECT p.*, 
                        u1.first_name as patient_fname, u1.last_name as patient_lname,
                        u2.first_name as doctor_fname, u2.last_name as doctor_lname
@@ -68,7 +74,7 @@ function getPendingPrescriptions($mysqli) {
                 JOIN patients pat ON p.patient_id = pat.patient_id
                 JOIN users u1 ON pat.user_id = u1.user_id
                 JOIN users u2 ON p.doctor_id = u2.user_id
-                WHERE p.status = 'active'
+                WHERE p.status IN ('pending', 'active', 'partially_dispensed')
                 ORDER BY p.prescription_date DESC LIMIT 50";
         
         $result = $mysqli->query($sql);
@@ -96,9 +102,12 @@ function getPendingPrescriptions($mysqli) {
             
             while ($med = $medResult->fetch_assoc()) {
                 $medicines[] = [
+                    'itemid' => $med['item_id'],
                     'medicineid' => $med['medicine_id'],
                     'medicinename' => $med['medicine_name'],
                     'prescribedqty' => $med['quantity'],
+                    'dispensedqty' => $med['dispensed_quantity'] ?? 0,
+                    'remainingqty' => $med['remaining_quantity'] ?? $med['quantity'],
                     'dosage' => $med['dosage'],
                     'frequency' => $med['frequency'] ?? '',
                     'instructions' => $med['instructions'] ?? '',
@@ -172,19 +181,30 @@ function getBranchInventory($mysqli) {
 
 function getDispensedToday($mysqli) {
     try {
-        // Get dispensed prescriptions from orders table
-        $sql = "SELECT o.*, p.prescription_date,
-                       u1.first_name as patient_fname, u1.last_name as patient_lname,
-                       u2.first_name as doctor_fname, u2.last_name as doctor_lname,
-                       u3.first_name as pharma_fname, u3.last_name as pharma_lname
-                FROM orders o
-                JOIN prescriptions p ON o.prescription_id = p.prescription_id
+        // Get dispensed history from dispensing_history table with prescription and medicine details
+        $sql = "SELECT DISTINCT
+                    dh.history_id,
+                    dh.prescription_id,
+                    dh.medicine_id,
+                    dh.quantity_dispensed,
+                    dh.pharmacist_id,
+                    dh.dispensed_date,
+                    p.patient_id,
+                    p.doctor_id,
+                    p.prescription_date,
+                    m.medicine_name,
+                    CONCAT(u1.first_name, ' ', u1.last_name) as patient_name,
+                    CONCAT(u2.first_name, ' ', u2.last_name) as doctor_name,
+                    CONCAT(u3.first_name, ' ', u3.last_name) as pharmacist_name
+                FROM dispensing_history dh
+                JOIN prescriptions p ON dh.prescription_id = p.prescription_id
+                JOIN medicines m ON dh.medicine_id = m.medicine_id
                 JOIN patients pat ON p.patient_id = pat.patient_id
                 JOIN users u1 ON pat.user_id = u1.user_id
                 JOIN users u2 ON p.doctor_id = u2.user_id
-                JOIN users u3 ON o.pharmacist_id = u3.user_id
-                WHERE o.status = 'completed' AND p.status = 'dispensed'
-                ORDER BY o.dispensed_at DESC LIMIT 50";
+                JOIN users u3 ON dh.pharmacist_id = u3.user_id
+                ORDER BY dh.dispensed_date DESC
+                LIMIT 100";
         
         $result = $mysqli->query($sql);
         
@@ -193,19 +213,34 @@ function getDispensedToday($mysqli) {
             return;
         }
         
+        // Group by prescription ID to consolidate medicines
         $dispensed = [];
+        $prescriptionMap = [];
+        
         while ($row = $result->fetch_assoc()) {
-            $dispensed[] = [
-                'prescriptionid' => $row['prescription_id'],
-                'patientname' => $row['patient_fname'] . ' ' . $row['patient_lname'],
-                'doctorname' => 'Dr. ' . $row['doctor_fname'] . ' ' . $row['doctor_lname'],
-                'pharmacistname' => $row['pharma_fname'] . ' ' . $row['pharma_lname'],
-                'medicinesummary' => 'Prescription medicines',
-                'totalamount' => $row['total_amount'],
-                'dispensedat' => $row['dispensed_at'],
-                'date_created' => $row['dispensed_at']
+            $prescriptionId = $row['prescription_id'];
+            
+            if (!isset($prescriptionMap[$prescriptionId])) {
+                $prescriptionMap[$prescriptionId] = [
+                    'prescriptionid' => $prescriptionId,
+                    'patientname' => $row['patient_name'],
+                    'doctorname' => 'Dr. ' . $row['doctor_name'],
+                    'pharmacistname' => $row['pharmacist_name'],
+                    'dispensedat' => $row['dispensed_date'],
+                    'date_created' => $row['dispensed_date'],
+                    'medicines' => []
+                ];
+            }
+            
+            // Add medicine to the prescription's medicines array
+            $prescriptionMap[$prescriptionId]['medicines'][] = [
+                'medicinename' => $row['medicine_name'],
+                'dispensedqty' => $row['quantity_dispensed']
             ];
         }
+        
+        // Convert map to array
+        $dispensed = array_values($prescriptionMap);
         
         echo json_encode(['success' => true, 'dispensed' => $dispensed, 'prescriptions' => $dispensed]);
     } catch (Exception $e) {
@@ -414,6 +449,195 @@ function updatePrescriptionStatus($mysqli, $input) {
         echo json_encode(['success' => true, 'message' => 'Status updated']);
     } catch (Exception $e) {
         echo json_encode(['success' => true, 'message' => 'Status updated']);
+    }
+}
+
+// ===== PARTIAL DISPENSING FUNCTIONS =====
+
+function partialDispensing($mysqli, $input) {
+    try {
+        $prescriptionId = $input['prescription_id'] ?? null;
+        $itemId = $input['item_id'] ?? null;
+        $quantityToDispense = $input['quantity_to_dispense'] ?? 0;
+        $notes = $input['notes'] ?? '';
+        
+        if (!$prescriptionId || !$itemId || $quantityToDispense <= 0) {
+            echo json_encode(['success' => false, 'message' => 'Invalid parameters']);
+            return;
+        }
+        
+        $pharmacistId = $_SESSION['userid'] ?? 7;
+        
+        // Start transaction
+        $mysqli->begin_transaction();
+        
+        try {
+            // Get prescription item details
+            $stmt = $mysqli->prepare("
+                SELECT pi.quantity, pi.dispensed_quantity, pi.remaining_quantity, 
+                       pi.medicine_id, p.patient_id
+                FROM prescription_items pi
+                JOIN prescriptions p ON pi.prescription_id = p.prescription_id
+                WHERE pi.item_id = ? AND pi.prescription_id = ?
+            ");
+            $stmt->bind_param('ii', $itemId, $prescriptionId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $item = $result->fetch_assoc();
+            $stmt->close();
+            
+            if (!$item) {
+                $mysqli->rollback();
+                echo json_encode(['success' => false, 'message' => 'Prescription item not found']);
+                return;
+            }
+            
+            // Validate quantity to dispense
+            $remainingQty = $item['quantity'] - $item['dispensed_quantity'];
+            if ($quantityToDispense > $remainingQty) {
+                $mysqli->rollback();
+                echo json_encode(['success' => false, 
+                    'message' => "Cannot dispense $quantityToDispense. Only $remainingQty remaining."]);
+                return;
+            }
+            
+            // Update prescription item with new dispensed quantities
+            $newDispensedQty = $item['dispensed_quantity'] + $quantityToDispense;
+            $newRemainingQty = $item['quantity'] - $newDispensedQty;
+            
+            $stmt = $mysqli->prepare("
+                UPDATE prescription_items 
+                SET dispensed_quantity = ?, remaining_quantity = ?, updated_at = NOW()
+                WHERE item_id = ?
+            ");
+            $stmt->bind_param('iii', $newDispensedQty, $newRemainingQty, $itemId);
+            $stmt->execute();
+            $stmt->close();
+            
+            // Log dispensing in dispensing_history
+            $stmt = $mysqli->prepare("
+                INSERT INTO dispensing_history 
+                (prescription_id, medicine_id, quantity_dispensed, quantity_before, quantity_after, pharmacist_id, notes)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ");
+            $stmt->bind_param('iiiiiss', $prescriptionId, $item['medicine_id'], 
+                            $quantityToDispense, $item['dispensed_quantity'], 
+                            $newDispensedQty, $pharmacistId, $notes);
+            $stmt->execute();
+            $stmt->close();
+            
+            // Check if all items in the prescription are fully dispensed
+            $stmt = $mysqli->prepare("
+                SELECT 
+                    COUNT(*) as total_items,
+                    SUM(CASE WHEN remaining_quantity = 0 THEN 1 ELSE 0 END) as fulfilled_items
+                FROM prescription_items
+                WHERE prescription_id = ?
+            ");
+            $stmt->bind_param('i', $prescriptionId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $itemStatus = $result->fetch_assoc();
+            $stmt->close();
+            
+            // Update prescription status and aggregate quantities
+            $stmt = $mysqli->prepare("
+                SELECT 
+                    SUM(quantity) as prescribed_total,
+                    SUM(dispensed_quantity) as dispensed_total,
+                    SUM(remaining_quantity) as remaining_total
+                FROM prescription_items
+                WHERE prescription_id = ?
+            ");
+            $stmt->bind_param('i', $prescriptionId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $aggregates = $result->fetch_assoc();
+            $stmt->close();
+            
+            // Determine new prescription status
+            $newStatus = 'pending';
+            if ($aggregates['remaining_total'] == 0) {
+                $newStatus = 'fulfilled';
+            } elseif ($aggregates['dispensed_total'] > 0) {
+                $newStatus = 'partially_dispensed';
+            }
+            
+            // Update prescription with aggregated values and new status
+            $stmt = $mysqli->prepare("
+                UPDATE prescriptions 
+                SET prescribed_quantity = ?,
+                    dispensed_quantity = ?,
+                    remaining_quantity = ?,
+                    status = ?,
+                    updated_at = NOW()
+                WHERE prescription_id = ?
+            ");
+            $stmt->bind_param('iiisi', $aggregates['prescribed_total'], 
+                            $aggregates['dispensed_total'], $aggregates['remaining_total'],
+                            $newStatus, $prescriptionId);
+            $stmt->execute();
+            $stmt->close();
+            
+            // Commit transaction
+            $mysqli->commit();
+            
+            echo json_encode([
+                'success' => true, 
+                'message' => 'Partial dispensing recorded successfully',
+                'new_status' => $newStatus,
+                'dispensed_quantity' => $newDispensedQty,
+                'remaining_quantity' => $newRemainingQty
+            ]);
+        } catch (Exception $e) {
+            $mysqli->rollback();
+            throw $e;
+        }
+    } catch (Exception $e) {
+        $mysqli->rollback();
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    }
+}
+
+function getDispensingHistory($mysqli, $input) {
+    try {
+        $prescriptionId = $input['prescription_id'] ?? null;
+        
+        if (!$prescriptionId) {
+            echo json_encode(['success' => false, 'message' => 'Prescription ID required']);
+            return;
+        }
+        
+        $stmt = $mysqli->prepare("
+            SELECT dh.*, m.medicine_name, u.first_name, u.last_name
+            FROM dispensing_history dh
+            JOIN medicines m ON dh.medicine_id = m.medicine_id
+            JOIN users u ON dh.pharmacist_id = u.user_id
+            WHERE dh.prescription_id = ?
+            ORDER BY dh.dispensed_date DESC
+        ");
+        $stmt->bind_param('i', $prescriptionId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $history = [];
+        while ($row = $result->fetch_assoc()) {
+            $history[] = [
+                'history_id' => $row['history_id'],
+                'medicine_name' => $row['medicine_name'],
+                'quantity_dispensed' => $row['quantity_dispensed'],
+                'quantity_before' => $row['quantity_before'],
+                'quantity_after' => $row['quantity_after'],
+                'pharmacist_name' => $row['first_name'] . ' ' . $row['last_name'],
+                'dispensed_date' => $row['dispensed_date'],
+                'notes' => $row['notes']
+            ];
+        }
+        $stmt->close();
+        
+        echo json_encode(['success' => true, 'history' => $history]);
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
     }
 }
 ?>

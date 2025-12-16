@@ -592,3 +592,304 @@
 )
 
 [16-Dec-2025 00:56:56 UTC] User found in session: patient
+[16-Dec-2025 15:45:25 UTC] Login successful for user: pharmacist, role: Pharmacist
+[16-Dec-2025 15:45:25 UTC] Session ID: 68ducs1o8bpeeaan02qmqdjlkd
+[16-Dec-2025 15:45:25 UTC] Session cookie path: /
+[16-Dec-2025 15:45:25 UTC] Session cookie name: PHPSESSID
+[16-Dec-2025 15:45:25 UTC] Session set: Array
+(
+    [user_id] => 7
+    [username] => pharmacist
+    [email] => pharmacist1@pharmacy.com
+    [role] => Pharmacist
+    [full_name] => Michael Chen
+    [gender] => Male
+    [login_time] => 1765899925
+)
+
+[16-Dec-2025 16:06:14 UTC] Login successful for user: pharmacist, role: Pharmacist
+[16-Dec-2025 16:06:14 UTC] Session ID: 68ducs1o8bpeeaan02qmqdjlkd
+[16-Dec-2025 16:06:14 UTC] Session cookie path: /
+[16-Dec-2025 16:06:14 UTC] Session cookie name: PHPSESSID
+[16-Dec-2025 16:06:14 UTC] Session set: Array
+(
+    [user_id] => 7
+    [username] => pharmacist
+    [email] => pharmacist1@pharmacy.com
+    [role] => Pharmacist
+    [full_name] => Michael Chen
+    [gender] => Male
+    [login_time] => 1765901174
+    [userid] => 7
+)
+
+[16-Dec-2025 16:10:59 UTC] Login successful for user: pharmacist, role: Pharmacist
+[16-Dec-2025 16:10:59 UTC] Session ID: 68ducs1o8bpeeaan02qmqdjlkd
+[16-Dec-2025 16:10:59 UTC] Session cookie path: /
+[16-Dec-2025 16:10:59 UTC] Session cookie name: PHPSESSID
+[16-Dec-2025 16:10:59 UTC] Session set: Array
+(
+    [user_id] => 7
+    [username] => pharmacist
+    [email] => pharmacist1@pharmacy.com
+    [role] => Pharmacist
+    [full_name] => Michael Chen
+    [gender] => Male
+    [login_time] => 1765901459
+    [userid] => 7
+)
+
+[16-Dec-2025 16:11:14 UTC] getCurrentUser called. Session ID: 68ducs1o8bpeeaan02qmqdjlkd
+[16-Dec-2025 16:11:14 UTC] Session cookie: 68ducs1o8bpeeaan02qmqdjlkd
+[16-Dec-2025 16:11:14 UTC] Session cookie path: /
+[16-Dec-2025 16:11:14 UTC] Session data: Array
+(
+    [user_id] => 7
+    [username] => pharmacist
+    [email] => pharmacist1@pharmacy.com
+    [role] => Pharmacist
+    [full_name] => Michael Chen
+    [gender] => Male
+    [login_time] => 1765901459
+    [userid] => 7
+)
+
+[16-Dec-2025 16:11:14 UTC] All cookies: Array
+(
+    [PHPSESSID] => 68ducs1o8bpeeaan02qmqdjlkd
+)
+
+[16-Dec-2025 16:11:14 UTC] User found in session: pharmacist
+[16-Dec-2025 16:11:21 UTC] Login successful for user: doctor, role: Doctor
+[16-Dec-2025 16:11:21 UTC] Session ID: 68ducs1o8bpeeaan02qmqdjlkd
+[16-Dec-2025 16:11:21 UTC] Session cookie path: /
+[16-Dec-2025 16:11:21 UTC] Session cookie name: PHPSESSID
+[16-Dec-2025 16:11:21 UTC] Session set: Array
+(
+    [user_id] => 3
+    [username] => doctor
+    [email] => dr.smith@hospital.com
+    [role] => Doctor
+    [full_name] => Sarah Smith
+    [gender] => Female
+    [login_time] => 1765901481
+)
+
+[16-Dec-2025 16:11:22 UTC] getCurrentUser called. Session ID: 68ducs1o8bpeeaan02qmqdjlkd
+[16-Dec-2025 16:11:22 UTC] Session cookie: 68ducs1o8bpeeaan02qmqdjlkd
+[16-Dec-2025 16:11:22 UTC] Session cookie path: /
+[16-Dec-2025 16:11:22 UTC] Session data: Array
+(
+    [user_id] => 3
+    [username] => doctor
+    [email] => dr.smith@hospital.com
+    [role] => Doctor
+    [full_name] => Sarah Smith
+    [gender] => Female
+    [login_time] => 1765901481
+)
+
+[16-Dec-2025 16:11:22 UTC] All cookies: Array
+(
+    [PHPSESSID] => 68ducs1o8bpeeaan02qmqdjlkd
+)
+
+[16-Dec-2025 16:11:22 UTC] User found in session: doctor
+[16-Dec-2025 16:20:02 UTC] Login successful for user: pharmacist, role: Pharmacist
+[16-Dec-2025 16:20:02 UTC] Session ID: 68ducs1o8bpeeaan02qmqdjlkd
+[16-Dec-2025 16:20:02 UTC] Session cookie path: /
+[16-Dec-2025 16:20:02 UTC] Session cookie name: PHPSESSID
+[16-Dec-2025 16:20:02 UTC] Session set: Array
+(
+    [user_id] => 7
+    [username] => pharmacist
+    [email] => pharmacist1@pharmacy.com
+    [role] => Pharmacist
+    [full_name] => Michael Chen
+    [gender] => Male
+    [login_time] => 1765902002
+    [userid] => 7
+)
+
+[16-Dec-2025 16:20:16 UTC] Login successful for user: doctor, role: Doctor
+[16-Dec-2025 16:20:16 UTC] Session ID: 68ducs1o8bpeeaan02qmqdjlkd
+[16-Dec-2025 16:20:16 UTC] Session cookie path: /
+[16-Dec-2025 16:20:16 UTC] Session cookie name: PHPSESSID
+[16-Dec-2025 16:20:16 UTC] Session set: Array
+(
+    [user_id] => 3
+    [username] => doctor
+    [email] => dr.smith@hospital.com
+    [role] => Doctor
+    [full_name] => Sarah Smith
+    [gender] => Female
+    [login_time] => 1765902016
+)
+
+[16-Dec-2025 16:20:17 UTC] getCurrentUser called. Session ID: 68ducs1o8bpeeaan02qmqdjlkd
+[16-Dec-2025 16:20:17 UTC] Session cookie: 68ducs1o8bpeeaan02qmqdjlkd
+[16-Dec-2025 16:20:17 UTC] Session cookie path: /
+[16-Dec-2025 16:20:17 UTC] Session data: Array
+(
+    [user_id] => 3
+    [username] => doctor
+    [email] => dr.smith@hospital.com
+    [role] => Doctor
+    [full_name] => Sarah Smith
+    [gender] => Female
+    [login_time] => 1765902016
+)
+
+[16-Dec-2025 16:20:17 UTC] All cookies: Array
+(
+    [PHPSESSID] => 68ducs1o8bpeeaan02qmqdjlkd
+)
+
+[16-Dec-2025 16:20:17 UTC] User found in session: doctor
+[16-Dec-2025 16:21:21 UTC] PHP Fatal error:  Uncaught ArgumentCountError: The number of elements in the type definition string must match the number of bind variables in C:\wamp64\www\webdev\php\pharmacist.php:497
+Stack trace:
+#0 C:\wamp64\www\webdev\php\pharmacist.php(497): mysqli_stmt->bind_param('iiiiis', '4', 3, 1, 0, 1, 7, '')
+#1 C:\wamp64\www\webdev\php\pharmacist.php(44): partialDispensing(Object(mysqli), Array)
+#2 {main}
+  thrown in C:\wamp64\www\webdev\php\pharmacist.php on line 497
+[16-Dec-2025 16:21:29 UTC] PHP Fatal error:  Uncaught ArgumentCountError: The number of elements in the type definition string must match the number of bind variables in C:\wamp64\www\webdev\php\pharmacist.php:497
+Stack trace:
+#0 C:\wamp64\www\webdev\php\pharmacist.php(497): mysqli_stmt->bind_param('iiiiis', '4', 3, 1, 1, 2, 7, '')
+#1 C:\wamp64\www\webdev\php\pharmacist.php(44): partialDispensing(Object(mysqli), Array)
+#2 {main}
+  thrown in C:\wamp64\www\webdev\php\pharmacist.php on line 497
+[16-Dec-2025 16:28:18 UTC] PHP Fatal error:  Uncaught ArgumentCountError: The number of elements in the type definition string must match the number of bind variables in C:\wamp64\www\webdev\php\pharmacist.php:538
+Stack trace:
+#0 C:\wamp64\www\webdev\php\pharmacist.php(538): mysqli_stmt->bind_param('iiiiis', '4', 3, 1, 2, 3, 7, '')
+#1 C:\wamp64\www\webdev\php\pharmacist.php(47): partialDispensing(Object(mysqli), Array)
+#2 {main}
+  thrown in C:\wamp64\www\webdev\php\pharmacist.php on line 538
+[16-Dec-2025 16:28:25 UTC] PHP Fatal error:  Uncaught ArgumentCountError: The number of elements in the type definition string must match the number of bind variables in C:\wamp64\www\webdev\php\pharmacist.php:538
+Stack trace:
+#0 C:\wamp64\www\webdev\php\pharmacist.php(538): mysqli_stmt->bind_param('iiiiis', '4', 3, 1, 3, 4, 7, '')
+#1 C:\wamp64\www\webdev\php\pharmacist.php(47): partialDispensing(Object(mysqli), Array)
+#2 {main}
+  thrown in C:\wamp64\www\webdev\php\pharmacist.php on line 538
+[16-Dec-2025 16:36:06 UTC] Login successful for user: pharmacist, role: Pharmacist
+[16-Dec-2025 16:36:06 UTC] Session ID: 68ducs1o8bpeeaan02qmqdjlkd
+[16-Dec-2025 16:36:06 UTC] Session cookie path: /
+[16-Dec-2025 16:36:06 UTC] Session cookie name: PHPSESSID
+[16-Dec-2025 16:36:06 UTC] Session set: Array
+(
+    [user_id] => 7
+    [username] => pharmacist
+    [email] => pharmacist1@pharmacy.com
+    [role] => Pharmacist
+    [full_name] => Michael Chen
+    [gender] => Male
+    [login_time] => 1765902966
+)
+
+[16-Dec-2025 16:36:14 UTC] Login successful for user: doctor, role: Doctor
+[16-Dec-2025 16:36:14 UTC] Session ID: 68ducs1o8bpeeaan02qmqdjlkd
+[16-Dec-2025 16:36:14 UTC] Session cookie path: /
+[16-Dec-2025 16:36:14 UTC] Session cookie name: PHPSESSID
+[16-Dec-2025 16:36:14 UTC] Session set: Array
+(
+    [user_id] => 3
+    [username] => doctor
+    [email] => dr.smith@hospital.com
+    [role] => Doctor
+    [full_name] => Sarah Smith
+    [gender] => Female
+    [login_time] => 1765902974
+    [userid] => 7
+)
+
+[16-Dec-2025 16:36:16 UTC] getCurrentUser called. Session ID: 68ducs1o8bpeeaan02qmqdjlkd
+[16-Dec-2025 16:36:16 UTC] Session cookie: 68ducs1o8bpeeaan02qmqdjlkd
+[16-Dec-2025 16:36:16 UTC] Session cookie path: /
+[16-Dec-2025 16:36:16 UTC] Session data: Array
+(
+    [user_id] => 3
+    [username] => doctor
+    [email] => dr.smith@hospital.com
+    [role] => Doctor
+    [full_name] => Sarah Smith
+    [gender] => Female
+    [login_time] => 1765902974
+    [userid] => 7
+)
+
+[16-Dec-2025 16:36:16 UTC] All cookies: Array
+(
+    [PHPSESSID] => 68ducs1o8bpeeaan02qmqdjlkd
+)
+
+[16-Dec-2025 16:36:16 UTC] User found in session: doctor
+[16-Dec-2025 16:44:44 UTC] Login successful for user: patient, role: Patient
+[16-Dec-2025 16:44:44 UTC] Session ID: 68ducs1o8bpeeaan02qmqdjlkd
+[16-Dec-2025 16:44:44 UTC] Session cookie path: /
+[16-Dec-2025 16:44:44 UTC] Session cookie name: PHPSESSID
+[16-Dec-2025 16:44:44 UTC] Session set: Array
+(
+    [user_id] => 9
+    [username] => patient
+    [email] => patient1@email.com
+    [role] => Patient
+    [full_name] => Maria Thompson
+    [gender] => Female
+    [login_time] => 1765903484
+)
+
+[16-Dec-2025 16:44:46 UTC] getCurrentUser called. Session ID: 68ducs1o8bpeeaan02qmqdjlkd
+[16-Dec-2025 16:44:46 UTC] Session cookie: 68ducs1o8bpeeaan02qmqdjlkd
+[16-Dec-2025 16:44:46 UTC] Session cookie path: /
+[16-Dec-2025 16:44:46 UTC] Session data: Array
+(
+    [user_id] => 9
+    [username] => patient
+    [email] => patient1@email.com
+    [role] => Patient
+    [full_name] => Maria Thompson
+    [gender] => Female
+    [login_time] => 1765903484
+)
+
+[16-Dec-2025 16:44:46 UTC] All cookies: Array
+(
+    [PHPSESSID] => 68ducs1o8bpeeaan02qmqdjlkd
+)
+
+[16-Dec-2025 16:44:46 UTC] User found in session: patient
+[16-Dec-2025 16:44:46 UTC] getCurrentUser called. Session ID: 68ducs1o8bpeeaan02qmqdjlkd
+[16-Dec-2025 16:44:46 UTC] Session cookie: 68ducs1o8bpeeaan02qmqdjlkd
+[16-Dec-2025 16:44:46 UTC] Session cookie path: /
+[16-Dec-2025 16:44:46 UTC] Session data: Array
+(
+    [user_id] => 9
+    [username] => patient
+    [email] => patient1@email.com
+    [role] => Patient
+    [full_name] => Maria Thompson
+    [gender] => Female
+    [login_time] => 1765903484
+)
+
+[16-Dec-2025 16:44:46 UTC] All cookies: Array
+(
+    [PHPSESSID] => 68ducs1o8bpeeaan02qmqdjlkd
+)
+
+[16-Dec-2025 16:44:46 UTC] User found in session: patient
+[16-Dec-2025 16:49:01 UTC] Login successful for user: pharmacist, role: Pharmacist
+[16-Dec-2025 16:49:01 UTC] Session ID: 68ducs1o8bpeeaan02qmqdjlkd
+[16-Dec-2025 16:49:01 UTC] Session cookie path: /
+[16-Dec-2025 16:49:01 UTC] Session cookie name: PHPSESSID
+[16-Dec-2025 16:49:01 UTC] Session set: Array
+(
+    [user_id] => 7
+    [username] => pharmacist
+    [email] => pharmacist1@pharmacy.com
+    [role] => Pharmacist
+    [full_name] => Michael Chen
+    [gender] => Male
+    [login_time] => 1765903741
+    [userid] => 7
+)
+

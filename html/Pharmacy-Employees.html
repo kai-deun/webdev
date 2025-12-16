@@ -123,8 +123,9 @@
                                 <th>Rx ID</th>
                                 <th>Patient</th>
                                 <th>Doctor</th>
+                                <th>Medicines Dispensed</th>
                                 <th>Pharmacist</th>
-                                <th>Dispensed At</th>
+                                <th>Date</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -138,6 +139,113 @@
 
     <!-- Loading Overlay -->
     <div class="pharm-loading">Loading pharmacy data...</div>
+
+    <!-- Partial Dispensing Modal -->
+    <div id="partialDispensingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Partial Dispensing</h2>
+                <button type="button" class="modal-close" onclick="closeDispensingModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="dispensing-info">
+                    <div class="info-group">
+                        <label>Prescription ID:</label>
+                        <span id="dispensing-rx-id">RX-</span>
+                    </div>
+                    <div class="info-group">
+                        <label>Patient:</label>
+                        <span id="dispensing-patient">-</span>
+                    </div>
+                </div>
+
+                <div class="dispensing-medicines">
+                    <h3>Medicines to Dispense:</h3>
+                    <div id="dispensingMedicinesList"></div>
+                </div>
+
+                <div class="dispensing-form">
+                    <p class="dispensing-hint">Enter the quantity to dispense for each medicine below. Leave blank or 0 to skip.</p>
+
+                    <div class="form-group">
+                        <label for="dispensingNotes">Notes (Optional)</label>
+                        <textarea id="dispensingNotes" rows="2" placeholder="Add any notes about this dispensing..."></textarea>
+                    </div>
+                </div>
+
+                <div class="dispensing-history">
+                    <h3>Dispensing History:</h3>
+                    <div id="dispensingHistoryList" class="history-list"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeDispensingModal()">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="submitPartialDispensing()">
+                    <i class="fas fa-check"></i> Confirm Dispensing
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hold Prescription Modal -->
+    <div id="holdPrescriptionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Hold Prescription</h2>
+                <button type="button" class="modal-close" onclick="closeHoldModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="dispensing-info">
+                    <div class="info-group">
+                        <label>Prescription ID:</label>
+                        <span id="hold-rx-id">-</span>
+                    </div>
+                    <div class="info-group">
+                        <label>Patient:</label>
+                        <span id="hold-patient">-</span>
+                    </div>
+                    <div class="info-group">
+                        <label>Doctor:</label>
+                        <span id="hold-doctor">-</span>
+                    </div>
+                    <div class="info-group">
+                        <label>Date:</label>
+                        <span id="hold-date">-</span>
+                    </div>
+                </div>
+
+                <div class="dispensing-medicines">
+                    <h3>Medications:</h3>
+                    <div id="holdMedicinesList"></div>
+                </div>
+
+                <div class="dispensing-form">
+                    <div class="form-group">
+                        <label for="holdReason">Reason for Hold <span style="color: red;">*</span></label>
+                        <select id="holdReason" class="form-control" required>
+                            <option value="">Select reason...</option>
+                            <option value="out_of_stock">Out of Stock</option>
+                            <option value="awaiting_insurance">Awaiting Insurance Approval</option>
+                            <option value="patient_request">Patient Request</option>
+                            <option value="verification_needed">Verification Needed</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="holdNotes">Additional Notes</label>
+                        <textarea id="holdNotes" class="form-control" rows="4" placeholder="Enter additional notes about why this prescription is being held..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeHoldModal()">Cancel</button>
+                <button type="button" class="btn btn-warning" onclick="submitHoldPrescription()">
+                    <i class="fas fa-pause"></i> Confirm Hold
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script src="../js/pharmacist/PharmacyEmployee.js"></script>
 </body>

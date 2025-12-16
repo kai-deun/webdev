@@ -198,8 +198,11 @@ CREATE TABLE prescriptions (
     expiry_date DATE,
     diagnosis TEXT,
     notes TEXT,
-    status ENUM('active', 'dispensed', 'expired', 'cancelled') DEFAULT 'active',
+    status ENUM('active', 'dispensed', 'expired', 'cancelled', 'pending', 'partially_dispensed', 'fulfilled') DEFAULT 'pending',
     renewal_requested BOOLEAN DEFAULT FALSE,
+    prescribed_quantity INT,
+    dispensed_quantity INT DEFAULT 0,
+    remaining_quantity INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (patient_id) REFERENCES patients(patient_id) ON DELETE RESTRICT,
@@ -216,12 +219,35 @@ CREATE TABLE prescription_items (
     medicine_id INT NOT NULL,
     dosage VARCHAR(100) NOT NULL,
     quantity INT NOT NULL,
+    dispensed_quantity INT DEFAULT 0,
+    remaining_quantity INT,
     frequency VARCHAR(200),
     duration VARCHAR(100),
     instructions TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (prescription_id) REFERENCES prescriptions(prescription_id) ON DELETE CASCADE,
     FOREIGN KEY (medicine_id) REFERENCES medicines(medicine_id)
+);
+
+-- =============================================
+-- DISPENSING HISTORY
+-- =============================================
+
+CREATE TABLE dispensing_history (
+    history_id INT PRIMARY KEY AUTO_INCREMENT,
+    prescription_id INT NOT NULL,
+    medicine_id INT NOT NULL,
+    quantity_dispensed INT NOT NULL,
+    quantity_before INT NOT NULL,
+    quantity_after INT NOT NULL,
+    pharmacist_id INT NOT NULL,
+    dispensed_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (prescription_id) REFERENCES prescriptions(prescription_id) ON DELETE CASCADE,
+    FOREIGN KEY (medicine_id) REFERENCES medicines(medicine_id),
+    FOREIGN KEY (pharmacist_id) REFERENCES users(user_id)
 );
 
 -- =============================================
@@ -482,20 +508,20 @@ INSERT INTO medical_history (patient_id, doctor_id, diagnosis, notes, visit_date
 (2, 3, 'Allergic Rhinitis', 'Seasonal allergies. Prescribed antihistamine.', '2024-10-28');
 
 -- Insert prescriptions
-INSERT INTO prescriptions (patient_id, doctor_id, prescription_date, expiry_date, diagnosis, notes, status) VALUES
-(1, 3, '2024-10-15', '2024-11-15', 'Upper Respiratory Tract Infection', 'Take with food', 'dispensed'),
-(2, 4, '2024-09-20', '2025-03-20', 'Hypertension', 'Take once daily in the morning', 'active'),
-(2, 3, '2024-10-28', '2025-01-28', 'Allergic Rhinitis', 'Take as needed for symptoms', 'active');
+INSERT INTO prescriptions (patient_id, doctor_id, prescription_date, expiry_date, diagnosis, notes, status, prescribed_quantity, dispensed_quantity, remaining_quantity) VALUES
+(1, 3, '2024-10-15', '2024-11-15', 'Upper Respiratory Tract Infection', 'Take with food', 'fulfilled', 35, 35, 0),
+(2, 4, '2024-09-20', '2025-03-20', 'Hypertension', 'Take once daily in the morning', 'pending', 90, 0, 90),
+(2, 3, '2024-10-28', '2025-01-28', 'Allergic Rhinitis', 'Take as needed for symptoms', 'pending', 30, 0, 30);
 
 -- Insert prescription items
-INSERT INTO prescription_items (prescription_id, medicine_id, dosage, quantity, frequency, duration, instructions) VALUES
+INSERT INTO prescription_items (prescription_id, medicine_id, dosage, quantity, dispensed_quantity, remaining_quantity, frequency, duration, instructions) VALUES
 -- Prescription 1
-(1, 1, '500mg', 21, 'Three times daily', '7 days', 'Take one capsule after meals'),
-(1, 2, '500mg', 14, 'Twice daily as needed', '7 days', 'For fever or pain'),
+(1, 1, '500mg', 21, 21, 0, 'Three times daily', '7 days', 'Take one capsule after meals'),
+(1, 2, '500mg', 14, 14, 0, 'Twice daily as needed', '7 days', 'For fever or pain'),
 -- Prescription 2
-(2, 6, '50mg', 90, 'Once daily', '90 days', 'Take in the morning'),
+(2, 6, '50mg', 90, 0, 90, 'Once daily', '90 days', 'Take in the morning'),
 -- Prescription 3
-(3, 8, '10mg', 30, 'Once daily', '30 days', 'Take at bedtime');
+(3, 8, '10mg', 30, 0, 30, 'Once daily', '30 days', 'Take at bedtime');
 
 -- Insert orders
 INSERT INTO orders (prescription_id, patient_id, branch_id, pharmacist_id, order_date, total_amount, status, payment_status, dispensed_at) VALUES
