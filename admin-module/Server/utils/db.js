@@ -3,7 +3,7 @@ import mysql2 from "mysql2";
 const conn = mysql2.createConnection({
   host: "localhost",
   user: "root",
-  password: "",
+  password: "host_12345",
   database: "vitalsoft_db"
 });
 
