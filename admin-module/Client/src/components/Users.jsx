@@ -51,7 +51,13 @@ const Users = () => {
           alert(result.data.Error || "Failed to delete user");
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        const msg =
+          err?.response?.data?.Error ||
+          err?.message ||
+          "Failed to delete user";
+        alert(msg);
+      });
   };
 
   return (

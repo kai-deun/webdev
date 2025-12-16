@@ -16,6 +16,7 @@ const Add_User = () => {
   });
 
   const [roles, setRoles] = useState([]);
+  const [errors, setErrors] = useState({});
 
   const navigate = useNavigate();
 
@@ -26,8 +27,40 @@ const Add_User = () => {
       .catch(() => setRoles([]));
   }, []);
 
+  const requiredFields = {
+    username: "Username",
+    email: "Email",
+    password: "Password",
+    first_name: "First name",
+    last_name: "Last name",
+  };
+
+  // displays the error message if the required field is empty
+  const validate = () => {
+    const errs = {};
+    Object.keys(requiredFields).forEach((key) => {
+      const val = (user[key] || "").trim();
+      if (!val) errs[key] = `${requiredFields[key]} is required`;
+    });
+    return errs;
+  };
+
+  // removes the warning after inputting the required field
+  const handleBlur = (field) => {
+    const val = (user[field] || "").trim();
+    setErrors((prev) => ({
+      ...prev,
+      [field]: val ? "" : `${requiredFields[field]} is required`,
+    }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const validationErrors = validate();
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length) return;
+    
     axios
       .post("http://localhost:3000/auth/add_user", user)
       .then((res) => {
@@ -54,7 +87,11 @@ const Add_User = () => {
               className="form-control rounded-0"
               id="username"
               onChange={(e) => setUser({ ...user, username: e.target.value })}
+              onBlur={() => handleBlur("username")}
             />
+            {errors.username ? (
+              <div className="text-danger small mt-1">{errors.username}</div>
+            ) : null}
           </div>
           <div className="col-12">
             <label htmlFor="email" className="form-label">
@@ -65,7 +102,11 @@ const Add_User = () => {
               className="form-control rounded-0"
               id="email"
               onChange={(e) => setUser({ ...user, email: e.target.value })}
+              onBlur={() => handleBlur("email")}
             />
+            {errors.email ? (
+              <div className="text-danger small mt-1">{errors.email}</div>
+            ) : null}
           </div>
           <div className="col-12">
             <label htmlFor="password" className="form-label">
@@ -76,7 +117,11 @@ const Add_User = () => {
               className="form-control rounded-0"
               id="password"
               onChange={(e) => setUser({ ...user, password: e.target.value })}
+              onBlur={() => handleBlur("password")}
             />
+            {errors.password ? (
+              <div className="text-danger small mt-1">{errors.password}</div>
+            ) : null}
           </div>
           <div className="col-12">
             <label htmlFor="first_name" className="form-label">
@@ -87,7 +132,11 @@ const Add_User = () => {
               className="form-control rounded-0"
               id="first_name"
               onChange={(e) => setUser({ ...user, first_name: e.target.value })}
+              onBlur={() => handleBlur("first_name")}
             />
+            {errors.first_name ? (
+              <div className="text-danger small mt-1">{errors.first_name}</div>
+            ) : null}
           </div>
           <div className="col-12">
             <label htmlFor="last_name" className="form-label">
@@ -98,7 +147,11 @@ const Add_User = () => {
               className="form-control rounded-0"
               id="last_name"
               onChange={(e) => setUser({ ...user, last_name: e.target.value })}
+              onBlur={() => handleBlur("last_name")}
             />
+            {errors.last_name ? (
+              <div className="text-danger small mt-1">{errors.last_name}</div>
+            ) : null}
           </div>
           <div className="col-12">
             <label htmlFor="phone_number" className="form-label">
