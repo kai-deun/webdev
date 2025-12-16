@@ -894,7 +894,9 @@
                                 const detResp = await fetch(`../php/prescription.php?action=getPrescriptionDetails&id=${encodeURIComponent(rx)}`);
                                 const detJson = await detResp.json();
                                 if (detJson.success) {
-                                    showPrescriptionDetails(detJson.prescription, detJson.items || []);
+                                    const prescription = detJson.prescription;
+                                    const items = prescription.items || prescription.medicines || [];
+                                    showPrescriptionDetails(prescription, items);
                                 } else {
                                     alert('Details not found: ' + (detJson.message || 'Unknown error'));
                                 }
