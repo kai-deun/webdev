@@ -20,14 +20,14 @@ const ProtectedRoute = ({children}) => {
   useEffect(() => {
     const onStorage = (e) => {
       if (e.key === "valid" && e.newValue === null) {
-        navigate("/auth/adminlogin", { replace: true })
+        navigate("/adminlogin", { replace: true })
       }
     }
     window.addEventListener("storage", onStorage)
     return () => window.removeEventListener("storage", onStorage)
   }, [navigate])
   if (status === "checking") return null
-  return status === "ok" ? children : <Navigate to="/auth/adminlogin" replace />
+  return status === "ok" ? children : <Navigate to="/adminlogin" replace />
 }
 
 export default ProtectedRoute
