@@ -11,7 +11,7 @@ const Home = () => {
 
   const AdminOverview = () => {
     axios
-      .get("http://localhost:3000/auth/adminOver")
+      .get(import.meta.env.VITE_API_URL + "/auth/adminOver")
       .then((result) => {
         if (
           result.data &&
@@ -26,7 +26,7 @@ const Home = () => {
 
   const adminCount = () => {
     axios
-      .get("http://localhost:3000/auth/admin_count")
+      .get(import.meta.env.VITE_API_URL + "/auth/admin_count")
       .then((result) => {
         if (
           result.data &&
@@ -42,7 +42,7 @@ const Home = () => {
 
   const doctorCount = () => {
     axios
-      .get("http://localhost:3000/auth/doctor_count")
+      .get(import.meta.env.VITE_API_URL + "/auth/doctor_count")
       .then((result) => {
         if (
           result.data &&
@@ -58,7 +58,7 @@ const Home = () => {
 
   const patientCount = () => {
     axios
-      .get("http://localhost:3000/auth/patient_count")
+      .get(import.meta.env.VITE_API_URL + "/auth/patient_count")
       .then((result) => {
         if (
           result.data &&
@@ -74,7 +74,7 @@ const Home = () => {
 
   const pharmacistCount = () => {
     axios
-      .get("http://localhost:3000/auth/pharmacist_count")
+      .get(import.meta.env.VITE_API_URL + "/auth/pharmacist_count")
       .then((result) => {
         if (
           result.data &&
@@ -90,7 +90,7 @@ const Home = () => {
 
   const managerCount = () => {
     axios
-      .get("http://localhost:3000/auth/manager_count")
+      .get(import.meta.env.VITE_API_URL + "/auth/manager_count")
       .then((result) => {
         if (
           result.data &&

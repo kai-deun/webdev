@@ -22,7 +22,7 @@ const Users = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/auth/user_management")
+      .get(import.meta.env.VITE_API_URL + "/auth/user_management")
       .then((res) => {
         if (res.data) {
           setUser(res.data);
@@ -35,14 +35,14 @@ const Users = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/auth/roles")
+      .get(import.meta.env.VITE_API_URL + "/auth/roles")
       .then((res) => setRoles(res.data || []))
       .catch(() => setRoles([]));
   }, []);
 
   const handleDelete = (id) => {
     axios
-      .delete("http://localhost:3000/auth/delete_user/" + id)
+      .delete(import.meta.env.VITE_API_URL + "/auth/delete_user/" + id)
       .then((result) => {
         if (result.data && result.data.Status) {
           setUser((prev) => prev.filter((u) => u.user_id !== id));

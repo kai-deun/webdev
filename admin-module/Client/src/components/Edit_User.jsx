@@ -23,12 +23,12 @@ const Edit_User = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/auth/roles")
+      .get(import.meta.env.VITE_API_URL + "/auth/roles")
       .then((res) => setRoles(res.data))
       .catch(() => setRoles([]));
 
     axios
-      .get("http://localhost:3000/auth/edit_user/" + id)
+      .get(import.meta.env.VITE_API_URL + "/auth/edit_user/" + id)
       .then((result) => {
         const data = Array.isArray(result.data) ? result.data[0] : result.data;
         if (data) {
@@ -87,7 +87,7 @@ const Edit_User = () => {
     }
 
     axios
-      .put("http://localhost:3000/auth/edit_user/" + id, payload)
+      .put(import.meta.env.VITE_API_URL + "/auth/edit_user/" + id, payload)
       .then((res) => {
         if (res.data && res.data.Status) {
           navigate("/dashboard/user_management");

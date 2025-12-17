@@ -7,7 +7,7 @@ const ProtectedRoute = ({children}) => {
   const navigate = useNavigate()
   useEffect(() => {
     axios.defaults.withCredentials = true
-    axios.get("http://localhost:3000/verify")
+    axios.get(import.meta.env.VITE_API_URL + "/verify")
       .then(res => {
         if (res.data && res.data.Status && res.data.role === "Admin") {
           setStatus("ok")

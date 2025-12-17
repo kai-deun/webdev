@@ -22,7 +22,7 @@ const Add_User = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/auth/roles")
+      .get(import.meta.env.VITE_API_URL + "/auth/roles")
       .then((res) => setRoles(res.data))
       .catch(() => setRoles([]));
   }, []);
@@ -62,7 +62,7 @@ const Add_User = () => {
     if (Object.keys(validationErrors).length) return;
     
     axios
-      .post("http://localhost:3000/auth/add_user", user)
+      .post(import.meta.env.VITE_API_URL + "/auth/add_user", user)
       .then((res) => {
         if (res.data && res.data.Status) {
           navigate("/dashboard/user_management");

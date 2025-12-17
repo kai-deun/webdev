@@ -16,7 +16,7 @@ const Login = () => {
   const handleLogin = (event) => {
     event.preventDefault();
     axios
-      .post("http://localhost:3000/auth/adminlogin", values)
+      .post(import.meta.env.VITE_API_URL + "/auth/adminlogin", values)
       .then((result) => {
         console.log(result);
         if (result.data.loginStatus) {

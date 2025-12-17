@@ -1,0 +1,24 @@
+FROM php:8.2-apache
+
+# Install mysqli extension
+RUN docker-php-ext-install mysqli && docker-php-ext-enable mysqli
+
+# Enable Apache mod_rewrite
+RUN a2enmod rewrite
+
+# Copy application source
+# We copy specific folders to avoid copying admin-module and other unrelated stuff
+COPY ./php /var/www/html/php
+COPY ./css /var/www/html/css
+COPY ./js /var/www/html/js
+COPY ./html /var/www/html/html
+COPY ./logs /var/www/html/logs
+
+# Copy index file if exists, or set up a redirect?
+# The user said the url is /html/login.html.
+# So if we copy ./html to /var/www/html/html, then http://host/html/login.html works.
+
+# Set permissions
+RUN chown -R www-data:www-data /var/www/html
+
+EXPOSE 80

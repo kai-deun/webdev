@@ -12,7 +12,7 @@ export const Dashboard = () => {
   }, []);
 
   const handleLogout = () => {
-    axios.get("http://localhost:3000/auth/logout").then((res) => {
+    axios.get(import.meta.env.VITE_API_URL + "/auth/logout").then((res) => {
       if (res.data.Status) {
         localStorage.removeItem("valid");
         nav("/auth/adminlogin");

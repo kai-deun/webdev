@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # MySQL Database Service
+  mysql-db:
+    image: mysql:8.0
+    container_name: vitalsoft-db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: vitalsoft_db
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./database/maindb.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - vitalsoft-network
+    command: --default-authentication-plugin=mysql_native_password
+
+  # Node.js Backend API Service
+  node-api:
+    build:
+      context: ./admin-module/Server
+      dockerfile: Dockerfile
+    container_name: vitalsoft-node-api
+    environment:
+      DB_HOST: mysql-db
+      DB_USER: root
+      DB_PASSWORD: rootpassword
+      DB_NAME: vitalsoft_db
+      PORT: 3000
+      # CORS_ORIGIN: "true" reflects the request origin, allowing any origin with credentials
+      CORS_ORIGIN: "true"
+    depends_on:
+      - mysql-db
+    networks:
+      - vitalsoft-network
+    restart: always
+
+  # React Admin Frontend Service (Nginx)
+  react-admin:
+    build:
+      context: ./admin-module/Client
+      dockerfile: Dockerfile
+    container_name: vitalsoft-react-admin
+    ports:
+      - "8090:80" # Access Admin at http://<IP>:8090
+    depends_on:
+      - node-api
+    networks:
+      - vitalsoft-network
+    restart: always
+
+  # PHP Application Service
+  php-app:
+    build:
+      context: .
+      dockerfile: Dockerfile-php
+    container_name: vitalsoft-php-app
+    ports:
+      - "8080:80" # Access PHP App at http://<IP>:8080/html/login.html
+    environment:
+      DB_HOST: mysql-db
+      DB_USER: root
+      DB_PASSWORD: rootpassword
+      DB_NAME: vitalsoft_db
+      BASE_URL: http://localhost:8080/webdev # You might need to adjust this for VPN IP
+    depends_on:
+      - mysql-db
+    networks:
+      - vitalsoft-network
+    restart: always
+
+networks:
+  vitalsoft-network:
+    driver: bridge
+
+volumes:
+  db-data:

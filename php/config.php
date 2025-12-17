@@ -7,17 +7,17 @@
 // =============================================
 // DATABASE CONFIGURATION
 // =============================================
-define('DB_HOST', 'localhost');     // MySQL server hostname
-define('DB_NAME', 'vitalsoft_db');  // Database name
-define('DB_USER', 'root');          // MySQL username
-define('DB_PASS', '');              // MySQL password (empty by default in WAMP)
+define('DB_HOST', getenv('DB_HOST') ?: 'localhost');     // MySQL server hostname
+define('DB_NAME', getenv('DB_NAME') ?: 'vitalsoft_db');  // Database name
+define('DB_USER', getenv('DB_USER') ?: 'root');          // MySQL username
+define('DB_PASS', getenv('DB_PASSWORD') ?: '');          // MySQL password
 
 // =============================================
 // APPLICATION CONFIGURATION
 // =============================================
 define('APP_NAME', 'VitalSoft');
 define('APP_VERSION', '1.0.0');
-define('BASE_URL', 'http://localhost/webdev');
+define('BASE_URL', getenv('BASE_URL') ?: 'http://localhost/webdev');
 define('SESSION_TIMEOUT', 3600);    // Session timeout in seconds (1 hour)
 
 // =============================================
