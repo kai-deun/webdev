@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Password Setup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .success {
+            color: #4CAF50;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #d4edda;
+            border-radius: 5px;
+        }
+        .error {
+            color: #f44336;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #f8d7da;
+            border-radius: 5px;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <h1>🔐 Password Setup Script</h1>
+        <p>This script will update all default user passwords with proper bcrypt hashes.</p>
+<h2>Processing Users...</h2><div class='success'>✓ Updated password for user: <strong>admin</strong> (password: <span class='code'>admin123</span>)</div><div class='success'>✓ Updated password for user: <strong>admin2</strong> (password: <span class='code'>admin123</span>)</div><div class='success'>✓ Updated password for user: <strong>doctor</strong> (password: <span class='code'>doctor123</span>)</div><div class='success'>✓ Updated password for user: <strong>doctor2</strong> (password: <span class='code'>doctor123</span>)</div><div class='success'>✓ Updated password for user: <strong>manager</strong> (password: <span class='code'>manager123</span>)</div><div class='success'>✓ Updated password for user: <strong>manager2</strong> (password: <span class='code'>manager123</span>)</div><div class='success'>✓ Updated password for user: <strong>pharmacist</strong> (password: <span class='code'>pharma123</span>)</div><div class='success'>✓ Updated password for user: <strong>pharmacist2</strong> (password: <span class='code'>pharma123</span>)</div><div class='success'>✓ Updated password for user: <strong>patient</strong> (password: <span class='code'>patient123</span>)</div><div class='success'>✓ Updated password for user: <strong>patient2</strong> (password: <span class='code'>patient123</span>)</div><hr><h2>📊 Summary</h2><p><strong>Total Users Updated:</strong> 10</p><div class='success'>✓ All passwords updated successfully!</div><div class='info'>
+    <h3>📋 Default Login Credentials</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Role</th>
+                <th>Username</th>
+                <th>Password</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Admin</td>
+                <td>admin</td>
+                <td><span class='code'>admin123</span></td>
+            </tr>
+            <tr>
+                <td>Admin</td>
+                <td>admin2</td>
+                <td><span class='code'>admin123</span></td>
+            </tr>
+            <tr>
+                <td>Doctor</td>
+                <td>doctor</td>
+                <td><span class='code'>doctor123</span></td>
+            </tr>
+            <tr>
+                <td>Doctor</td>
+                <td>doctor2</td>
+                <td><span class='code'>doctor123</span></td>
+            </tr>
+            <tr>
+                <td>Pharmacy Manager</td>
+                <td>manager</td>
+                <td><span class='code'>manager123</span></td>
+            </tr>
+            <tr>
+                <td>Pharmacy Manager</td>
+                <td>manager2</td>
+                <td><span class='code'>manager123</span></td>
+            </tr>
+            <tr>
+                <td>Pharmacist</td>
+                <td>pharmacist</td>
+                <td><span class='code'>pharma123</span></td>
+            </tr>
+            <tr>
+                <td>Pharmacist</td>
+                <td>pharmacist2 - pharmacist6</td>
+                <td><span class='code'>pharma123</span></td>
+            </tr>
+            <tr>
+                <td>Patient</td>
+                <td>patient</td>
+                <td><span class='code'>patient123</span></td>
+            </tr>
+            <tr>
+                <td>Patient</td>
+                <td>patient2</td>
+                <td><span class='code'>patient123</span></td>
+            </tr>
+        </tbody>
+    </table>
+</div><div class='info'>
+    <p><strong>⚠️ Security Note:</strong> For production use, make sure to:</p>
+    <ul>
+        <li>Delete this setup file after running it</li>
+        <li>Change all default passwords</li>
+        <li>Use strong, unique passwords for each user</li>
+    </ul>
+</div></div></body></html>

@@ -15,7 +15,7 @@ router.post("/adminlogin", (req, res) => {
     if (err)
       return res.json({
         loginStatus: false,
-        Error: "Query syntax not working",
+        Error: err?.message || "Query syntax not working",
       });
 
     if (result.length > 0) {
@@ -26,11 +26,10 @@ router.post("/adminlogin", (req, res) => {
       let ok = false;
 
       try {
-        // for bcrypt checking
         if (/^\$2[aby]\$/.test(stored)) {
-          ok = await bcrypt.compare(incoming, stored);
+          const compat = stored.replace(/^\$2y\$/, "$2b$");
+          ok = await bcrypt.compare(incoming, compat);
         } else {
-          // for plaintext password (DEV PURPOSES)
           ok = incoming === stored;
         }
       } catch {
