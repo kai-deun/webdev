@@ -439,6 +439,36 @@ header {
     overflow-x: auto;
 }
 
+#inventory-tab .inventory-table-container {
+    max-height: 500px;   
+    overflow-y: auto;     
+    overflow-x: auto;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+}
+
+#inventory-tab .inventory-table-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+#inventory-tab .inventory-table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 8px;
+}
+
+#inventory-tab .inventory-table-container::-webkit-scrollbar-thumb {
+    background: var(--pharmacy-primary);
+    border-radius: 8px;
+}
+
+#inventory-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #f8f9fa;
+    box-shadow: inset 0 -1px 0 #e9ecef;
+}
+
 .data-table {
     width: 100%;
     border-collapse: collapse;
@@ -1260,3 +1290,5 @@ header {
         justify-content: center;
     }
 }
+
+
