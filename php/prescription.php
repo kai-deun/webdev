@@ -247,29 +247,45 @@ function getPrescriptions($mysqli) {
         ";
 
         if ($patientFilter !== null) {
-            $query .= " WHERE p.patient_id = " . $patientFilter . " ";
+            $query .= " AND p.patient_id = ? ";
+            $params[] = $patientFilter;
+            $types .= "i";
+        }
+
+        if (!empty($status)) {
+            $query .= " AND p.status = ? ";
+            $params[] = $status;
+            $types .= "s";
+        }
+
+         if (!empty($search)) {
+            $query .= " AND (p.diagnosis LIKE ? OR p.prescription_id LIKE ?) ";
+            $searchParam = "%$search%";
+            $params[] = $searchParam;
+            $params[] = $searchParam;
+            $types .= "ss";
         }
 
         $query .= " ORDER BY p.prescription_date DESC, p.prescription_id DESC ";
 
-        $result = $mysqli->query($query);
-        
-        if (!$result) {
-            throw new Exception("Query failed: " . $mysqli->error);
+        $stmt = $mysqli->prepare($query);
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
         }
+        
+        $stmt->execute();
+        $result = $stmt->get_result();
         
         $prescriptions = [];
         while ($row = $result->fetch_assoc()) {
             $prescriptions[] = $row;
         }
+        $stmt->close();
         
-        echo json_encode([
-            'success' => true,
-            'prescriptions' => $prescriptions
-        ]);
+        echo json_encode(['success' => true, 'prescriptions' => $prescriptions]);
     } catch (Exception $e) {
         http_response_code(500);
-        echo json_encode(['success' => false, 'message' => 'Error fetching prescriptions: ' . $e->getMessage()]);
+        echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
     }
 }
 
