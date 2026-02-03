@@ -158,6 +158,50 @@ function handleLogin($mysqli) {
     }
 }
 
+function handleForgotpassword($mysqli){
+    $email = $_POST['email'] ?? '';
+
+    if(empty($email){
+        http_response_code(400);
+        echo json_encode(['sucess' => false, 'message' => 'Email is required!'])
+        return;
+    })
+
+    // if email exists
+    $stmt = $mysqli->prepare("SELECT user_id FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
+    $stmt->close();
+
+    if($user){
+        //make token
+        $token = bin2hex(random_bytes(16));
+        $token_hash = hash('sha256', $token);
+        $expiry = date("Y-m-d H:i:s", time() + 60 * 30); //30 minutes before expiry
+
+        // store token in db
+        $update = $mysqli->prepare("UPDATE users SET reset_token_hash = ?", reset_token_expires_at = ? WHERE user_id = ?);
+        $update-> bind_param("ssi", $token_hash, $expiry, $user['user_id']);
+        $update->execute();
+        $update->close();
+
+        // send email
+        $resetlink = "http://vitialsoft.com/html/reset-password.html?token=" . $token;
+        $subject = "Password Reset Request";
+        $message = "Click here to reset your password: " . $resetlink;
+
+        mail($email, $subject, $message);
+
+        error_log("Reset Link for $email: " . $resetlink);
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'If that email exists, we have sent a password reset link.'    
+        ])
+    }
+}
 /**
  * Handle user logout
  */
