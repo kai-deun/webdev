@@ -64,6 +64,10 @@ function setupLoginForm() {
     });
 }
 
+function setupForgotPassword(){
+    const modal = 
+}
+
 function setupPasswordToggle() {
     const togglePassword = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('password');
