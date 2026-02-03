@@ -65,7 +65,59 @@ function setupLoginForm() {
 }
 
 function setupForgotPassword(){
-    const modal = 
+    const modal = document.getElementById('forgotPasswordModal');
+    const link = document.querySelector('.forgot-link');
+    const closeBtn = document.querySelector('.close-modal');
+    const form = document.getElementById('forgotPasswordForm');
+
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        modal.classList.add('active');
+    });
+
+    closeBtn.addEventListener('click', () => {
+        modal.classList.remove('active');
+    });
+
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+        }
+    });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('resetEmail').value;
+        const btn = form.querySelector('button');
+        const originalText = btn.innerHTML;
+
+        btn.innerHTML = 'Sending...';
+        btn.disabled = true;
+
+        try {
+            const formData = new FormData();
+            formData.append('action', 'forgot-password');
+            formData.append('email', email);
+
+            const response = await fetch(AUTH_API, {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            
+            showMessage(data.message, 'success');
+            modal.classList.remove('active');
+            form.reset();
+
+        } catch (error) {
+            console.error('Error:', error);
+            showMessage('An error occurred. Please try again.', 'error');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    });
 }
 
 function setupPasswordToggle() {
