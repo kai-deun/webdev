@@ -20,6 +20,51 @@
     }
 })();
 
+async function loadPrescriptions() {
+    const search = document.getElementById('prescription-search').value;
+    const status = document.getElementById('prescription-status-filter').value;
+    const loadingEl = document.getElementById('prescriptions-loading');
+    
+    if (loadingEl) loadingEl.style.display = 'block';
+
+    try {
+        // Construct URL with filter parameters
+        let url = `../php/prescription.php?action=getPrescriptions&search=${encodeURIComponent(search)}&status=${encodeURIComponent(status)}`;
+        
+        // If a patient ID is stored in the session/user object, append it
+        if (window.currentUser && window.currentUser.patient_id) {
+            url += `&patient_id=${window.currentUser.patient_id}`;
+        }
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.success) {
+            renderPrescriptionsTable(data.prescriptions);
+        }
+    } catch (err) {
+        console.error('Failed to load prescriptions:', err);
+    } finally {
+        if (loadingEl) loadingEl.style.display = 'none';
+    }
+}
+
+// Initialize listeners when the dashboard loads
+document.addEventListener('DOMContentLoaded', () => {
+    const searchBtn = document.getElementById('prescription-search-btn');
+    if (searchBtn) {
+        searchBtn.addEventListener('click', loadPrescriptions);
+    }
+
+    // Optional: Trigger search on "Enter" key in the search box
+    const searchInput = document.getElementById('prescription-search');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') loadPrescriptions();
+        });
+    }
+});
+
 async function loadDashboardStats() {
     const setValue = (id, value) => {
         const el = document.getElementById(id);
