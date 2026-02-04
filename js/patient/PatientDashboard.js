@@ -49,6 +49,27 @@ async function loadPrescriptions() {
     }
 }
 
+async function loadMedicalHistory() {
+    const search = document.getElementById('history-search').value;
+    const type = document.getElementById('history-type-filter').value;
+    const patientId = window.currentUser?.patient_id;
+
+    if (!patientId) return;
+
+    try {
+        let url = `../php/prescription.php?action=getMedicalHistory&patient_id=${patientId}&search=${encodeURIComponent(search)}&type=${encodeURIComponent(type)}`;
+        
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.success) {
+            renderMedicalHistoryTable(data.records);
+        }
+    } catch (err) {
+        console.error('Failed to load medical history:', err);
+    }
+}
+
 // Initialize listeners when the dashboard loads
 document.addEventListener('DOMContentLoaded', () => {
     const searchBtn = document.getElementById('prescription-search-btn');

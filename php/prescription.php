@@ -110,6 +110,9 @@ switch ($action) {
 
 function getMedicalHistory($mysqli) {
     $patientId = $_GET['patient_id'] ?? '';
+    $type = $_GET['type'] ?? '';
+    $search = $_GET['search'] ?? '';
+
     if (empty($patientId)) {
         http_response_code(400);
         echo json_encode(['success' => false, 'message' => 'patient_id is required']);
@@ -118,17 +121,36 @@ function getMedicalHistory($mysqli) {
 
     try {
         $query = "
-            SELECT mh.history_id, mh.patient_id, mh.doctor_id, mh.diagnosis, mh.notes, mh.visit_date, mh.created_at,
+            SELECT mh.history_id, mh.record_type, mh.diagnosis, mh.notes, mh.visit_date,
                    CONCAT(u.first_name, ' ', u.last_name) AS doctor_name
             FROM medical_history mh
             LEFT JOIN users u ON mh.doctor_id = u.user_id
             WHERE mh.patient_id = ?
-            ORDER BY mh.visit_date DESC, mh.history_id DESC
         ";
 
+        $params = [$patientId];
+        $types = "i";
+
+        //apple type filter
+        if (!empty($type)) {
+            $query .= " AND mh.record_type = ? ";
+            $params[] = $type;
+            $types .= "s";
+        }
+
+        //apply search filter
+        if (!empty($search)) {
+            $query .= " AND (mh.diagnosis LIKE ? OR mh.notes LIKE ?) ";
+            $searchParam = "%$search%";
+            $params[] = $searchParam;
+            $params[] = $searchParam;
+            $types .= "ss";
+        }
+
+        $query .= " ORDER BY mh.visit_date DESC";
+
         $stmt = $mysqli->prepare($query);
-        if (!$stmt) throw new Exception('Prepare failed: ' . $mysqli->error);
-        $stmt->bind_param('i', $patientId);
+        $stmt->bind_param($types, ...$params);
         $stmt->execute();
         $result = $stmt->get_result();
 
@@ -136,12 +158,11 @@ function getMedicalHistory($mysqli) {
         while ($row = $result->fetch_assoc()) {
             $records[] = $row;
         }
-        $stmt->close();
 
         echo json_encode(['success' => true, 'records' => $records]);
     } catch (Exception $e) {
         http_response_code(500);
-        echo json_encode(['success' => false, 'message' => 'Error fetching medical history: ' . $e->getMessage()]);
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
     }
 }
 
