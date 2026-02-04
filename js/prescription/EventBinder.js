@@ -23,7 +23,7 @@ export class BindEvents {
                 display.displayCurrentPrescription(); // Refresh the list
             });
         }
-
+        
         // Header: New Prescription button scrolls to the create form and opens the Prescriptions tab
         const newPresBtn = document.getElementById('btn-new-prescription');
         if (newPresBtn) {
@@ -98,7 +98,14 @@ export class BindEvents {
             btn.addEventListener('click', (e) => prescriptUtils.switchTab(e.target));
         });
 
-        // A–Z filter removed from UI; search input handles filtering now.
+        // Filter
+        const filterSelects = document.querySelectorAll('.search-filter select, .inventory-status-select');
+        filterSelects.forEach(select => {
+                select.addEventListener('change', (e) => {
+                // prescriptUtils is the exported instance from Instances.js
+                prescriptUtils.handleFilter(e.target);
+            });
+        });
     }
 
     // Handles elements that are dynamically added to the DOM (like table rows)
