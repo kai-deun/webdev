@@ -23,7 +23,7 @@ export const Dashboard = () => {
   return (
     <div className="container-fluid">
       <div className="row flex-nowrap">
-        <div className="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
+        <div className="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark" style={{height: "100vh", overflowY: "auto"}}>
           <div className="d-flex flex-column align-items align-items-sm-start px-3 pt-2 text_white min-vh-100">
             <Link
               to="/dashboard"
@@ -91,7 +91,9 @@ export const Dashboard = () => {
           <div className="p-2 d-flex justify-content-center shadow">
             <h4>ADMIN Management System</h4>
           </div>
+          <div style={{ height: "calc(100vh - 60px)", overflowY: "auto", padding: "20px"}}>
           <Outlet />
+          </div>
         </div>
       </div>
     </div>
