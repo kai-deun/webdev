@@ -253,18 +253,25 @@ function getMedicines($mysqli) {
 
 function getPrescriptions($mysqli) {
     try {
-        // Optionally allow filtering by patient_id for patient-specific views
+       
         $patientFilter = isset($_GET['patient_id']) && $_GET['patient_id'] !== '' ? (int)$_GET['patient_id'] : null;
+        $status = $_GET['status'] ?? '';
+        $search = $_GET['search'] ?? '';
+
+        $params = [];
+        $types = "";
 
         $query = "
-            SELECT p.prescription_id, CAST(p.patient_id AS CHAR) AS patient_id, p.doctor_id, p.prescription_date, p.expiry_date, 
-                   p.diagnosis, p.notes, p.status, p.renewal_requested, p.created_at, p.updated_at,
+            SELECT p.prescription_id, CAST(p.patient_id AS CHAR) AS patient_id, p.doctor_id, 
+                   p.prescription_date, p.expiry_date, p.diagnosis, p.notes, p.status, 
+                   p.renewal_requested, p.created_at, p.updated_at,
                    CONCAT(u_pat.first_name, ' ', u_pat.last_name) as patient_name,
                    CONCAT(u_doc.first_name, ' ', u_doc.last_name) as doctor_name
             FROM prescriptions p
             JOIN patients pat ON p.patient_id = pat.patient_id
             JOIN users u_pat ON pat.user_id = u_pat.user_id
             JOIN users u_doc ON p.doctor_id = u_doc.user_id
+            WHERE 1=1
         ";
 
         if ($patientFilter !== null) {
@@ -279,7 +286,7 @@ function getPrescriptions($mysqli) {
             $types .= "s";
         }
 
-         if (!empty($search)) {
+        if (!empty($search)) {
             $query .= " AND (p.diagnosis LIKE ? OR p.prescription_id LIKE ?) ";
             $searchParam = "%$search%";
             $params[] = $searchParam;
